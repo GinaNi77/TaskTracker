@@ -14,7 +14,7 @@
                 />
 
                 <q-input
-                    label="Mail"
+                    label="Email"
                     v-model="form.email"
                 /> 
 
