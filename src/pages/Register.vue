@@ -9,13 +9,13 @@
                 />
 
                 <q-input
-                    label="Email"
-                    v-model="form.email"
+                    label="Surname"
+                    v-model="form.surname"
                 />
 
                 <q-input
-                    label="Password"
-                    v-model="form.password"
+                    label="Mail"
+                    v-model="form.email"
                 /> 
 
                 <div class="q-mt-lg">
@@ -34,7 +34,7 @@ export default defineComponent({
     const form = ref({
         name:"",
         email: "",
-        password: ""
+        surname: ""
     })
     return{
         form
