@@ -62,6 +62,9 @@ export default defineComponent({
         })
         console.log(data.userSignIn.recordId);
         resetForm();
+        if (data.userSignIn.status === 200) {
+            window.location.href = "#/main";
+        }
     };
 
     const resetForm = () => {
@@ -70,7 +73,7 @@ export default defineComponent({
     };
 
     return{
-        form, signIn, signInUser, resetForm
+        form, signIn, resetForm
     }
   }
 })

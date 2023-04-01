@@ -110,6 +110,9 @@ export default defineComponent({
         }
        )
        resetForm();
+       if (data.userSignUpSetPassword.status === 200) {
+            window.location.href = "#/login";
+        }
     };
 
     const resetForm = () => {
@@ -121,7 +124,7 @@ export default defineComponent({
     };
 
     return{
-        form, formPas, userSignUp, signUp, userSignUpSetPassword, setPassword
+        form, formPas, signUp, setPassword
     }
   }
 })
