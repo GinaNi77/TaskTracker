@@ -60,11 +60,17 @@ export default defineComponent({
                 "password": form.value.password
             }
         })
-        console.log(data.userSignIn.recordId)
+        console.log(data.userSignIn.recordId);
+        resetForm();
+    };
+
+    const resetForm = () => {
+      form.value.email = "",
+      form.value.password = "";
     };
 
     return{
-        form, signIn, signInUser
+        form, signIn, signInUser, resetForm
     }
   }
 })

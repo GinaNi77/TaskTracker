@@ -109,8 +109,16 @@ export default defineComponent({
         }
         }
        )
+       resetForm();
     };
 
+    const resetForm = () => {
+      form.value.email = "",
+      form.value.surname = "",
+      form.value.name = "",
+      formPas.value.code = "",
+      formPas.value.password = ""
+    };
 
     return{
         form, formPas, userSignUp, signUp, userSignUpSetPassword, setPassword
