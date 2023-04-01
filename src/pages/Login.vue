@@ -1,6 +1,6 @@
 <template>
     <q-page padding>
-        <q-form class="row justify-center" @submit.prevent="">
+        <q-form class="row justify-center" @submit.prevent="signIn">
             <p class="col-12 text-h5 text-center">Login</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
@@ -27,6 +27,9 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import { useMutation } from '@vue/apollo-composable'
+import gql from "graphql-tag";
+
 export default defineComponent({
   name: 'PageLogin',
   setup(){
@@ -34,8 +37,34 @@ export default defineComponent({
         email: "",
         password: ""
     })
+
+    const { mutate: signInUser } = useMutation(gql`
+    mutation UserSignIn($input: UserSignInInput!) {
+    userSignIn(input: $input) {
+		recordId
+		record {
+			token_type
+			expires_in
+			access_token
+			refresh_token
+		}
+		status
+  }
+}`)
+
+     const signIn = async () => {
+        const {data} = await signInUser(
+        {
+            "input": {
+                "login": form.value.email,
+                "password": form.value.password
+            }
+        })
+        console.log(data.userSignIn.recordId)
+    };
+
     return{
-        form
+        form, signIn, signInUser
     }
   }
 })
