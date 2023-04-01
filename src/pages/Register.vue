@@ -1,6 +1,6 @@
 <template>
     <q-page padding>
-        <q-form class="row justify-center" @submit.prevent="">
+        <q-form class="row justify-center" @submit.prevent="signUp">
             <p class="col-12 text-h5 text-center">Register</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
@@ -21,13 +21,34 @@
                 <div class="q-mt-lg">
                     <q-btn outline size="md" color="black" label="Register" class="full-width" type="submit"/>     
                 </div>    
+
+                <q-form  @submit.prevent="setPassword">
+                    <q-input
+                        label="Code"
+                        v-model="formPas.code"
+                    />
+
+                    <q-input
+                        label="Password"
+                        v-model="formPas.password"
+                    />
+
+                    <div class="q-mt-lg">
+                        <q-btn outline size="md" color="black" label="Set Password" class="full-width" type="submit"/>     
+                    </div>    
+                </q-form>
             </div>
+
+        
         </q-form>
     </q-page>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue'
+import { useMutation } from '@vue/apollo-composable'
+import gql from "graphql-tag";
+
 export default defineComponent({
   name: 'PageRegister',
   setup(){
@@ -36,8 +57,63 @@ export default defineComponent({
         email: "",
         surname: ""
     })
+
+    const formPas = ref({
+        code:"",
+        password: "",
+    })
+
+     const { mutate: userSignUp } = useMutation(gql`
+        mutation UserSignUp($input: UserSignUpInput!) {
+        userSignUp(input: $input) {
+            recordId
+            record {
+                id
+                email
+                registration_passed
+                name
+                surname
+            }
+            status
+        }
+        }`
+    )
+
+    const signUp = async () => {
+       const {data} = await userSignUp(
+        {
+            "input": {
+            "name": form.value.name,
+            "surname": form.value.surname,
+            "email": form.value.email
+            }
+        })
+        console.log(data.userSignUp.recordId)
+        localStorage.setItem("userSignUpId", data.userSignUp.recordId)   
+    };
+
+    const { mutate: userSignUpSetPassword } = useMutation(gql`
+    mutation UserSignUpSetPassword($input: UserSignUpSetPasswordInput!) {
+    userSignUpSetPassword(input: $input) {
+            status
+    }
+    }`)
+
+      const setPassword = async () => {
+       const {data} = await userSignUpSetPassword(
+        {
+        "input": {
+        "user_id": localStorage.getItem('userSignUpId'),
+            "code": formPas.value.code,
+            "password": formPas.value.password
+        }
+        }
+       )
+    };
+
+
     return{
-        form
+        form, formPas, userSignUp, signUp, userSignUpSetPassword, setPassword
     }
   }
 })
