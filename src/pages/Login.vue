@@ -60,6 +60,7 @@ export default defineComponent({
                 "password": form.value.password
             }
         })
+        localStorage.setItem('token', data.userSignIn.record.access_token)
         console.log(data.userSignIn.recordId);
         resetForm();
         if (data.userSignIn.status === 200) {
