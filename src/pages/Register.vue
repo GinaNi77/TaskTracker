@@ -109,11 +109,22 @@ export default defineComponent({
         }
         }
        )
+       resetForm();
+       if (data.userSignUpSetPassword.status === 200) {
+            window.location.href = "#/login";
+        }
     };
 
+    const resetForm = () => {
+      form.value.email = "",
+      form.value.surname = "",
+      form.value.name = "",
+      formPas.value.code = "",
+      formPas.value.password = ""
+    };
 
     return{
-        form, formPas, userSignUp, signUp, userSignUpSetPassword, setPassword
+        form, formPas, signUp, setPassword
     }
   }
 })

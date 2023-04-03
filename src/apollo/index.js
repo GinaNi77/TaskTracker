@@ -1,16 +1,46 @@
 import { createHttpLink, InMemoryCache } from '@apollo/client/core'
+import { setContext } from "@apollo/client/link/context";
+import { concat } from "apollo-link";
 export /* async */ function getClientOptions(/* {app, router, ...} */ options) {
+
+  const httpLink = createHttpLink({
+    uri:
+      process.env.GRAPHQL_URI ||
+      // Change to your graphql endpoint.
+      "https://app.stud.druid.1t.ru/graphql",
+  });
+  const authLink = setContext((_, { headers }) => {
+    const token = localStorage.getItem('token');
+    if (token === "") {
+      return {
+        headers: {
+          ...headers,
+        },
+      };
+    } else {
+      return {
+        headers: {
+          ...headers,
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      };
+    }
+  });
+
   return Object.assign(
     // General options.
     {
-      link: createHttpLink({
-        uri:
-          process.env.GRAPHQL_URI ||
-          // Change to your graphql endpoint.
-          'https://app.stud.druid.1t.ru/graphql',
-      }),
+      // link: createHttpLink({
+      //   uri:
+      //     process.env.GRAPHQL_URI ||
+      //     // Change to your graphql endpoint.
+      //     'https://app.stud.druid.1t.ru/graphql',
+      // }),
+      link: authLink.concat(httpLink),
       cache: new InMemoryCache(),
     },
+
+    
     // Specific Quasar mode options.
     process.env.MODE === 'spa'
       ? {

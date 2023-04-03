@@ -72,11 +72,21 @@ export default defineComponent({
                 "password": form.value.password
             }
         })
-        console.log(data.userSignIn.recordId)
+        localStorage.setItem('token', data.userSignIn.record.access_token)
+        console.log(data.userSignIn.recordId);
+        resetForm();
+        if (data.userSignIn.status === 200) {
+            window.location.href = "#/main";
+        }
+    };
+
+    const resetForm = () => {
+      form.value.email = "",
+      form.value.password = "";
     };
 
     return{
-        form, signIn, signInUser
+        form, signIn, resetForm
     }
   }
 })
