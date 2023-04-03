@@ -1,9 +1,12 @@
 <template>
-  <q-page padding>
-    <q-form class="row justify-center" @submit.prevent="">
-      <p class="col-12 text-h5 text-center">Login</p>
-      <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
-        <q-input label="Email" v-model="form.email" />
+    <q-page padding>
+        <q-form class="row justify-center" @submit.prevent="signIn">
+            <p class="col-12 text-h5 text-center">Login</p>
+            <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
+                <q-input
+                    label="Email"
+                    v-model="form.email"
+                />
 
         <q-input label="Password" v-model="form.password" />
 
@@ -35,54 +38,46 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
+import { defineComponent, ref } from 'vue'
+import { useMutation } from '@vue/apollo-composable'
 import gql from "graphql-tag";
 
 export default defineComponent({
   name: "PageLogin",
   setup() {
     const form = ref({
-      email: "",
-      password: "",
-    });
+        email: "",
+        password: ""
+    })
 
     const { mutate: signInUser } = useMutation(gql`
-      mutation UserSignIn($input: UserSignInInput!) {
-        userSignIn(input: $input) {
-          recordId
-          record {
-            token_type
-            expires_in
-            access_token
-            refresh_token
-          }
-          status
-        }
-      }
-    `);
+    mutation UserSignIn($input: UserSignInInput!) {
+    userSignIn(input: $input) {
+		recordId
+		record {
+			token_type
+			expires_in
+			access_token
+			refresh_token
+		}
+		status
+  }
+}`)
 
-    const signIn = async () => {
-      const { data } = await signInUser({
-        input: {
-          login: form.value.email,
-          password: form.value.password,
-        },
-      });
-
-      console.log(data.userSignIn);
-      console.log(data.userSignIn.status);
-
-      if (data.userSignIn.status === 200) {
-        window.location.href = "#/main";
-      }
+     const signIn = async () => {
+        const {data} = await signInUser(
+        {
+            "input": {
+                "login": form.value.email,
+                "password": form.value.password
+            }
+        })
+        console.log(data.userSignIn.recordId)
     };
 
-    return {
-      form,
-      signIn,
-      signInUser,
-    };
-  },
-});
+    return{
+        form, signIn, signInUser
+    }
+  }
+})
 </script>
