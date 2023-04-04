@@ -1,38 +1,51 @@
 <template>
-  <q-drawer
-    v-model="leftDrawerOpen"
-    :width="400"
-    :breakpoint="300"
-    class="bg-grey-1"
-    bordered
-    :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
-  >
-    <q-scroll-area
-      class="fit"
+  <div v-if="result">
+    <q-drawer
+      v-model="leftDrawerOpen"
       :width="400"
-      :horizontal-thumb-style="{ opacity: 0 }"
+      :breakpoint="300"
+      class="bg-grey-1"
+      bordered
+      :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
     >
-      <q-tree
-        v-if="result"
-        :nodes="treePages"
-        node-key="label"
-        v-model:selected="selected"
-      />
-    </q-scroll-area>
-  </q-drawer>
+      <q-scroll-area
+        class="fit"
+        :width="400"
+        :horizontal-thumb-style="{ opacity: 0 }"
+      >
+        <q-tree
+          :nodes="treePages"
+          node-key="label"
+          v-model:selected="selected"
+          @click="value()"
+        />
+      </q-scroll-area>
+    </q-drawer>
+
+    <AddPerformerUser v-if="selected === 'Исполнители'" />
+    <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
+    <div v-else>Гадость ...</div>
+  </div>
 </template>
 
 <script>
 import { defineComponent, ref } from "vue";
-
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
+import AddPerformerUser from "../components/AddPerformerUser.vue";
+import AddResponsibleUser from "../components/AddResponsibleUser.vue";
+
 export default defineComponent({
+  components: {
+    AddPerformerUser,
+    AddResponsibleUser,
+  },
+
   setup() {
     const treePages = ref([]);
     const parentPages = ref([]);
-    const selected = ref();
+    const selected = ref("");
     const leftDrawerOpen = ref(true);
 
     const { result, loading, error, onResult, refetch } = useQuery(
@@ -84,6 +97,9 @@ export default defineComponent({
       console.log(treePages.value[0].label);
     });
 
+    // setInterval(() => console.log(selected.value), 2000);
+
+    const value = () => console.log(selected.value);
     return {
       drawer: ref(false),
       miniState: ref(true),
@@ -92,6 +108,7 @@ export default defineComponent({
       treePages,
       selected,
       leftDrawerOpen,
+      value,
     };
   },
 });
