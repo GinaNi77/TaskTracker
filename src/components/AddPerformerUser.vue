@@ -40,8 +40,8 @@ export default defineComponent({
     })
 
      const { mutate: userGroupInviteUser } = useMutation(gql`
-            mutation inviteUserToGroup($input: InviteUserToGroupInput!) {
-                inviteUserToGroup(input: $input) {
+            mutation UserGroupInviteUser($input: UserGroupInviteUserInput!) {
+            userGroupInviteUser(input: $input) {
                 status
             }
         }`
@@ -54,9 +54,10 @@ export default defineComponent({
             "name": form.value.name,
             "surname": form.value.surname,
             "email": form.value.email,
-            "page_group_id": "4753316581813399177"
+            "page_group_id": "3969277701932267641"
             }
         }) 
+        console.log(data.userGroupInviteUser.status)
         resetForm()
     };
 
