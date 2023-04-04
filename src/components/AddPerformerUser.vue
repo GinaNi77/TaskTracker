@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <q-list>
+    <!-- <q-list>
       <q-item v-for="user in performerUsers" :key="user.index">
         <q-item-section avatar>
           <q-avatar color="primary" text-color="white">
@@ -16,6 +16,24 @@
           <q-item-label>{{ user.email.email }}</q-item-label>
         </q-item-section>
       </q-item>
+    </q-list> -->
+    <q-list class="q-mb-xl">
+      <table style="width: 100%; border-collapse: collapse">
+        <caption class="q-my-lg text-h5">
+          Список исполнителей
+        </caption>
+        <tr>
+          <th>Имя</th>
+          <th>Фамилия</th>
+          <th>Email</th>
+        </tr>
+
+        <tr v-for="user in performerUsers" :key="user.index">
+          <td>{{ user.fullname.first_name }}</td>
+          <td>{{ user.fullname.last_name }}</td>
+          <td>{{ user.email.email }}</td>
+        </tr>
+      </table>
     </q-list>
 
     <q-form class="row justify-center" @submit.prevent="addPerformer">
@@ -50,7 +68,7 @@ import gql from "graphql-tag";
 
 export default defineComponent({
   name: "add-performer-user",
-  
+
   setup() {
     const form = ref({
       name: "",
@@ -122,3 +140,15 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+th {
+  border: 1px solid black;
+  padding: 5px;
+}
+
+td {
+  border: 1px solid black;
+  padding: 5px 10px;
+}
+</style>
