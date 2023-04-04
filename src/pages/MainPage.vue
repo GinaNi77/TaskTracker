@@ -24,6 +24,7 @@
 
     <AddPerformerUser v-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
+    <AddModule v-else-if="selected === 'Модули'"/>
     <div v-else>Гадость ...</div>
   </div>
 </template>
@@ -35,11 +36,13 @@ import gql from "graphql-tag";
 
 import AddPerformerUser from "../components/AddPerformerUser.vue";
 import AddResponsibleUser from "../components/AddResponsibleUser.vue";
+import AddModule from "../components/AddModule.vue";
 
 export default defineComponent({
   components: {
     AddPerformerUser,
     AddResponsibleUser,
+    AddModule,
   },
 
   setup() {
