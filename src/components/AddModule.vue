@@ -12,7 +12,6 @@
                     <template #append>
                         <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
                         <q-popup-proxy>
-                           <q-dropdown color="white" class="text-black" flat>
                                 <q-list>
                                     <q-item clickable v-close-popup  v-for="user in responsibleUsers" :key="user.index" @click="onItemClick(user.fullname.first_name)">
                                     <q-item-section>
@@ -20,7 +19,6 @@
                                     </q-item-section>
                                     </q-item>
                                 </q-list>
-                    </q-dropdown>
                         </q-popup-proxy>
                     </template>
                 </q-input>
