@@ -8,6 +8,8 @@ const routes = [
       { path: 'login', name:'login', component: () => import('pages/Login.vue') },
       { path: 'register', name:'register', component: () => import('pages/Register.vue') },
       { path: 'main', name:'main', component: () => import('pages/MainPage.vue') },
+      { path: 'addUser', name:'addUser', component: () => import('components/AddPerformerUser.vue') },
+      { path: 'addUser2', name:'addUser2', component: () => import('components/AddResponsibleUser.vue') }
     ]
   },
 

@@ -1,26 +1,121 @@
 <template>
-    <div>Ответственные</div>
+    <q-page padding>
 
-    <q-form class="row justify-center" @submit.prevent="signIn">
-            <p class="col-12 text-h5 text-center">Login</p>
+        <q-list>
+            <q-item v-for="user in responsibleUsers" :key="user.index">
+                <q-item-section avatar>
+                    <q-avatar color="primary" text-color="white">
+                        {{ user.fullname.first_name.substr(0,1) }}
+                    </q-avatar>
+                </q-item-section>
+                 
+                <q-item-section>
+                    <q-item-label>{{user.fullname.first_name}} {{user.fullname.last_name}}</q-item-label>
+                    <q-item-label>{{user.email.email}}</q-item-label>
+                </q-item-section>
+            </q-item>
+        </q-list>
+
+        <q-form class="row justify-center" @submit.prevent="addResponsible">
+            <p class="col-12 text-h5 text-center">Добавить ответственного</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
-                    label="Name"
+                    label="Имя"
                     v-model="form.name"
                 />
 
                 <q-input
-                    label="Password"
-                    v-model="form.password"
+                    label="Фамилия"
+                    v-model="form.surname"
+                />
+
+                <q-input
+                    label="Почта"
+                    v-model="form.email"
                 /> 
 
                 <div class="q-mt-lg">
-                    <q-btn outline size="md" color="black" label="Login" class="full-width" type="submit"/>     
-                </div>
-
-                <div >
-                    <q-btn flat size="md" color="black" label="Register" class="full-width" to="/register"/>     
-                </div>     
+                    <q-btn outline size="md" color="black" label="Добавить" class="full-width" type="submit"/>     
+                </div>    
             </div>
         </q-form>
+    </q-page>
 </template>
+
+<script>
+import { defineComponent, ref } from 'vue'
+import { useMutation } from '@vue/apollo-composable'
+import { useQuery } from "@vue/apollo-composable";
+import gql from "graphql-tag";
+
+export default defineComponent({
+  setup(){
+    const form = ref({
+        name:"",
+        email: "",
+        surname: ""
+    })
+
+    const responsibleUsers = ref([])
+
+    const { result, onResult } = useQuery(
+      gql`
+        query {
+          get_group(id: "4833572297286333641") {
+            name
+            subject {
+              id
+              type_id
+              email {
+                email
+              }
+              fullname {
+                first_name
+                last_name
+              }
+            }
+          }
+        }
+      `
+    );
+
+    onResult(() => {
+      responsibleUsers.value = result.value.get_group.subject;
+      console.log(responsibleUsers.value)
+    });
+
+
+     const { mutate: userGroupInviteUser } = useMutation(gql`
+            mutation UserGroupInviteUser($input: UserGroupInviteUserInput!) {
+            userGroupInviteUser(input: $input) {
+                status
+            }
+        }`
+    )
+
+    const addResponsible = async () => {
+       const {data} = await userGroupInviteUser(
+        {
+            "input": {
+            "name": form.value.name,
+            "surname": form.value.surname,
+            "email": form.value.email,
+            "page_group_id": "9163702586231323932"
+            }
+        }) 
+        console.log(data.userGroupInviteUser.status)
+        resetForm()
+    };
+
+    const resetForm = () => {
+      form.value.email = "",
+      form.value.surname = "",
+      form.value.name = ""
+    };
+
+    return{
+        form, addResponsible, onResult, responsibleUsers
+    }
+  }
+})
+</script>
