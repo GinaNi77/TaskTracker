@@ -1,5 +1,21 @@
 <template>
     <q-page padding>
+
+        <q-list>
+            <q-item v-for="user in performerUsers" :key="user.index">
+                <q-item-section avatar>
+                    <q-avatar color="primary" text-color="white">
+                        {{ user.fullname.first_name.substr(0,1) }}
+                    </q-avatar>
+                </q-item-section>
+                 
+                <q-item-section>
+                    <q-item-label>{{user.fullname.first_name}} {{user.fullname.last_name}}</q-item-label>
+                    <q-item-label>{{user.email.email}}</q-item-label>
+                </q-item-section>
+            </q-item>
+        </q-list>
+
         <q-form class="row justify-center" @submit.prevent="addPerformer">
             <p class="col-12 text-h5 text-center">Добавить исполнителя</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
@@ -29,6 +45,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { useMutation } from '@vue/apollo-composable'
+import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
 export default defineComponent({
@@ -38,6 +55,37 @@ export default defineComponent({
         email: "",
         surname: ""
     })
+
+    const performerUsers = ref([])
+
+    const { result, onResult } = useQuery(
+      gql`
+        query {
+          get_group(id: "4753316581813399177") {
+            name
+            subject {
+              id
+              type_id
+              email {
+                email
+              }
+              fullname {
+                first_name
+                last_name
+              }
+            }
+          }
+        }
+      `
+    );
+
+    onResult(() => {
+      performerUsers.value = result.value.get_group.subject;
+      console.log(performerUsers.value)
+    });
+
+    
+
 
      const { mutate: userGroupInviteUser } = useMutation(gql`
             mutation UserGroupInviteUser($input: UserGroupInviteUserInput!) {
@@ -68,7 +116,7 @@ export default defineComponent({
     };
 
     return{
-        form, addPerformer
+        form, addPerformer, onResult, performerUsers
     }
   }
 })
