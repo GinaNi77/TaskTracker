@@ -18,11 +18,13 @@
           node-key="label"
           v-model:selected="selected"
           @click="value()"
+          no-selection-unset
         />
       </q-scroll-area>
     </q-drawer>
 
-    <AddPerformerUser v-if="selected === 'Исполнители'" />
+    <TeamPage :team_pages="teams" v-if="selected === 'Команда'" />
+    <AddPerformerUser v-else-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
     <div v-else>Гадость ...</div>
   </div>
@@ -35,11 +37,13 @@ import gql from "graphql-tag";
 
 import AddPerformerUser from "../components/AddPerformerUser.vue";
 import AddResponsibleUser from "../components/AddResponsibleUser.vue";
+import TeamPage from "../components/TeamPage.vue";
 
 export default defineComponent({
   components: {
     AddPerformerUser,
     AddResponsibleUser,
+    TeamPage,
   },
 
   setup() {
@@ -47,6 +51,7 @@ export default defineComponent({
     const parentPages = ref([]);
     const selected = ref("");
     const leftDrawerOpen = ref(true);
+    const teams = ref([]);
 
     const { result, loading, error, onResult, refetch } = useQuery(
       gql`
@@ -94,10 +99,10 @@ export default defineComponent({
       });
 
       selected.value = treePages.value[0].label;
-      console.log(treePages.value[0].label);
+      teams.value = treePages.value[0].children;
+      console.log(teams);
+      console.log(teams.value);
     });
-
-    // setInterval(() => console.log(selected.value), 2000);
 
     const value = () => console.log(selected.value);
     return {
@@ -109,6 +114,7 @@ export default defineComponent({
       selected,
       leftDrawerOpen,
       value,
+      teams,
     };
   },
 });
