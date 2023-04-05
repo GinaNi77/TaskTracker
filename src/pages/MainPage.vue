@@ -1,12 +1,12 @@
 <template>
   <div v-if="result">
     <q-drawer
-      v-model="leftDrawerOpen"
       :width="400"
       :breakpoint="300"
       class="bg-grey-1"
       bordered
       :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+      v-model="leftDrawerOpen"
     >
       <q-scroll-area
         class="fit"
@@ -17,7 +17,6 @@
           :nodes="treePages"
           node-key="label"
           v-model:selected="selected"
-          @click="value()"
           no-selection-unset
         />
       </q-scroll-area>
@@ -45,12 +44,12 @@ export default defineComponent({
     AddResponsibleUser,
     TeamPage,
   },
+  props: ["leftDrawerOpen"],
 
   setup() {
     const treePages = ref([]);
     const parentPages = ref([]);
     const selected = ref("");
-    const leftDrawerOpen = ref(true);
     const teams = ref([]);
 
     const { result, loading, error, onResult, refetch } = useQuery(
@@ -104,7 +103,6 @@ export default defineComponent({
       console.log(teams.value);
     });
 
-    const value = () => console.log(selected.value);
     return {
       drawer: ref(false),
       miniState: ref(true),
@@ -112,8 +110,6 @@ export default defineComponent({
       parentPages,
       treePages,
       selected,
-      leftDrawerOpen,
-      value,
       teams,
     };
   },

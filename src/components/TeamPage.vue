@@ -1,7 +1,7 @@
 <template>
-  <AddPerformerUser v-if="selected === 'Исполнители'" />
-  <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
-  <div v-else class="q-pa-md">
+  <div class="q-pa-md">
+    <AddPerformerUser v-if="selectedTeamPage === 'Исполнители'" />
+    <AddResponsibleUser v-else-if="selectedTeamPage === 'Ответственные'" />
     <div class="text-h5 text-weight-regular q-mb-md">Команда</div>
     <q-list v-for="item in team_pages" :key="item.id">
       <q-item clickable v-ripple @click="openNewPage(item.label)">
@@ -29,26 +29,13 @@ export default defineComponent({
   },
 
   setup() {
-    const selected = ref();
-
+    const selectedTeamPage = ref("Команда");
     const openNewPage = (label) => {
-      selected.value = label;
-      console.log(selected);
-      //   switch (label) {
-      //     case "Исполнители":
-      //       window.location.href = "#/addUser";
-      //       break;
-      //     case "Исполнители":
-      //       window.location.href = "#/addUser2";
-      //       break;
-      //     default:
-      //       window.location.href = "#/teamPage";
-      //   }
+      selectedTeamPage.value = label;
     };
-
     return {
       openNewPage,
-      selected,
+      selectedTeamPage,
     };
   },
 });
