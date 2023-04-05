@@ -22,10 +22,15 @@
       </q-scroll-area>
     </q-drawer>
 
-    <TeamPage :team_pages="teams" v-if="selected === 'Команда'" />
+    <TeamPage
+      :team_pages="teams"
+      :selectedPage="selected"
+      @update:selectedPage="selected = $event"
+      v-if="selected === 'Команда'"
+    />
     <AddPerformerUser v-else-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
-    <AddModule v-else-if="selected === 'Модули'"/>
+    <AddModule v-else-if="selected === 'Модули'" />
     <div v-else>Гадость ...</div>
   </div>
 </template>
