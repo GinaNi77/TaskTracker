@@ -5,6 +5,7 @@
             <q-item-section>{{item.name}}</q-item-section>
             <q-item-section>{{item.property6.date}}</q-item-section>
             <q-item-section>{{item.property7.date}}</q-item-section>
+            <q-item-section>{{item.property4.fullname.first_name}} {{item.property4.fullname.last_name}}</q-item-section>
         </q-item>
     </q-list>
 </template>
@@ -32,11 +33,23 @@ export default defineComponent({
         created_at
         updated_at
         name
+        property4 {
+          id
+          user_id
+          fullname {
+            first_name
+            last_name
+          }
+        }
          property6 {
           date
         }
         property7 {
           date
+        }
+        property9{
+          name
+          property8
         }
       }
 

@@ -13,9 +13,12 @@
                         <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
                         <q-popup-proxy>
                                 <q-list>
-                                    <q-item clickable v-close-popup  v-for="user in responsibleUsers" :key="user.index" @click="onItemClick(user.fullname.first_name)">
+                                    <q-item clickable v-close-popup  v-for="user in responsibleUsers" :key="user.index" @click="onItemClick(user.id)">
                                     <q-item-section>
                                         <q-item-label>{{user.fullname.first_name}}</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label>{{user.fullname.last_name}}</q-item-label>
                                     </q-item-section>
                                     </q-item>
                                 </q-list>
@@ -103,8 +106,8 @@ export default defineComponent({
       console.log(responsibleUsers.value)
     });
   
-    const onItemClick = (name) => {
-            responsibleUser.value = name
+    const onItemClick = (id) => {
+            responsibleUser.value = id
     }
 
     const { mutate: addModule } = useMutation(gql`
@@ -148,7 +151,10 @@ export default defineComponent({
                     "property6":{
                         "date": start_date.value },
                     "property7":{
-                        "date": end_date.value }
+                        "date": end_date.value },
+                    "property4":{
+                        "2730894142110796608": responsibleUser.value
+                                }
             }
         })
         resetForm()
