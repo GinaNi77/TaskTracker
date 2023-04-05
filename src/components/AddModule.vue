@@ -1,6 +1,6 @@
 <template>
      <q-page padding>
-        <q-form class="row justify-center" @submit.prevent="">
+        <q-form class="row justify-center" @submit.prevent="addModules">
             <p class="col-12 text-h5 text-center">Добавить Модуль</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
@@ -32,6 +32,7 @@
                            <q-date
                                 v-model="start_date"
                                 minimal
+                                mask="DD.MM.YYYY"
                             /> 
                         </q-popup-proxy>
                     </template>
@@ -46,6 +47,7 @@
                            <q-date
                                 v-model="end_date"
                                 minimal
+                                mask="DD.MM.YYYY"
                             /> 
                         </q-popup-proxy>
                     </template>
@@ -105,8 +107,64 @@ export default defineComponent({
             responsibleUser.value = name
     }
 
+    const { mutate: addModule } = useMutation(gql`
+        mutation ($input: create_type1_input!) {
+    create_type1(input: $input) {
+      status
+      recordId
+      record {
+        id
+        type_id
+        author_id
+        level
+        position
+        created_at
+        updated_at
+        name
+        property4 {
+          id
+          user_id
+          fullname {
+            first_name
+            last_name
+          }
+        }
+        property6 {
+          date
+        }
+        property7 {
+          date
+        }
+      }
+    }
+  }`
+    )
+
+    const addModules = async () => {
+       const {data} = await addModule(
+        {
+            "input":{
+                "name": title.value,
+                    "property6":{
+                        "date": start_date.value },
+                    "property7":{
+                        "date": end_date.value }
+            }
+        })
+        resetForm()
+        console.log(data.create_type1.recordId)  
+    };
+
+    const resetForm = () => {
+        title.value = "",
+        start_date.value="",
+        end_date.value="",
+        responsibleUser.value = ""
+      
+    };
+
         return{
-           title, responsibleUsers, onResult,onItemClick, responsibleUser, start_date, end_date
+           title, responsibleUsers, onResult,onItemClick, responsibleUser, start_date, end_date, addModules
            
         }
         
