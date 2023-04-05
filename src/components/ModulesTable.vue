@@ -1,7 +1,7 @@
 <template>
     <div>Modules table</div>
     <q-list>
-        <q-item v-for="item in modulesList">
+        <q-item v-for="item in modulesList" :key="item.index">
             <q-item-section>{{item.name}}</q-item-section>
             <q-item-section>{{item.property6.date}}</q-item-section>
             <q-item-section>{{item.property7.date}}</q-item-section>
