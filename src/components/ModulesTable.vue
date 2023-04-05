@@ -68,6 +68,12 @@ export default defineComponent({
       `
     );
 
+    // name - названия модуля
+    // property 6 - дата начала
+    // property 7 - дата конца
+    // property 4 - данные об ответсвенном за модуль
+    // property 9 - привязанные задачи (property 8 - статус задачи)
+
      onResult(() => {
      modulesList.value = result.value.paginate_type1.data;
     console.log( modulesList.value)

@@ -154,6 +154,7 @@ export default defineComponent({
                         "date": end_date.value },
                     "property4":{
                         "2730894142110796608": responsibleUser.value
+                        // айдишник типа Субъект
                                 }
             }
         })

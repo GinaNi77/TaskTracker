@@ -68,6 +68,13 @@ export default defineComponent({
   } `
     );
 
+    // name - названия задания
+    // property 3 - описание задания
+    // property 8 - айдишник статуса задачи
+    // property 5 - данные об исполнителе задачи
+    // property 9 - привязанный модуль (property4 - данные об ответсвенном за модуль)
+
+
     onResult(() => {
         tasksList.value = result.value.paginate_type2.data;
         console.log( tasksList.value)
