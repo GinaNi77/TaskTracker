@@ -10,7 +10,8 @@ const routes = [
       { path: 'main', name:'main', component: () => import('pages/MainPage.vue') },
       { path: 'addUser', name:'addUser', component: () => import('components/AddPerformerUser.vue') },
       { path: 'addUser2', name:'addUser2', component: () => import('components/AddResponsibleUser.vue') },
-      { path: 'addModule', name:'addModule', component: () => import('components/AddModule.vue') }
+      { path: 'addModule', name:'addModule', component: () => import('components/AddModule.vue') },
+      { path: 'modules', name:'modules', component: () => import('components/ModulesTable.vue') }
     ]
   },
 
