@@ -74,6 +74,30 @@
                     </template>
                 </q-input>
 
+                <q-input label="Cтатус" v-model="taskStatus">
+                    <template #append>
+                        <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                        <q-popup-proxy>
+                                <q-list v-close-popup>
+                                    <q-item  clickable @click="getTaskStatus('Назначена')">
+                                    <q-item-section >
+                                        <q-item-label>Назначена</q-item-label>
+                                    </q-item-section ></q-item>
+                                    <q-item clickable @click="getTaskStatus('Выполнена')">
+                                    <q-item-section >
+                                        <q-item-label>Выполнена</q-item-label>
+                                    </q-item-section>
+                                    </q-item>
+                                    <q-item  clickable @click="getTaskStatus('Завершена')">
+                                    <q-item-section >
+                                        <q-item-label>Завершена</q-item-label>
+                                    </q-item-section>
+                                    </q-item>
+                                </q-list>
+                        </q-popup-proxy>
+                    </template>
+                </q-input>
+
 
                 <q-input label="Модуль" v-model=" moduleId">
                     <template #append>
@@ -118,6 +142,7 @@ export default defineComponent({
         const performerUser = ref('')
         const moduleId = ref()
         const taskId = ref()
+        const taskStatus = ref()
 
         const getTaskId=(id)=>{
           alert.value = true
@@ -278,6 +303,18 @@ export default defineComponent({
             moduleId.value = id
     }
 
+    const getTaskStatus = (status) =>{
+      if ( status == "Назначена"){
+        taskStatus.value = "8536411824694842134"
+        }
+      else if(status == "Выполнена"){
+        taskStatus.value = "3812168432889805433"
+        }
+      else{
+        taskStatus.value = "6403872496291980172"
+      }
+        }
+
     const {mutate: updateTask}=useMutation(gql`
     mutation ($id: String!,$input: update_type2_input!) {
     update_type2(id: $id, input: $input) {
@@ -326,7 +363,7 @@ export default defineComponent({
   "input":{
 	"name": title.value,
   "property3": description.value,
-  "property8": "8536411824694842134",
+  "property8": taskStatus.value,
   "property5":{
   	"2730894142110796608":performerUser.value
               },
@@ -342,7 +379,8 @@ export default defineComponent({
     return{
            onResult,  tasksList, deleteTasks, alert, getModules, 
            modulesList, performerUsers, getResponsible, title,
-           description, getUserId, getModuleId, performerUser, moduleId, taskId, getTaskId, updateTasks
+           description, getUserId, getModuleId, performerUser, moduleId,
+            taskId, getTaskId, updateTasks, taskStatus, getTaskStatus
         }
         
     },
