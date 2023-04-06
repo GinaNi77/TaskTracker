@@ -73,7 +73,7 @@ export default defineComponent({
             }
         })
         localStorage.setItem('token', data.userSignIn.record.access_token)
-        console.log(data.userSignIn.recordId);
+        
         resetForm();
         if (data.userSignIn.status === 200) {
             window.location.href = "#/main";

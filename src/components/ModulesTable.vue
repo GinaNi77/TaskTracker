@@ -230,7 +230,6 @@ export default defineComponent({
 
     onResult(() => {
       responsibleUsers.value = result.value.get_group.subject;
-      console.log(responsibleUsers.value)
     });
 
     return {onResult}

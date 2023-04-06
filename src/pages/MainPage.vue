@@ -95,7 +95,7 @@ export default defineComponent({
 
     onResult(() => {
       parentPages.value = result.value.rootPages.data;
-      console.log(parentPages.value);
+
 
       parentPages.value.forEach((page) => {
         let treeElem = {
@@ -111,8 +111,6 @@ export default defineComponent({
 
       selected.value = treePages.value[0].label;
       teams.value = treePages.value[0].children;
-      console.log(teams);
-      console.log(teams.value);
     });
 
     return {

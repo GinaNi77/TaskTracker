@@ -84,7 +84,7 @@ export default defineComponent({
 
     onResult(() => {
       performerUsers.value = result.value.get_group.subject;
-      console.log(performerUsers.value);
+
     });
 
     const { mutate: userGroupInviteUser } = useMutation(gql`
@@ -104,7 +104,7 @@ export default defineComponent({
           page_group_id: "3969277701932267641",
         },
       });
-      console.log(data.userGroupInviteUser.status);
+   
       resetForm();
     };
 

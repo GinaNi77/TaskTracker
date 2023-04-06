@@ -107,7 +107,6 @@ export default defineComponent({
 
     onResult(() => {
       responsibleUsers.value = result.value.get_group.subject;
-      console.log(responsibleUsers.value)
     });
   
     const onItemClick = (id) => {
@@ -162,8 +161,7 @@ export default defineComponent({
                                 }
             }
         })
-        resetForm()
-        console.log(data.create_type1.recordId)  
+        resetForm() 
     };
 
     const resetForm = () => {

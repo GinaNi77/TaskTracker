@@ -102,7 +102,7 @@ export default defineComponent({
 
     onResult(() => {
       performerUsers.value = result.value.get_group.subject;
-      console.log(performerUsers.value);
+      
     });
 
     const getModules = () =>{
@@ -126,7 +126,7 @@ export default defineComponent({
 
     onResult(() => {
       modulesList.value = result.value.paginate_type1.data
-      console.log(modulesList.value)
+      
     });
 
     return { 
@@ -205,7 +205,7 @@ export default defineComponent({
             }
         })
         resetForm()
-        console.log(data.create_type2.recordId)  
+          
     };
 
     const resetForm = () => {

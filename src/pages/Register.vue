@@ -88,7 +88,7 @@ export default defineComponent({
             "email": form.value.email
             }
         })
-        console.log(data.userSignUp.recordId)
+      
         localStorage.setItem("userSignUpId", data.userSignUp.recordId)   
     };
 
