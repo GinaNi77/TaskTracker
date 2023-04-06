@@ -1,20 +1,23 @@
 <template>
     <q-page padding>
+<q-list class="q-mb-xl">
+      <table style="width: 100%; border-collapse: collapse">
+        <caption class="q-my-lg text-h5">
+          Список ответственных
+        </caption>
+        <tr>
+          <th>Имя</th>
+          <th>Фамилия</th>
+          <th>Email</th>
+        </tr>
 
-        <q-list>
-            <q-item v-for="user in responsibleUsers" :key="user.index">
-                <q-item-section avatar>
-                    <q-avatar color="primary" text-color="white">
-                        {{ user.fullname.first_name.substr(0,1) }}
-                    </q-avatar>
-                </q-item-section>
-                 
-                <q-item-section>
-                    <q-item-label>{{user.fullname.first_name}} {{user.fullname.last_name}}</q-item-label>
-                    <q-item-label>{{user.email.email}}</q-item-label>
-                </q-item-section>
-            </q-item>
-        </q-list>
+        <tr v-for="user in responsibleUsers" :key="user.index">
+          <td>{{ user.fullname.first_name }}</td>
+          <td>{{ user.fullname.last_name }}</td>
+          <td>{{ user.email.email }}</td>
+        </tr>
+      </table>
+    </q-list>
 
         <q-form class="row justify-center" @submit.prevent="addResponsible">
             <p class="col-12 text-h5 text-center">Добавить ответственного</p>
@@ -119,3 +122,15 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+th {
+  border: 1px solid black;
+  padding: 5px;
+}
+
+td {
+  border: 1px solid black;
+  padding: 5px 10px;
+}
+</style>
