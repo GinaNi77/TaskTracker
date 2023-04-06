@@ -51,7 +51,7 @@ import gql from "graphql-tag";
 
 export default defineComponent({
   name: "add-performer-user",
-  
+
   setup() {
     const form = ref({
       name: "",

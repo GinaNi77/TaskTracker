@@ -1,12 +1,12 @@
 <template>
   <div v-if="result">
     <q-drawer
-      v-model="leftDrawerOpen"
       :width="400"
       :breakpoint="300"
       class="bg-grey-1"
       bordered
       :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+      v-model="leftDrawerOpen"
     >
       <q-scroll-area
         class="fit"
@@ -17,12 +17,18 @@
           :nodes="treePages"
           node-key="label"
           v-model:selected="selected"
-          @click="value()"
+          no-selection-unset
         />
       </q-scroll-area>
     </q-drawer>
 
-    <AddPerformerUser v-if="selected === 'Исполнители'" />
+    <TeamPage
+      :team_pages="teams"
+      :selectedPage="selected"
+      @update:selectedPage="selected = $event"
+      v-if="selected === 'Команда'"
+    />
+    <AddPerformerUser v-else-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
     <ModulesTable v-else-if="selected === 'Модули'"/>
     <TasksTable v-else-if="selected === 'Мои задачи'"/>
@@ -39,20 +45,24 @@ import AddPerformerUser from "../components/AddPerformerUser.vue";
 import AddResponsibleUser from "../components/AddResponsibleUser.vue";
 import ModulesTable from "../components/ModulesTable.vue";
 import TasksTable from "../components/TasksTable.vue";
+import TeamPage from "../components/TeamPage.vue";
+
 
 export default defineComponent({
   components: {
     AddPerformerUser,
     AddResponsibleUser,
     ModulesTable,
-    TasksTable
+    TasksTable,
+    TeamPage
   },
+  props: ["leftDrawerOpen"],
 
   setup() {
     const treePages = ref([]);
     const parentPages = ref([]);
     const selected = ref("");
-    const leftDrawerOpen = ref(true);
+    const teams = ref([]);
 
     const { result, loading, error, onResult, refetch } = useQuery(
       gql`
@@ -100,12 +110,11 @@ export default defineComponent({
       });
 
       selected.value = treePages.value[0].label;
-      console.log(treePages.value[0].label);
+      teams.value = treePages.value[0].children;
+      console.log(teams);
+      console.log(teams.value);
     });
 
-    // setInterval(() => console.log(selected.value), 2000);
-
-    const value = () => console.log(selected.value);
     return {
       drawer: ref(false),
       miniState: ref(true),
@@ -113,8 +122,7 @@ export default defineComponent({
       parentPages,
       treePages,
       selected,
-      leftDrawerOpen,
-      value,
+      teams,
     };
   },
 });
