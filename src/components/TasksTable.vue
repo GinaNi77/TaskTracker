@@ -29,10 +29,10 @@
           <td>{{task.property5.fullname.first_name}} {{task.property5.fullname.last_name}}</td>
           <td>{{task.property9.name}}</td>
           <td>
-            <q-btn class="bg-teal-10 text-white">Редактировать</q-btn>
+            <q-btn class="bg-teal-10 text-white" icon="edit"></q-btn>
           </td>
           <td>
-            <q-btn class="bg-red-10 text-white" @click="deleteTasks(task.id)" >Удалить</q-btn>
+            <q-btn class="bg-red-10 text-white" @click="deleteTasks(task.id)" icon="delete"></q-btn>
           </td>
         </tr>
       </table>
@@ -141,3 +141,15 @@ export default defineComponent({
     },
 })
 </script>
+
+<style scoped>
+th {
+  border: 1px solid black;
+  padding: 5px;
+}
+
+td {
+  border: 1px solid black;
+  padding: 5px 10px;
+}
+</style>
