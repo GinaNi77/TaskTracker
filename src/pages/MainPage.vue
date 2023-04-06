@@ -30,7 +30,8 @@
     />
     <AddPerformerUser v-else-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
-    <AddModule v-else-if="selected === 'Модули'" />
+    <AddModule v-else-if="selected === 'Модули'"/>
+    <AddTask v-else-if="selected === 'Мои задачи'"/>
     <div v-else>Гадость ...</div>
   </div>
 </template>
@@ -44,6 +45,7 @@ import AddPerformerUser from "../components/AddPerformerUser.vue";
 import AddResponsibleUser from "../components/AddResponsibleUser.vue";
 import TeamPage from "../components/TeamPage.vue";
 import AddModule from "../components/AddModule.vue";
+import AddTask from "../components/AddTask.vue";
 
 export default defineComponent({
   components: {
@@ -51,6 +53,7 @@ export default defineComponent({
     AddResponsibleUser,
     TeamPage,
     AddModule,
+    AddTask
   },
   props: ["leftDrawerOpen"],
 
