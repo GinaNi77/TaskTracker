@@ -44,7 +44,7 @@
     <q-dialog v-model="alert">
       <q-card>
         <q-form class="row justify-center" @submit.prevent="updateTasks">
-            <p class="col-12 text-h5 text-center">Изменить Задачу</p>
+            <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
                     label="Название"
@@ -209,7 +209,6 @@ export default defineComponent({
 
     onResult(() => {
         tasksList.value = result.value.paginate_type2.data;
-        console.log( tasksList.value)
     });
     
 
@@ -237,7 +236,6 @@ export default defineComponent({
 
     onResult(() => {
       performerUsers.value = result.value.get_group.subject;
-      console.log(performerUsers.value);
     });
 
       return { 
@@ -247,7 +245,7 @@ export default defineComponent({
 
     getResponsible()
 
-      const getModules = () =>{
+    const getModules = () =>{
     const { result, onResult } = useQuery(
       gql`
         query getModules {
@@ -268,7 +266,6 @@ export default defineComponent({
 
     onResult(() => {
       modulesList.value = result.value.paginate_type1.data
-      console.log(modulesList.value)
     });
 
     return { 
@@ -374,13 +371,24 @@ export default defineComponent({
     
   }
         )
+        reset()
+
+}
+
+const reset = ()=>{
+  taskId.value = "",
+  title.value = "",
+  description.value = "",
+  taskStatus.value = "",
+  performerUser.value = "",
+  moduleId.value = ""
 }
 
     return{
            onResult,  tasksList, deleteTasks, alert, getModules, 
            modulesList, performerUsers, getResponsible, title,
            description, getUserId, getModuleId, performerUser, moduleId,
-            taskId, getTaskId, updateTasks, taskStatus, getTaskStatus
+            taskId, getTaskId, updateTasks, taskStatus, getTaskStatus, reset
         }
         
     },
