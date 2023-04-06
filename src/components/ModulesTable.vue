@@ -23,6 +23,8 @@
         <th>Назначено</th>
         <th>Выполнено</th>
         <th>Завершено</th>
+        <th>Редактировать</th>
+        <th>Удалить</th>
       </tr>
 
       <tr v-for="item in modulesList" :key="item.index">
@@ -31,11 +33,35 @@
         <td>{{ item.property7.date }}</td>
         <td>{{ item.property4.fullname.first_name }}</td>
         <td>{{ item.property4.fullname.last_name }}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <q-btn icon="edit"/>
-        <q-btn icon="delete"/>
+        <td>
+          {{
+            item.property9.reduce(function (a, b) {
+              if (b.property8 == "8536411824694842134") {
+                return ++a;
+              } else return 0;
+            }, 0)
+          }}
+        </td>
+        <td>
+          {{
+            item.property9.reduce(function (a, b) {
+              if (b.property8 == "3812168432889805433") {
+                return ++a;
+              } else return 0;
+            }, 0)
+          }}
+        </td>
+        <td>
+          {{
+            item.property9.reduce(function (a, b) {
+              if (b.property8 == "6403872496291980172") {
+                return ++a;
+              } else return 0;
+            }, 0)
+          }}
+        </td>
+        <td><q-btn class="bg-teal-10 text-white" icon="edit" /></td>
+        <td><q-btn class="bg-red-10 text-white" icon="delete" /></td>
       </tr>
     </table>
   </q-list>
@@ -106,8 +132,32 @@ export default defineComponent({
 
     onResult(() => {
       modulesList.value = result.value.paginate_type1.data;
-      console.log(modulesList.value);
+      // console.log(modulesList.value);
     });
+
+    // const getModuleTasksStatusQuantity = (status) => {
+    //   let counter;
+    //   for (let i = 0; i < modulesList.value.length; i++) {
+    //     console.log(modulesList.value[i]);
+    //     // for (let n = 0; n < modulesList.value[i].property9.length; n++) {
+    //     //   // if (modulesList.value[i].property9[n] == status) {
+    //     //   //   counter++;
+    //     //     console.log(modulesList.value[i].property9[n]);
+    //     //   // }
+    //     // }
+    //   }
+    //   return counter;
+
+    //   // let counter;
+    //   // for (let i; i < modulesList.value.property9.length; i++) {
+    //   //   if (modulesList.value.property9.property8 == status) {
+    //   //     counter++;
+    //   //   }
+    //   // }
+    //   // console.log(modulesList.value[1].property9[1].property8);
+    //   // console.log(counter);
+    //   // return counter;
+    // };
 
     return {
       onResult,
