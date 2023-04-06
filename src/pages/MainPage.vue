@@ -18,6 +18,7 @@
           node-key="label"
           v-model:selected="selected"
           no-selection-unset
+          default-expand-all
         />
       </q-scroll-area>
     </q-drawer>
@@ -30,8 +31,8 @@
     />
     <AddPerformerUser v-else-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
-    <AddModule v-else-if="selected === 'Модули'"/>
-    <AddTask v-else-if="selected === 'Мои задачи'"/>
+    <AddModule v-else-if="selected === 'Модули'" />
+    <AddTask v-else-if="selected === 'Мои задачи'" />
     <div v-else>Гадость ...</div>
   </div>
 </template>
@@ -47,13 +48,17 @@ import TeamPage from "../components/TeamPage.vue";
 import AddModule from "../components/AddModule.vue";
 import AddTask from "../components/AddTask.vue";
 
+import { getClientOptions } from "src/apollo/index.js";
+import { provideApolloClient } from "@vue/apollo-composable";
+import { ApolloClient } from "@apollo/client/core";
+
 export default defineComponent({
   components: {
     AddPerformerUser,
     AddResponsibleUser,
     TeamPage,
     AddModule,
-    AddTask
+    AddTask,
   },
   props: ["leftDrawerOpen"],
 
@@ -62,6 +67,10 @@ export default defineComponent({
     const parentPages = ref([]);
     const selected = ref("");
     const teams = ref([]);
+    const modulesList = ref([]);
+
+    const apolloClient = new ApolloClient(getClientOptions());
+    provideApolloClient(apolloClient);
 
     const { result, loading, error, onResult, refetch } = useQuery(
       gql`
@@ -91,10 +100,8 @@ export default defineComponent({
         }
       `
     );
-
     onResult(() => {
       parentPages.value = result.value.rootPages.data;
-      console.log(parentPages.value);
 
       parentPages.value.forEach((page) => {
         let treeElem = {
@@ -110,9 +117,71 @@ export default defineComponent({
 
       selected.value = treePages.value[0].label;
       teams.value = treePages.value[0].children;
-      console.log(teams);
-      console.log(teams.value);
+      getModules();
     });
+
+    const getModules = () => {
+      const { result, onResult } = useQuery(
+        gql`
+          query getModules {
+            paginate_type1(page: 1, perPage: 100) {
+              data {
+                id
+                type_id
+                author_id
+                level
+                position
+                created_at
+                updated_at
+                name
+                property4 {
+                  id
+                  user_id
+                  fullname {
+                    first_name
+                    last_name
+                  }
+                }
+                property6 {
+                  date
+                }
+                property7 {
+                  date
+                }
+                property9 {
+                  name
+                  property8
+                }
+              }
+
+              paginatorInfo {
+                perPage
+                currentPage
+                lastPage
+                total
+                count
+                from
+                to
+                hasMorePages
+              }
+            }
+          }
+        `
+      );
+
+      onResult(() => {
+        modulesList.value = [];
+        modulesList.value = result.value.paginate_type1.data;
+        console.log(modulesList.value);
+
+        modulesList.value.forEach((page) => {
+          treePages.value[1].children.push({
+            label: page.name,
+            id: page.id,
+          });
+        });
+      });
+    };
 
     return {
       drawer: ref(false),
