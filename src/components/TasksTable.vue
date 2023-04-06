@@ -1,6 +1,6 @@
 <template>
     <q-list>
-      <table style="width: 80%; border-collapse: collapse; text-align: left; margin:50px auto;  border: 2px solid #400303; ">
+      <table style="width: 80%; border-collapse: collapse; text-align: left; margin:30px auto;  border: 1px solid #400303; ">
         <caption class="q-my-lg text-h5">
           Список задач
         </caption>
@@ -14,7 +14,7 @@
           <th>Удалить</th>
         </tr>
 
-        <tr style="border: solid 2px #400303;" v-for="task in tasksList" :key="task.index" :class="
+        <tr style="border: solid 1px #400303;" v-for="task in tasksList" :key="task.index" :class="
                 task.property8 == 8536411824694842134
                   ? 'bg-pink-4'
                   : task.property8 == 3812168432889805433
@@ -32,11 +32,15 @@
             <q-btn class="bg-teal-10 text-white">Редактировать</q-btn>
           </td>
           <td>
-            <q-btn class="bg-red-10 text-white" @click="deleteTasks(task.id)">Удалить</q-btn>
+            <q-btn class="bg-red-10 text-white" @click="deleteTasks(task.id)" >Удалить</q-btn>
           </td>
         </tr>
       </table>
     </q-list>
+    <div class="flex justify-center q-mb-lg">
+      <q-btn color="black" outline to="/addTask">Добавить задачу</q-btn>
+    </div>
+    
 </template>
 
 <script>
