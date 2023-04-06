@@ -32,7 +32,7 @@
             <q-btn class="bg-teal-10 text-white">Редактировать</q-btn>
           </td>
           <td>
-            <q-btn class="bg-red-10 text-white">Удалить</q-btn>
+            <q-btn class="bg-red-10 text-white" @click="deleteTasks(task.id)">Удалить</q-btn>
           </td>
         </tr>
       </table>
@@ -42,6 +42,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { useQuery } from "@vue/apollo-composable";
+import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
 export default defineComponent({
@@ -110,9 +111,27 @@ export default defineComponent({
         tasksList.value = result.value.paginate_type2.data;
         console.log( tasksList.value)
     });
+    
+
+    const {mutate: deleteTask} = useMutation(gql`
+      mutation($id: String!) {
+      delete_type2(id: $id) {
+      status
+            }
+        }
+    `)
+
+    const deleteTasks = async(id) => {
+      const {data} = await deleteTask(
+        {
+          id:id,
+        }
+      )
+
+    }
 
     return{
-           onResult,  tasksList
+           onResult,  tasksList, deleteTasks
         }
         
     },
