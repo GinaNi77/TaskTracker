@@ -1,15 +1,17 @@
 <template>
     <q-list>
-      <table style="width: 80%; border-collapse: collapse; text-align: left; margin:0px auto;  border: 2px solid #400303; ">
+      <table style="width: 80%; border-collapse: collapse; text-align: left; margin:50px auto;  border: 2px solid #400303; ">
         <caption class="q-my-lg text-h5">
           Список задач
         </caption>
-        <tr style="">
+        <tr style="font-size:16px;">
           <th>Название</th>
           <th>Описание</th>
           <th>Статус</th>
           <th>Исполнители</th>
           <th>Модуль</th>
+          <th>Редактировать</th>
+          <th>Удалить</th>
         </tr>
 
         <tr style="border: solid 2px #400303;" v-for="task in tasksList" :key="task.index" :class="
@@ -26,6 +28,12 @@
           <td v-else>Завершена</td>
           <td>{{task.property5.fullname.first_name}} {{task.property5.fullname.last_name}}</td>
           <td>{{task.property9.name}}</td>
+          <td>
+            <q-btn class="bg-teal-10 text-white">Редактировать</q-btn>
+          </td>
+          <td>
+            <q-btn class="bg-red-10 text-white">Удалить</q-btn>
+          </td>
         </tr>
       </table>
     </q-list>
