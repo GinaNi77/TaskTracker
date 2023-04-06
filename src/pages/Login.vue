@@ -1,28 +1,40 @@
 <template>
     <q-page padding>
         <q-form class="row justify-center" @submit.prevent="signIn">
-            <p class="col-12 text-h5 text-center">Login</p>
+            <p class="col-12 text-h5 text-center">Вход</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
-                    label="Email"
+                    label="Почта"
                     v-model="form.email"
                 />
 
-                <q-input
-                    label="Password"
-                    v-model="form.password"
-                /> 
+        <q-input label="Пароль" v-model="form.password" />
 
-                <div class="q-mt-lg">
-                    <q-btn outline size="md" color="black" label="Login" class="full-width" type="submit"/>     
-                </div>
+        <div class="q-mt-lg">
+          <q-btn
+            outline
+            size="md"
+            color="black"
+            label="Войти"
+            class="full-width"
+            type="submit"
+            @click="signIn"
+          />
+        </div>
 
-                <div >
-                    <q-btn flat size="md" color="black" label="Register" class="full-width" to="/register"/>     
-                </div>     
-            </div>
-        </q-form>
-    </q-page>
+        <div>
+          <q-btn
+            flat
+            size="md"
+            color="black"
+            label="Регистрация"
+            class="full-width"
+            to="/register"
+          />
+        </div>
+      </div>
+    </q-form>
+  </q-page>
 </template>
 
 <script>
@@ -31,8 +43,8 @@ import { useMutation } from '@vue/apollo-composable'
 import gql from "graphql-tag";
 
 export default defineComponent({
-  name: 'PageLogin',
-  setup(){
+  name: "PageLogin",
+  setup() {
     const form = ref({
         email: "",
         password: ""
