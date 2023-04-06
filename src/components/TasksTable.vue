@@ -1,7 +1,13 @@
 <template>
     <div>TasksTable</div>
     <q-list>
-        <q-item v-for="task in tasksList" :key="task.index">
+        <q-item v-for="task in tasksList" :key="task.index" :class="
+                task.property8 == 8536411824694842134
+                  ? 'bg-pink-4'
+                  : task.property8 == 3812168432889805433
+                  ? 'bg-yellow-4'
+                  : 'bg-light-green-4'
+              ">
             <q-item-section>{{task.name}}</q-item-section>
             <q-item-section>{{task.property3}}</q-item-section>
             <q-item-section>{{task.property8}}</q-item-section>
@@ -65,7 +71,10 @@ export default defineComponent({
         hasMorePages
       }
     }
-  } `
+  } `, null,
+      {
+        pollInterval: 1,
+      }
     );
 
     // name - названия задания
