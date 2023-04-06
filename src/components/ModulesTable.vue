@@ -193,7 +193,10 @@ export default defineComponent({
             }
           }
         }
-      `
+      `, null,
+      {
+        pollInterval: 1,
+      }
     );
 
     const onItemClick = (id) => {
