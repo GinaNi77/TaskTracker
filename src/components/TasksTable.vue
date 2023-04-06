@@ -1,19 +1,33 @@
 <template>
-    <div>TasksTable</div>
     <q-list>
-        <q-item v-for="task in tasksList" :key="task.index" :class="
+      <table style="width: 80%; border-collapse: collapse; text-align: left; margin:0px auto;  border: 2px solid #400303; ">
+        <caption class="q-my-lg text-h5">
+          Список задач
+        </caption>
+        <tr style="">
+          <th>Название</th>
+          <th>Описание</th>
+          <th>Статус</th>
+          <th>Исполнители</th>
+          <th>Модуль</th>
+        </tr>
+
+        <tr style="border: solid 2px #400303;" v-for="task in tasksList" :key="task.index" :class="
                 task.property8 == 8536411824694842134
                   ? 'bg-pink-4'
                   : task.property8 == 3812168432889805433
                   ? 'bg-yellow-4'
                   : 'bg-light-green-4'
               ">
-            <q-item-section>{{task.name}}</q-item-section>
-            <q-item-section>{{task.property3}}</q-item-section>
-            <q-item-section>{{task.property8}}</q-item-section>
-            <q-item-section>{{task.property5.fullname.first_name}} {{task.property5.fullname.last_name}}</q-item-section>
-            <q-item-section>{{task.property9.name}}</q-item-section>
-        </q-item>
+          <td>{{task.name}}</td>
+          <td>{{task.property3}}</td>
+          <td v-if="task.property8 == 8536411824694842134">Назначена</td>
+          <td v-else-if="task.property8 == 3812168432889805433">Выполнена</td>
+          <td v-else>Завершена</td>
+          <td>{{task.property5.fullname.first_name}} {{task.property5.fullname.last_name}}</td>
+          <td>{{task.property9.name}}</td>
+        </tr>
+      </table>
     </q-list>
 </template>
 
