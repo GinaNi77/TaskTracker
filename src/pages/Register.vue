@@ -1,20 +1,20 @@
 <template>
     <q-page padding>
         <q-form class="row justify-center" @submit.prevent="signUp">
-            <p class="col-12 text-h5 text-center">Register</p>
+            <p class="col-12 text-h5 text-center">Регистрация</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
-                    label="Name"
+                    label="Имя"
                     v-model="form.name"
                 />
 
                 <q-input
-                    label="Surname"
+                    label="Фамилия"
                     v-model="form.surname"
                 />
 
                 <q-input
-                    label="Email"
+                    label="Почта"
                     v-model="form.email"
                 /> 
 
@@ -24,17 +24,17 @@
 
                 <q-form  @submit.prevent="setPassword">
                     <q-input
-                        label="Code"
+                        label="Код"
                         v-model="formPas.code"
                     />
 
                     <q-input
-                        label="Password"
+                        label="Пароль"
                         v-model="formPas.password"
                     />
 
                     <div class="q-mt-lg">
-                        <q-btn outline size="md" color="black" label="Set Password" class="full-width" type="submit"/>     
+                        <q-btn outline size="md" color="black" label="Установить пароль" class="full-width" type="submit"/>     
                     </div>    
                 </q-form>
             </div>
