@@ -1,21 +1,21 @@
 <template>
     <q-page padding>
         <q-form class="row justify-center" @submit.prevent="signIn">
-            <p class="col-12 text-h5 text-center">Login</p>
+            <p class="col-12 text-h5 text-center">Вход</p>
             <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
                 <q-input
-                    label="Email"
+                    label="Почта"
                     v-model="form.email"
                 />
 
-        <q-input label="Password" v-model="form.password" />
+        <q-input label="Пароль" v-model="form.password" />
 
         <div class="q-mt-lg">
           <q-btn
             outline
             size="md"
             color="black"
-            label="Login"
+            label="Войти"
             class="full-width"
             type="submit"
             @click="signIn"
@@ -27,7 +27,7 @@
             flat
             size="md"
             color="black"
-            label="Register"
+            label="Регистрация"
             class="full-width"
             to="/register"
           />
