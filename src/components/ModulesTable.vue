@@ -1,13 +1,5 @@
 <template>
   <div>Modules table</div>
-  <!-- <q-list>
-        <q-item v-for="item in modulesList" :key="item.index">
-            <q-item-section>{{item.name}}</q-item-section>
-            <q-item-section>{{item.property6.date}}</q-item-section>
-            <q-item-section>{{item.property7.date}}</q-item-section>
-            <q-item-section>{{item.property4.fullname.first_name}} {{item.property4.fullname.last_name}}</q-item-section>
-        </q-item>
-    </q-list> -->
 
   <q-list class="q-mb-xl flex justify-center">
     <table style="width: 90%; border-collapse: collapse">
@@ -61,7 +53,13 @@
           }}
         </td>
         <td><q-btn class="bg-teal-10 text-white" icon="edit" /></td>
-        <td><q-btn class="bg-red-10 text-white" icon="delete" /></td>
+        <td>
+          <q-btn
+            class="bg-red-10 text-white"
+            icon="delete"
+            @click="deleteModules(item.id)"
+          />
+        </td>
       </tr>
     </table>
   </q-list>
@@ -69,7 +67,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useQuery } from "@vue/apollo-composable";
+import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
 export default defineComponent({
@@ -148,20 +146,25 @@ export default defineComponent({
     //   }
     //   return counter;
 
-    //   // let counter;
-    //   // for (let i; i < modulesList.value.property9.length; i++) {
-    //   //   if (modulesList.value.property9.property8 == status) {
-    //   //     counter++;
-    //   //   }
-    //   // }
-    //   // console.log(modulesList.value[1].property9[1].property8);
-    //   // console.log(counter);
-    //   // return counter;
-    // };
+    const { mutate: deleteModule } = useMutation(gql`
+      mutation ($id: String!) {
+        delete_type1(id: $id) {
+          status
+        }
+      }
+    `);
+
+    const deleteModules = async (id) => {
+      const { data } = await deleteModule({
+        id: id,
+      });
+      console.log("deleted");
+    };
 
     return {
       onResult,
       modulesList,
+      deleteModules,
     };
   },
 });
