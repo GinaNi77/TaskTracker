@@ -61,6 +61,9 @@
       </tr>
     </table>
   </q-list>
+  <div class="flex justify-center q-mb-lg">
+      <q-btn color="black" outline to="/addModule">Добавить модуль</q-btn>
+    </div>
 </template>
 
 <script>
