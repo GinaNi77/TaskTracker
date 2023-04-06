@@ -8,6 +8,9 @@
             <q-item-section>{{item.property4.fullname.first_name}} {{item.property4.fullname.last_name}}</q-item-section>
         </q-item>
     </q-list>
+    <div class="flex justify-center q-my-lg">
+      <q-btn color="black" outline to="/addModule">Добавить модуль</q-btn>
+    </div>
 </template>
 
 <script>

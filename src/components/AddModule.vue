@@ -58,7 +58,11 @@
 
                 <div class="q-mt-lg">
                     <q-btn outline size="md" color="black" label="Добавить" class="full-width" type="submit"/>     
-                </div>    
+                </div>  
+
+                <div class="q-mt-lg">
+                    <q-btn flat size="md" color="black" label="Главная страница" class="full-width" to="/main"/>     
+                </div>  
 
             </div>
         </q-form>
