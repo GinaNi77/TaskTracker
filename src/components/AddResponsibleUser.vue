@@ -1,23 +1,5 @@
 <template>
   <q-page padding>
-    <!-- <q-list>
-      <q-item v-for="user in responsibleUsers" :key="user.index">
-        <q-item-section avatar>
-          <q-avatar color="primary" text-color="white">
-            {{ user.fullname.first_name.substr(0, 1) }}
-          </q-avatar>
-        </q-item-section>
-
-        <q-item-section>
-          <q-item-label
-            >{{ user.fullname.first_name }}
-            {{ user.fullname.last_name }}</q-item-label
-          >
-          <q-item-label>{{ user.email.email }}</q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list> -->
-
     <q-list class="q-mb-xl">
       <table style="width: 100%; border-collapse: collapse">
         <caption class="q-my-lg text-h5">
