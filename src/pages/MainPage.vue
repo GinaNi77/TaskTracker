@@ -31,7 +31,7 @@
     />
     <AddPerformerUser v-else-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
-    <AddModule v-else-if="selected === 'Модули'" />
+    <AddModule @addModule="getModules()" v-else-if="selected === 'Модули'" />
     <AddTask v-else-if="selected === 'Мои задачи'" />
     <div v-else>Гадость ...</div>
   </div>
@@ -191,6 +191,7 @@ export default defineComponent({
       treePages,
       selected,
       teams,
+      getModules,
     };
   },
 });
