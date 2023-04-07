@@ -28,7 +28,7 @@
             item.property9.reduce(function (a, b) {
               if (b.property8 == "8536411824694842134") {
                 return ++a;
-              } else return 0;
+              } else return a;
             }, 0)
           }}
         </td>
@@ -37,7 +37,7 @@
             item.property9.reduce(function (a, b) {
               if (b.property8 == "3812168432889805433") {
                 return ++a;
-              } else return 0;
+              } else return a;
             }, 0)
           }}
         </td>
@@ -46,7 +46,7 @@
             item.property9.reduce(function (a, b) {
               if (b.property8 == "6403872496291980172") {
                 return ++a;
-              } else return 0;
+              } else return a;
             }, 0)
           }}
         </td>

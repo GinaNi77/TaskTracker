@@ -1,7 +1,7 @@
 <template>
     <q-list>
       <table style="width: 80%; border-collapse: collapse; text-align: left; margin:30px auto;  border: 1px solid #400303; ">
-        <caption class="q-my-lg text-h5">
+        <caption class="q-mb-lg text-h5">
           Список задач
         </caption>
         <tr style="font-size:16px;">
