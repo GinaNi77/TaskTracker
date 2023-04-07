@@ -20,27 +20,37 @@
       </table>
     </q-list>
 
-    <q-form class="row justify-center" @submit.prevent="addResponsible">
-      <p class="col-12 text-h5 text-center">Добавить ответственного</p>
-      <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
-        <q-input label="Имя" v-model="form.name" />
+    <div class="flex justify-center q-mb-lg">
+       <q-btn outline size="md" color="black" label="Добавить ответственного"  @click="alert = true"/>     
+    </div>
 
-        <q-input label="Фамилия" v-model="form.surname" />
+    <q-dialog v-model="alert">
+      <q-card>
+        <q-form class="row justify-center q-my-md" @submit.prevent="addResponsible">
+          <p class="col-12 text-h5 text-center">Добавить ответственного</p>
+          <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
+            <q-input label="Имя" v-model="form.name" />
 
-        <q-input label="Почта" v-model="form.email" />
+            <q-input label="Фамилия" v-model="form.surname" />
 
-        <div class="q-mt-lg">
-          <q-btn
-            outline
-            size="md"
-            color="black"
-            label="Добавить"
-            class="full-width"
-            type="submit"
-          />
-        </div>
-      </div>
-    </q-form>
+            <q-input label="Почта" v-model="form.email" />
+
+            <div class="q-mt-lg">
+              <q-btn
+                outline
+                size="md"
+                color="black"
+                label="Добавить"
+                class="full-width"
+                type="submit"
+              />
+            </div>
+          </div>
+        </q-form>
+      </q-card>
+    </q-dialog>
+
+    
   </q-page>
 </template>
 
@@ -52,6 +62,7 @@ import gql from "graphql-tag";
 
 export default defineComponent({
   setup() {
+    const alert = ref(false)
     const form = ref({
       name: "",
       email: "",
@@ -113,7 +124,7 @@ export default defineComponent({
 
 
     return{
-        form, addResponsible, onResult, responsibleUsers
+        form, addResponsible, onResult, responsibleUsers, alert
     }
   }
 })
