@@ -55,7 +55,11 @@
             label="Добавить"
             class="full-width"
             type="submit"
-            @click="$emit('addModule')"
+            :modules="newModule"
+            @click="
+              $emit('@update:updateModules', newModule);
+              $emit('addModule');
+            "
           />
         </div>
       </div>
@@ -70,12 +74,14 @@ import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
 export default defineComponent({
+  props: ["modules"],
   setup() {
     const responsibleUsers = ref([]);
     const title = ref("");
     const responsibleUser = ref();
     const start_date = ref();
     const end_date = ref();
+    const newModule = ref();
 
     const { result, onResult } = useQuery(
       gql`
@@ -157,6 +163,7 @@ export default defineComponent({
         },
       });
       resetForm();
+
       console.log(data.create_type1.recordId);
     };
 
@@ -167,6 +174,12 @@ export default defineComponent({
         (responsibleUser.value = "");
     };
 
+    // const createNewPage = () => {
+    //   newModule.value = {
+    //     label: title.value,
+    //   };
+    // };
+
     return {
       title,
       responsibleUsers,
@@ -176,6 +189,7 @@ export default defineComponent({
       start_date,
       end_date,
       addModules,
+      // createNewPage,
     };
   },
 });

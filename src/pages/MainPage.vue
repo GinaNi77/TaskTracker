@@ -31,7 +31,12 @@
     />
     <AddPerformerUser v-else-if="selected === 'Исполнители'" />
     <AddResponsibleUser v-else-if="selected === 'Ответственные'" />
-    <AddModule @addModule="getModules()" v-else-if="selected === 'Модули'" />
+    <AddModule
+      @addModule="upDate(newModule)"
+      :modules="newModule"
+      @update:updateModules="newModule = $event"
+      v-else-if="selected === 'Модули'"
+    />
     <AddTask v-else-if="selected === 'Мои задачи'" />
     <div v-else>Гадость ...</div>
   </div>
@@ -68,6 +73,7 @@ export default defineComponent({
     const selected = ref("");
     const teams = ref([]);
     const modulesList = ref([]);
+    const newModule = ref();
 
     const apolloClient = new ApolloClient(getClientOptions());
     provideApolloClient(apolloClient);
@@ -106,7 +112,6 @@ export default defineComponent({
       parentPages.value.forEach((page) => {
         let treeElem = {
           label: page.title,
-          // avatar: page.icon,
           children: page.children.data.map((elem) => {
             elem = { label: elem.title, id: elem.id };
             return elem;
@@ -183,6 +188,11 @@ export default defineComponent({
       });
     };
 
+    const upDate = (newPage) => {
+      console.log(newPage);
+      // treePages.value[1].children.push(newPage);
+    };
+
     return {
       drawer: ref(false),
       miniState: ref(true),
@@ -192,6 +202,7 @@ export default defineComponent({
       selected,
       teams,
       getModules,
+      upDate,
     };
   },
 });
