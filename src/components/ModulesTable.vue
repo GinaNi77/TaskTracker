@@ -25,28 +25,28 @@
         <td>{{ item.property4.fullname.last_name }}</td>
         <td>
           {{
-            item.property9.reduce(function (a, b) {
-              if (b.property8 == "8536411824694842134") {
-                return ++a;
-              } else return a;
+            item.property9.reduce(function (count, cur_value) {
+              if (cur_value.property8 == "8536411824694842134") {
+                return ++count;
+              } else return count;
             }, 0)
           }}
         </td>
         <td>
           {{
-            item.property9.reduce(function (a, b) {
-              if (b.property8 == "3812168432889805433") {
-                return ++a;
-              } else return a;
+            item.property9.reduce(function (count, cur_value) {
+              if (cur_value.property8 == "3812168432889805433") {
+                return ++count;
+              } else return count;
             }, 0)
           }}
         </td>
         <td>
           {{
-            item.property9.reduce(function (a, b) {
-              if (b.property8 == "6403872496291980172") {
-                return ++a;
-              } else return a;
+            item.property9.reduce(function (count, cur_value) {
+              if (cur_value.property8 == "6403872496291980172") {
+                return ++count;
+              } else return count;
             }, 0)
           }}
         </td>
