@@ -6,8 +6,9 @@
         clickable
         v-ripple
         @click="
-          openNewPage(item.label);
+          openNewPage(item.id);
           $emit('update:selectedPage', selectedTeamPage);
+          $emit('openPage');
         "
       >
         <q-item-section avatar>
@@ -35,8 +36,8 @@ export default defineComponent({
 
   setup() {
     const selectedTeamPage = ref("Команда");
-    const openNewPage = (label) => {
-      selectedTeamPage.value = label;
+    const openNewPage = (id) => {
+      selectedTeamPage.value = id;
     };
     return {
       openNewPage,

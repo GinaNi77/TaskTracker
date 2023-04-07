@@ -50,7 +50,13 @@
             }, 0)
           }}
         </td>
-        <td><q-btn class="bg-teal-10 text-white" icon="edit" @click="getModuleId(item.id)"/></td>
+        <td>
+          <q-btn
+            class="bg-teal-10 text-white"
+            icon="edit"
+            @click="getModuleId(item.id)"
+          />
+        </td>
         <td>
           <q-btn
             class="bg-red-10 text-white"
@@ -62,74 +68,74 @@
     </table>
   </q-list>
   <div class="flex justify-center q-mb-lg">
-      <q-btn color="black" outline to="/addModule">Добавить модуль</q-btn>
+    <q-btn color="black" outline to="/addModule">Добавить модуль</q-btn>
   </div>
 
   <q-dialog v-model="alert">
-      <q-card>
-        <q-form class="row justify-center" @submit.prevent="updateModules">
-            <p class="col-12 text-h5 text-center q-mt-md">Изменить Модуль</p>
-            <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
-                <q-input
-                    label="Название"
-                    v-model="title"
-                />                        
+    <q-card>
+      <q-form class="row justify-center" @submit.prevent="updateModules">
+        <p class="col-12 text-h5 text-center q-mt-md">Изменить Модуль</p>
+        <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
+          <q-input label="Название" v-model="title" />
 
-                <q-input label="Ответственный" v-model="responsibleUser">
-                    <template #append>
-                        <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
-                        <q-popup-proxy>
-                                <q-list>
-                                    <q-item clickable v-close-popup  v-for="user in responsibleUsers" :key="user.index" @click="onItemClick(user.id)">
-                                    <q-item-section>
-                                        <q-item-label>{{user.fullname.first_name}}</q-item-label>
-                                    </q-item-section>
-                                    <q-item-section>
-                                        <q-item-label>{{user.fullname.last_name}}</q-item-label>
-                                    </q-item-section>
-                                    </q-item>
-                                </q-list>
-                        </q-popup-proxy>
-                    </template>
-                </q-input>
+          <q-input label="Ответственный" v-model="responsibleUser">
+            <template #append>
+              <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+              <q-popup-proxy>
+                <q-list>
+                  <q-item
+                    clickable
+                    v-close-popup
+                    v-for="user in responsibleUsers"
+                    :key="user.index"
+                    @click="onItemClick(user.id)"
+                  >
+                    <q-item-section>
+                      <q-item-label>{{
+                        user.fullname.first_name
+                      }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ user.fullname.last_name }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-popup-proxy>
+            </template>
+          </q-input>
 
-                <q-input
-                    label="Дата начала"
-                    v-model="start_date">
-                    <template #append>
-                        <q-icon name="event" class="cursor-pointer"></q-icon>
-                        <q-popup-proxy>
-                           <q-date
-                                v-model="start_date"
-                                minimal
-                                mask="DD.MM.YYYY"
-                            /> 
-                        </q-popup-proxy>
-                    </template>
-                </q-input>
+          <q-input label="Дата начала" v-model="start_date">
+            <template #append>
+              <q-icon name="event" class="cursor-pointer"></q-icon>
+              <q-popup-proxy>
+                <q-date v-model="start_date" minimal mask="DD.MM.YYYY" />
+              </q-popup-proxy>
+            </template>
+          </q-input>
 
-                <q-input
-                    label="Дата окончания"
-                    v-model="end_date">
-                    <template #append>
-                        <q-icon name="event" class="cursor-pointer"></q-icon>
-                        <q-popup-proxy>
-                           <q-date
-                                v-model="end_date"
-                                minimal
-                                mask="DD.MM.YYYY"
-                            /> 
-                        </q-popup-proxy>
-                    </template>
-                </q-input>
+          <q-input label="Дата окончания" v-model="end_date">
+            <template #append>
+              <q-icon name="event" class="cursor-pointer"></q-icon>
+              <q-popup-proxy>
+                <q-date v-model="end_date" minimal mask="DD.MM.YYYY" />
+              </q-popup-proxy>
+            </template>
+          </q-input>
 
-                <div class="q-mt-lg">
-                    <q-btn outline size="md" color="black" label="Изменить" class="full-width q-mb-md" type="submit"/>     
-                </div>
-            </div>
-        </q-form>
-      </q-card>
-    </q-dialog>
+          <div class="q-mt-lg">
+            <q-btn
+              outline
+              size="md"
+              color="black"
+              label="Изменить"
+              class="full-width q-mb-md"
+              type="submit"
+            />
+          </div>
+        </div>
+      </q-form>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -139,14 +145,14 @@ import gql from "graphql-tag";
 
 export default defineComponent({
   setup() {
-    const moduleId = ref()
+    const moduleId = ref();
     const modulesList = ref([]);
-     const responsibleUsers = ref([])
-    const title = ref('')
-    const responsibleUser = ref()
-    const start_date = ref()
-    const end_date = ref()
-    const alert= ref(false)
+    const responsibleUsers = ref([]);
+    const title = ref("");
+    const responsibleUser = ref();
+    const start_date = ref();
+    const end_date = ref();
+    const alert = ref(false);
 
     const { result, onResult } = useQuery(
       gql`
@@ -193,52 +199,52 @@ export default defineComponent({
             }
           }
         }
-      `, null,
+      `,
+      null,
       {
         pollInterval: 1,
       }
     );
 
     const onItemClick = (id) => {
-            responsibleUser.value = id
-    }
+      responsibleUser.value = id;
+    };
 
-    const getModuleId=(id)=>{
-          alert.value = true
-          moduleId.value = id
-          
-        }
-    
-    const getResponsibleUsers =()=> {
-    const { result, onResult } = useQuery(
-      gql`
-        query {
-          get_group(id: "4833572297286333641") {
-            name
-            subject {
-              id
-              type_id
-              email {
-                email
-              }
-              fullname {
-                first_name
-                last_name
+    const getModuleId = (id) => {
+      alert.value = true;
+      moduleId.value = id;
+    };
+
+    const getResponsibleUsers = () => {
+      const { result, onResult } = useQuery(
+        gql`
+          query {
+            get_group(id: "4833572297286333641") {
+              name
+              subject {
+                id
+                type_id
+                email {
+                  email
+                }
+                fullname {
+                  first_name
+                  last_name
+                }
               }
             }
           }
-        }
-      `
-    );
+        `
+      );
 
-    onResult(() => {
-      responsibleUsers.value = result.value.get_group.subject;
-    });
+      onResult(() => {
+        responsibleUsers.value = result.value.get_group.subject;
+      });
 
-    return {onResult}
-    }
+      return { onResult };
+    };
 
-    getResponsibleUsers()
+    getResponsibleUsers();
 
     onResult(() => {
       modulesList.value = result.value.paginate_type1.data;
@@ -259,73 +265,79 @@ export default defineComponent({
       console.log("deleted");
     };
 
-    const {mutate: updateModule} = useMutation(gql`
-    mutation ($id: String!, $input: update_type1_input!) {
-    update_type1(id: $id, input: $input) {
-      status
-      recordId
-      record {
-        id
-        type_id
-        author_id
-        level
-        position
-        created_at
-        updated_at
-        name
-        property4 {
-          id
-          user_id
-          fullname {
-            first_name
-            last_name
+    const { mutate: updateModule } = useMutation(gql`
+      mutation ($id: String!, $input: update_type1_input!) {
+        update_type1(id: $id, input: $input) {
+          status
+          recordId
+          record {
+            id
+            type_id
+            author_id
+            level
+            position
+            created_at
+            updated_at
+            name
+            property4 {
+              id
+              user_id
+              fullname {
+                first_name
+                last_name
+              }
+            }
+            property6 {
+              date
+            }
+            property7 {
+              date
+            }
           }
         }
-        property6 {
-          date
-        }
-        property7 {
-          date
-        }
       }
-    }
-  }
-`)
+    `);
 
     const updateModules = async (id) => {
-      const { data } = await updateModule(
-        {
-          "id": moduleId.value,
-          "input":{
-                "name": title.value,
-                    "property6":{
-                        "date": start_date.value },
-                    "property7":{
-                        "date": end_date.value },
-                    "property4":{
-                        "2730894142110796608": responsibleUser.value
-                                }
-            }
+      const { data } = await updateModule({
+        id: moduleId.value,
+        input: {
+          name: title.value,
+          property6: {
+            date: start_date.value,
+          },
+          property7: {
+            date: end_date.value,
+          },
+          property4: {
+            "2730894142110796608": responsibleUser.value,
+          },
+        },
       });
-      resetForm()
+      resetForm();
     };
     const resetForm = () => {
-      moduleId.value ="",
-        title.value = "",
-        start_date.value="",
-        end_date.value="",
-        responsibleUser.value = ""
-      
+      (moduleId.value = ""),
+        (title.value = ""),
+        (start_date.value = ""),
+        (end_date.value = ""),
+        (responsibleUser.value = "");
     };
 
     return {
       onResult,
       modulesList,
       deleteModules,
-      title, responsibleUsers,
-      responsibleUser, start_date, end_date,
-      getModuleId, alert, moduleId, onItemClick,
-      updateModules
+      title,
+      responsibleUsers,
+      responsibleUser,
+      start_date,
+      end_date,
+      getModuleId,
+      alert,
+      moduleId,
+      onItemClick,
+      updateModules,
     };
   },
 });
