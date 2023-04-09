@@ -61,6 +61,7 @@
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: "add-performer-user",
@@ -73,6 +74,7 @@ export default defineComponent({
     const moduleId = ref()
     const title = ref('')
     const description = ref('')
+    const $q = useQuasar();
 
 
     const getUserId = (id) => {
@@ -143,6 +145,12 @@ export default defineComponent({
                                 }
             }
         })
+         $q.notify({
+        message: "Задача добавлена",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
+      });
         resetForm()
           
     };

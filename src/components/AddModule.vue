@@ -81,6 +81,7 @@
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   props: ["modules"],
@@ -91,6 +92,8 @@ export default defineComponent({
     const responsibleUser = ref();
     const start_date = ref();
     const end_date = ref();
+    const $q = useQuasar();
+  
     const newModule = ref();
 
     const onItemClick = (id) => {
@@ -146,7 +149,17 @@ export default defineComponent({
           },
         },
       });
+       $q.notify({
+        message: "Модуль добавлен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
+      });
       resetForm();
+      // $q.notify({
+      //     message: 'Добавлен новый модуль',
+      //     color: 'black'
+      //   })
       console.log(data.create_type1.recordId);
     };
 

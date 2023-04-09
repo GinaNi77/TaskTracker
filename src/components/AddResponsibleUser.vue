@@ -65,6 +65,7 @@ import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   setup() {
@@ -75,6 +76,7 @@ export default defineComponent({
       surname: "",
     });
 
+    const $q = useQuasar();
     const responsibleUsers = ref([]);
 
     const { result, onResult, refetch } = useQuery(
@@ -119,6 +121,12 @@ export default defineComponent({
           email: form.value.email,
           page_group_id: "9163702586231323932",
         },
+      });
+      $q.notify({
+        message: "Ответственный добавлен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
       });
       resetForm();
     };
