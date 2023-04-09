@@ -139,7 +139,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
@@ -154,57 +154,66 @@ export default defineComponent({
     const end_date = ref();
     const alert = ref(false);
 
-    const { result, onResult } = useQuery(
-      gql`
-        query getModules {
-          paginate_type1(page: 1, perPage: 100) {
-            data {
-              id
-              type_id
-              author_id
-              level
-              position
-              created_at
-              updated_at
-              name
-              property4 {
+    const getModules = () => {
+      const { result, onResult, refetch } = useQuery(
+        gql`
+          query getModules {
+            paginate_type1(page: 1, perPage: 100) {
+              data {
                 id
-                user_id
-                fullname {
-                  first_name
-                  last_name
+                type_id
+                author_id
+                level
+                position
+                created_at
+                updated_at
+                name
+                property4 {
+                  id
+                  user_id
+                  fullname {
+                    first_name
+                    last_name
+                  }
+                }
+                property6 {
+                  date
+                }
+                property7 {
+                  date
+                }
+                property9 {
+                  name
+                  property8
                 }
               }
-              property6 {
-                date
-              }
-              property7 {
-                date
-              }
-              property9 {
-                name
-                property8
-              }
-            }
 
-            paginatorInfo {
-              perPage
-              currentPage
-              lastPage
-              total
-              count
-              from
-              to
-              hasMorePages
+              paginatorInfo {
+                perPage
+                currentPage
+                lastPage
+                total
+                count
+                from
+                to
+                hasMorePages
+              }
             }
           }
+        `,
+        null,
+        {
+          pollInterval: 1,
         }
-      `,
-      null,
-      {
-        pollInterval: 1,
-      }
-    );
+      );
+
+      onResult(() => {
+        modulesList.value = result.value.paginate_type1.data;
+      });
+      refetch();
+    };
+
+    // getModules();
 
     const onItemClick = (id) => {
       responsibleUser.value = id;
@@ -216,7 +225,7 @@ export default defineComponent({
     };
 
     const getResponsibleUsers = () => {
-      const { result, onResult } = useQuery(
+      const { result, onResult, refetch } = useQuery(
         gql`
           query {
             get_group(id: "4833572297286333641") {
@@ -240,15 +249,11 @@ export default defineComponent({
       onResult(() => {
         responsibleUsers.value = result.value.get_group.subject;
       });
-
+      refetch();
       return { onResult };
     };
 
-    getResponsibleUsers();
-
-    onResult(() => {
-      modulesList.value = result.value.paginate_type1.data;
-    });
+    // getResponsibleUsers();
 
     const { mutate: deleteModule } = useMutation(gql`
       mutation ($id: String!) {
@@ -316,6 +321,7 @@ export default defineComponent({
       });
       resetForm();
     };
+
     const resetForm = () => {
       (moduleId.value = ""),
         (title.value = ""),
@@ -324,8 +330,13 @@ export default defineComponent({
         (responsibleUser.value = "");
     };
 
+    onMounted(() => {
+      getModules();
+      getResponsibleUsers();
+    });
+
     return {
-      onResult,
+      // onResult,
       modulesList,
       deleteModules,
       title,
