@@ -18,12 +18,9 @@
                         <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
                         <q-popup-proxy>
                                 <q-list>
-                                    <q-item clickable v-close-popup  v-for="user in performerUsers" :key="user.index" @click="getUserId(user.id)">
-                                    <q-item-section>
-                                        <q-item-label>{{user.fullname.first_name}}</q-item-label>
-                                    </q-item-section>
-                                    <q-item-section>
-                                        <q-item-label>{{user.fullname.last_name}}</q-item-label>
+                                    <q-item clickable v-close-popup  v-for="user in performerList" :key="user.index" @click="getUserId(user.id)">
+                                    <q-item-section>                                        
+                                      <q-item-label>{{ user.fullname.first_name +" "+user.fullname.last_name}}</q-item-label>
                                     </q-item-section>
                                     </q-item>
                                 </q-list>
@@ -52,7 +49,7 @@
                 </div>
 
                 <div class="q-mt-lg">
-                    <q-btn flat size="md" color="black" label="Главная страница" class="full-width" to="/main"/>     
+                    <q-btn flat size="md" color="black" label="Задачи" class="full-width" to="/tasks"/>     
                 </div>     
 
             </div>
@@ -63,7 +60,6 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
-import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
 export default defineComponent({
@@ -71,70 +67,13 @@ export default defineComponent({
   
   setup() {
 
-    const performerUsers = ref([]);
+    const performerList = ref(JSON.parse(localStorage.getItem("performerArray")));
     const performerUser = ref('')
-    const modulesList=ref([])
+    const modulesList= ref(JSON.parse(localStorage.getItem("modulesArray")))
     const moduleId = ref()
     const title = ref('')
     const description = ref('')
 
-    
-    const { result, onResult } = useQuery(
-      gql`
-        query {
-          get_group(id: "4753316581813399177") {
-            name
-            subject {
-              id
-              type_id
-              email {
-                email
-              }
-              fullname {
-                first_name
-                last_name
-              }
-            }
-          }
-        }
-      `
-    );
-
-    onResult(() => {
-      performerUsers.value = result.value.get_group.subject;
-      
-    });
-
-    const getModules = () =>{
-    const { result, onResult } = useQuery(
-      gql`
-        query getModules {
-        paginate_type1(page: 1, perPage: 100) {
-        data {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-                    }
-                }
-            }`
-    );
-
-    onResult(() => {
-      modulesList.value = result.value.paginate_type1.data
-      
-    });
-
-    return { 
-        onResult
-        }
-    }
-
-    getModules()
 
     const getUserId = (id) => {
             performerUser.value = id
@@ -217,7 +156,7 @@ export default defineComponent({
     };
 
     return {
-      onResult, performerUsers, getModules, modulesList, performerUser, getUserId, getModuleId, moduleId, addTasks, title, description
+      performerList, modulesList, performerUser, getUserId, getModuleId, moduleId, addTasks, title, description
     };
 
 

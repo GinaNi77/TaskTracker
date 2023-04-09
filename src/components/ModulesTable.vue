@@ -75,7 +75,7 @@
     <q-card>
       <q-form class="row justify-center" @submit.prevent="updateModules">
         <p class="col-12 text-h5 text-center q-mt-md">Изменить Модуль</p>
-        <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
+        <div class="q-gutter-y-lg">
           <q-input label="Название" v-model="title" />
 
           <q-input label="Ответственный" v-model="responsibleUser">
@@ -92,11 +92,8 @@
                   >
                     <q-item-section>
                       <q-item-label>{{
-                        user.fullname.first_name
+                        user.fullname.first_name + "  " + user.fullname.last_name
                       }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ user.fullname.last_name }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -209,6 +206,7 @@ export default defineComponent({
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
+        localStorage.setItem("modulesArray", JSON.stringify(modulesList.value))
       });
       refetch();
     };

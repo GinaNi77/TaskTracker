@@ -69,7 +69,7 @@
     <q-card>
       <q-form class="row justify-center" @submit.prevent="updateTasks">
         <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
-        <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
+        <div class="q-gutter-y-lg">
           <q-input label="Название" v-model="title" />
 
           <q-input label="Описание" v-model="description" />
@@ -88,11 +88,8 @@
                   >
                     <q-item-section>
                       <q-item-label>{{
-                        user.fullname.first_name
+                        user.fullname.first_name + " " + user.fullname.last_name
                       }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ user.fullname.last_name }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>

@@ -100,6 +100,7 @@ export default defineComponent({
 
     onResult(() => {
       responsibleUsers.value = result.value.get_group.subject;
+      localStorage.setItem("responsibleArray", JSON.stringify(responsibleUsers.value))
     });
 
     const { mutate: userGroupInviteUser } = useMutation(gql`
