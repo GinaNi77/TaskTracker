@@ -424,7 +424,7 @@ export default defineComponent({
       getModules,
       modulesList,
       performerUsers,
-      getResponsible,
+      getPerformer,
       title,
       description,
       getUserId,
