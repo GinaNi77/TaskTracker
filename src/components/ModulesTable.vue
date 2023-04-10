@@ -56,7 +56,7 @@
               icon="edit"
               @click="getModuleId(item.id)"
             />
-            <q-btn
+            <q-btn :disabled="item.property9.length ? '' : disabled"
             class="bg-red-10 text-white"
             icon="delete"
             @click="deleteModules(item.id)"
