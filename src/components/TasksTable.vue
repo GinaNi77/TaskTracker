@@ -246,7 +246,7 @@ export default defineComponent({
       tasksList.value = result.value.paginate_type2.data;
     });
 
-    const getResponsible = () => {
+    const getPerformer = () => {
       const { result, onResult, refetch } = useQuery(
         gql`
           query {
@@ -412,7 +412,7 @@ export default defineComponent({
         (moduleId.value = "");
     };
 
-    getResponsible();
+    getPerformer();
     getModules();
     refetch();
 
