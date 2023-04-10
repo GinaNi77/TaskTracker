@@ -1,11 +1,11 @@
 <template>
-  <div>Modules table</div>
+  <div class="flex justify-between q-py-lg" style="width: 90%; margin: 0 auto">
+    <p class="text-h5">Список задач модуля</p>
+    <q-btn round color="black" no-border flat to="/addTask" icon="add_circle" />
+  </div>
 
   <q-list class="q-mb-xl flex justify-center">
     <table style="width: 90%; border-collapse: collapse">
-      <caption class="q-my-lg text-h5">
-        Список модулей
-      </caption>
       <tr>
         <th>Название</th>
         <th>Задача</th>
@@ -17,7 +17,7 @@
         <th>Удалить</th>
       </tr>
 
-      <tr v-for="item in modulesList" :key="item.index">
+      <tr v-for="item in tasksListById" :key="item.index">
         <td>{{ item.property9.name }}</td>
         <td>{{ item.name }}</td>
         <td>{{ item.property3 }}</td>
@@ -42,99 +42,90 @@
 </template>
 
 <script>
-import { defineComponent, ref, onUpdated } from "vue";
+import { defineComponent, ref, onUpdated, onBeforeUpdate } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "../router";
 
 export default defineComponent({
   setup() {
-    const modulesList = ref([]);
-
+    const tasksList = ref([]);
+    const tasksListById = ref([]);
     const moduleID = ref();
+
     moduleID.value = router.currentRoute.value.params.id;
 
-    onUpdated(() => {
-      moduleID.value = router.currentRoute.value.params.id;
-      console.log("onUpdated" + moduleID.value);
-    });
-
-    const { result, onResult } = useQuery(
-      gql`
-        query getModules {
-          paginate_type2(page: 1, perPage: 100) {
-            data {
-              id
-              type_id
-              author_id
-              level
-              position
-              created_at
-              updated_at
-              name
-              property3
-              property8
-              property5 {
+    const getTasks = () => {
+      const { result, onResult, refetch } = useQuery(
+        gql`
+          query getModules {
+            paginate_type2(page: 1, perPage: 100) {
+              data {
                 id
-                user_id
-                fullname {
-                  first_name
-                  last_name
-                }
-              }
-              property9 {
-                id
+                type_id
+                author_id
+                level
+                position
+                created_at
+                updated_at
                 name
-                property4 {
+                property3
+                property8
+                property5 {
+                  id
+                  user_id
                   fullname {
                     first_name
                     last_name
                   }
                 }
+                property9 {
+                  id
+                  name
+                  property4 {
+                    fullname {
+                      first_name
+                      last_name
+                    }
+                  }
+                }
+              }
+              paginatorInfo {
+                perPage
+                currentPage
+                lastPage
+                total
+                count
+                from
+                to
+                hasMorePages
               }
             }
-            paginatorInfo {
-              perPage
-              currentPage
-              lastPage
-              total
-              count
-              from
-              to
-              hasMorePages
-            }
           }
+        `,
+        null,
+        {
+          pollInterval: 1,
         }
-      `,
-      null,
-      {
-        pollInterval: 1,
-      }
-    );
+      );
 
-    // name - названия модуля
-    // property 6 - дата начала
-    // property 7 - дата конца
-    // property 4 - данные об ответсвенном за модуль
-    // property 9 - привязанные задачи (property 8 - статус задачи)
+      // name - названия модуля
+      // property 6 - дата начала
+      // property 7 - дата конца
+      // property 4 - данные об ответсвенном за модуль
+      // property 9 - привязанные задачи (property 8 - статус задачи)
+      refetch();
+      onResult(() => {
+        tasksList.value = result.value.paginate_type2.data;
+        console.log(tasksList.value);
 
-    onResult(() => {
-      modulesList.value = result.value.paginate_type2.data;
-      console.log(modulesList.value);
-    });
+        tasksListById.value = tasksList.value.filter(
+          (item) => item.property9.id === moduleID.value
+        );
 
-    // const getModuleTasksStatusQuantity = (status) => {
-    //   let counter;
-    //   for (let i = 0; i < modulesList.value.length; i++) {
-    //     console.log(modulesList.value[i]);
-    //     // for (let n = 0; n < modulesList.value[i].property9.length; n++) {
-    //     //   // if (modulesList.value[i].property9[n] == status) {
-    //     //   //   counter++;
-    //     //     console.log(modulesList.value[i].property9[n]);
-    //     //   // }
-    //     // }
-    //   }
-    //   return counter;
+        console.log(tasksListById.value);
+      });
+    };
 
     const { mutate: deleteModuleTask } = useMutation(gql`
       mutation ($id: String!) {
@@ -151,9 +142,16 @@ export default defineComponent({
       console.log("deleted");
     };
 
+    getTasks();
+
+    onUpdated(() => {
+      moduleID.value = router.currentRoute.value.params.id;
+      getTasks();
+    });
+
     return {
-      onResult,
-      modulesList,
+      tasksList,
+      tasksListById,
       deleteModules,
     };
   },
