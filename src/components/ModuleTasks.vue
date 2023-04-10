@@ -5,40 +5,50 @@
   </div>
 
   <q-list class="q-mb-xl flex justify-center">
-    <table style="width: 90%; border-collapse: collapse">
-      <tr>
-        <th>Название</th>
-        <th>Задача</th>
-        <th>Описание</th>
-        <th>Имя исполнителя</th>
-        <th>Фамилия исполнителя</th>
-        <th>Статус</th>
-        <th></th>
-      </tr>
+    <div
+      style="width: 100%"
+      class="flex justify-center"
+      v-if="tasksListById.length"
+    >
+      <table style="width: 90%; border-collapse: collapse">
+        <tr>
+          <th>Название</th>
+          <th>Задача</th>
+          <th>Описание</th>
+          <th>Имя исполнителя</th>
+          <th>Фамилия исполнителя</th>
+          <th>Статус</th>
+          <th></th>
+        </tr>
 
-      <tr v-for="item in tasksListById" :key="item.index">
-        <td>{{ item.property9.name }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.property3 }}</td>
-        <td>{{ item.property5.fullname.first_name }}</td>
-        <td>{{ item.property5.fullname.last_name }}</td>
+        <tr v-for="item in tasksListById" :key="item.index">
+          <td>{{ item.property9.name }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.property3 }}</td>
+          <td>{{ item.property5.fullname.first_name }}</td>
+          <td>{{ item.property5.fullname.last_name }}</td>
 
-        <td v-if="item.property8 == 8536411824694842134">Назначена</td>
-        <td v-else-if="item.property8 == 3812168432889805433">Выполнена</td>
-        <td v-else>Завершена</td>
+          <td v-if="item.property8 == 8536411824694842134">Назначена</td>
+          <td v-else-if="item.property8 == 3812168432889805433">Выполнена</td>
+          <td v-else>Завершена</td>
 
-        <td>
-          <div class="flex justify-center">
-            <q-btn class="bg-teal-10 q-mr-xs text-white" icon="edit" />
-            <q-btn
-              class="bg-red-10 q-ml-xs text-white"
-              icon="delete"
-              @click="deleteModules(item.id)"
-            />
-          </div>
-        </td>
-      </tr>
-    </table>
+          <td>
+            <div class="flex justify-center">
+              <q-btn class="bg-teal-10 q-ma-xs text-white" icon="edit" />
+              <q-btn
+                class="bg-red-10 q-ma-xs text-white"
+                icon="delete"
+                @click="deleteModules(item.id)"
+              />
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="flex column justify-center items-center" v-else>
+      <q-icon name="sentiment_very_satisfied" color="grey" size="10em" />
+      <div style="color: #a0a0a0" class="text-h5">Все задачи решены!</div>
+    </div>
   </q-list>
 </template>
 
