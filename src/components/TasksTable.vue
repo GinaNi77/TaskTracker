@@ -61,7 +61,7 @@
     </table>
   </q-list>
   <div class="flex justify-center q-mb-lg">
-    <q-btn color="black" outline to="/addTask">Добавить задачу</q-btn>
+    <q-btn color="black" outline to="/addTask" class="q-mb-sm">Добавить задачу</q-btn>
   </div>
 
   <q-dialog v-model="alert">
