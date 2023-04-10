@@ -18,8 +18,7 @@
         <th>Статус</th>
         <th>Исполнители</th>
         <th>Модуль</th>
-        <th>Редактировать</th>
-        <th>Удалить</th>
+        <th></th>
       </tr>
 
       <tr
@@ -45,18 +44,18 @@
         </td>
         <td>{{ task.property9.name }}</td>
         <td>
-          <q-btn
-            class="bg-teal-10 text-white"
+          <div class="flex justify-center">
+            <q-btn
+            class="bg-teal-10 text-white q-mr-sm"
             icon="edit"
-            @click="getTaskId(task.id)"
-          ></q-btn>
-        </td>
-        <td>
-          <q-btn
+            @click="getTaskId(task.id)">
+            </q-btn>
+            <q-btn
             class="bg-red-10 text-white"
             @click="deleteTasks(task.id)"
-            icon="delete"
-          ></q-btn>
+            icon="delete">
+            </q-btn>
+          </div>
         </td>
       </tr>
     </table>

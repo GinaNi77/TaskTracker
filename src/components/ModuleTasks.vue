@@ -15,8 +15,8 @@
         <th>Имя исполнителя</th>
         <th>Фамилия исполнителя</th>
         <th>Статус</th>
-        <th>Редактировать</th>
-        <th>Удалить</th>
+        <th></th>
+   
       </tr>
 
       <tr v-for="item in tasksListById" :key="item.index"
@@ -38,14 +38,16 @@
         <td v-else>Завершена</td>
 
         <td>
-          <q-btn class="bg-teal-10 text-white" icon="edit" @click="getTaskId(item.id)"/></td>
-        <td>
-          <q-btn
+          <div class="flex justify-center">
+            <q-btn class="bg-teal-10 text-white q-mr-sm" icon="edit" @click="getTaskId(item.id)"/>
+            <q-btn
             class="bg-red-10 text-white"
             icon="delete"
             @click="deleteModules(item.id)"
           />
-        </td>
+          </div>
+          </td>
+        
       </tr>
     </table>
   </q-list>
@@ -71,7 +73,7 @@
                     :key="user.index"
                     @click="getUserId(user.id)"
                   >
-                    <q-item-section>
+                    <q-item-section >
                       <q-item-label>{{
                         user.fullname.first_name + " " + user.fullname.last_name
                       }}
