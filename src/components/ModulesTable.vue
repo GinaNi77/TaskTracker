@@ -139,9 +139,11 @@
 import { defineComponent, ref, onMounted } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   setup() {
+    const $q = useQuasar();
     const moduleId = ref();
     const modulesList = ref([]);
     const responsibleUsers = ref([]);
@@ -316,6 +318,12 @@ export default defineComponent({
             "2730894142110796608": responsibleUser.value,
           },
         },
+      });
+       $q.notify({
+        message: "Модуль изменен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
       });
       resetForm();
     };

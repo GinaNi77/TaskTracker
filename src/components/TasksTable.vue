@@ -164,9 +164,11 @@ import { defineComponent, ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   setup() {
+    const $q = useQuasar();
     const tasksList = ref([]);
     const modulesList = ref([]);
     const performerUsers = ref([]);
@@ -392,6 +394,12 @@ export default defineComponent({
             "6591698446779899108": moduleId.value,
           },
         },
+      });
+       $q.notify({
+        message: "Задача изменена",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
       });
       reset();
     };
