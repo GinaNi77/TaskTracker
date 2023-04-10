@@ -37,7 +37,7 @@
           :nodes="treePages"
           node-key="id"
           v-model:selected="selected"
-          @update:selected="onTreeItemSelected(selected)"
+          @update:selected="onTreeItemSelected(selected), toggleLeftDrawer()"
           no-selection-unset
           default-expand-all
         />
