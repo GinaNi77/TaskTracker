@@ -13,8 +13,7 @@
         <th>Имя исполнителя</th>
         <th>Фамилия исполнителя</th>
         <th>Статус</th>
-        <th>Редактировать</th>
-        <th>Удалить</th>
+        <th></th>
       </tr>
 
       <tr v-for="item in tasksListById" :key="item.index">
@@ -28,13 +27,15 @@
         <td v-else-if="item.property8 == 3812168432889805433">Выполнена</td>
         <td v-else>Завершена</td>
 
-        <td><q-btn class="bg-teal-10 text-white" icon="edit" /></td>
         <td>
-          <q-btn
-            class="bg-red-10 text-white"
-            icon="delete"
-            @click="deleteModules(item.id)"
-          />
+          <div class="flex justify-center">
+            <q-btn class="bg-teal-10 q-mr-xs text-white" icon="edit" />
+            <q-btn
+              class="bg-red-10 q-ml-xs text-white"
+              icon="delete"
+              @click="deleteModules(item.id)"
+            />
+          </div>
         </td>
       </tr>
     </table>
