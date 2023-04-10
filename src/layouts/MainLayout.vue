@@ -204,6 +204,7 @@ export default defineComponent({
           treePages.value[1].children.push({
             label: page.name,
             id: page.id,
+            url: `${treePages.value[1].url}/${page.id}`,
           });
         });
       });

@@ -25,6 +25,10 @@ const routes = [
         component: () => import('components/ModulesTable.vue')
       },
       {
+        path: 'modules/:id',
+        component: () => import('components/ModuleTasks.vue')
+      },
+      {
         path: 'teams',
         component: () => import('components/TeamPage.vue')
       },
