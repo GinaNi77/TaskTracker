@@ -106,6 +106,9 @@ export default defineComponent({
               children {
                 data {
                   id
+                  object {
+                    id
+                  }
                   title
                 }
               }
@@ -135,14 +138,22 @@ export default defineComponent({
               label: elem.title,
               id: elem.id,
               url: `${urlMap[page.title]}/${elem.id}`,
+              canView: canViewTreeItem(elem),
             };
             return elem;
           }),
         };
-        treePages.value.push(treeElem);
+        if (
+          canViewTreeItem(page) ||
+          treeElem.children.some((item) => item.canView)
+        ) {
+          treeElem.children = treeElem.children.filter((item) => item.canView);
+          treePages.value.push(treeElem);
+        }
       });
 
       teams.value = treePages.value[0].children;
+      console.log(treePages.value);
       getModules();
     });
 
@@ -201,13 +212,34 @@ export default defineComponent({
         console.log(modulesList.value);
 
         modulesList.value.forEach((page) => {
-          treePages.value[1].children.push({
-            label: page.name,
-            id: page.id,
-            url: `${treePages.value[1].url}/${page.id}`,
-          });
+          if (canViewTreeItem(page)) {
+            treePages.value[1].children.push({
+              label: page.name,
+              id: page.id,
+              url: `${treePages.value[1].url}/${page.id}`,
+            });
+            console.log(322);
+          }
         });
       });
+    };
+
+    const canViewTreeItem = (item) => {
+      const user = JSON.parse(localStorage.getItem("userData"));
+      //  check module
+      if (item.property4?.id && item.property4.id === user.id) {
+        return true;
+      }
+      // check teams
+      else if (user.groups.some((group) => group.id === item.id)) {
+        return true;
+      } else if (user.groups.some((group) => group.id === item.object?.id)) {
+        return true;
+      } else if (item.title === "Модули" || item.title === "Мои задачи") {
+        return true;
+      }
+      return false;
+      console.log(item.property4.id);
     };
 
     const onTreeItemSelected = (selected) => {

@@ -36,7 +36,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
+import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "src/router";
 
@@ -47,6 +47,49 @@ export default defineComponent({
       email: "",
       password: "",
     });
+
+    const groups = ref([]);
+    const user = ref({
+      id: "6272278244771470827",
+      groups: [],
+    });
+
+    const getUserGroups = () => {
+      const { result, onResult, refetch } = useQuery(
+        gql`
+          {
+            get_subject(id: "6272278244771470827") {
+              id
+              author_id
+              group {
+                id
+                name
+                type_id
+              }
+              type_id
+              fullname {
+                first_name
+                middle_name
+                last_name
+              }
+              user_id
+              created_at
+              updated_at
+            }
+          }
+        `
+      );
+
+      onResult(() => {
+        console.log(result);
+        user.value.groups = result.value.get_subject.group;
+        localStorage.setItem("userData", JSON.stringify(user.value));
+      });
+
+      console.log(user.value);
+    };
+
+    getUserGroups();
 
     const { mutate: signInUser } = useMutation(gql`
       mutation UserSignIn($input: UserSignInInput!) {
