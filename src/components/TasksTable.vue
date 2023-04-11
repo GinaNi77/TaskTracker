@@ -23,7 +23,7 @@
 
       <tr
         style="border: solid 1px #400303"
-        v-for="task in tasksList"
+        v-for="task in userTasksList"
         :key="task.index"
         :class="
           task.property8 == 8536411824694842134
@@ -179,6 +179,17 @@ export default defineComponent({
     const taskId = ref();
     const taskStatus = ref();
 
+    const userID = ref(localStorage.getItem("userSignInId"));
+    const userTasksList = ref([]);
+
+    const getUserTask = () => {
+      for (let i = 0; i < tasksList.value.length; i++) {
+        if (tasksList.value[i].property5.user_id == userID.value) {
+          userTasksList.value.push(tasksList.value[i]);
+        }
+      }
+    };
+
     const getTaskId = (id) => {
       alert.value = true;
       taskId.value = id;
@@ -244,6 +255,7 @@ export default defineComponent({
 
     onResult(() => {
       tasksList.value = result.value.paginate_type2.data;
+      getUserTask();
     });
 
     const getPerformer = () => {
@@ -437,6 +449,9 @@ export default defineComponent({
       taskStatus,
       getTaskStatus,
       reset,
+      userID,
+      getUserTask,
+      userTasksList,
     };
   },
 });

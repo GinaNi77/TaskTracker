@@ -71,6 +71,7 @@ export default defineComponent({
         },
       });
       localStorage.setItem("token", data.userSignIn.record.access_token);
+      localStorage.setItem("userSignInId", data.userSignIn.recordId);
 
       resetForm();
       if (data.userSignIn.status === 200) {
