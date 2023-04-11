@@ -65,6 +65,7 @@ import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: "add-performer-user",
@@ -77,6 +78,7 @@ export default defineComponent({
       surname: "",
     });
 
+    const $q = useQuasar();
     const performerUsers = ref([]);
 
     const { result, onResult, refetch } = useQuery(
@@ -102,6 +104,7 @@ export default defineComponent({
 
     onResult(() => {
       performerUsers.value = result.value.get_group.subject;
+      localStorage.setItem("performerArray", JSON.stringify(performerUsers.value))
     });
 
     const { mutate: userGroupInviteUser } = useMutation(gql`
@@ -120,6 +123,12 @@ export default defineComponent({
           email: form.value.email,
           page_group_id: "3969277701932267641",
         },
+      });
+      $q.notify({
+        message: "Исполнитель добавлен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
       });
 
       resetForm();

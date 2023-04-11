@@ -18,8 +18,7 @@
         <th>Статус</th>
         <th>Исполнители</th>
         <th>Модуль</th>
-        <th>Редактировать</th>
-        <th>Удалить</th>
+        <th></th>
       </tr>
 
       <tr
@@ -45,31 +44,31 @@
         </td>
         <td>{{ task.property9.name }}</td>
         <td>
-          <q-btn
-            class="bg-teal-10 text-white"
+          <div class="flex justify-center">
+            <q-btn
+            class="bg-teal-10 text-white q-mr-sm"
             icon="edit"
-            @click="getTaskId(task.id)"
-          ></q-btn>
-        </td>
-        <td>
-          <q-btn
+            @click="getTaskId(task.id)">
+            </q-btn>
+            <q-btn
             class="bg-red-10 text-white"
             @click="deleteTasks(task.id)"
-            icon="delete"
-          ></q-btn>
+            icon="delete">
+            </q-btn>
+          </div>
         </td>
       </tr>
     </table>
   </q-list>
   <div class="flex justify-center q-mb-lg">
-    <q-btn color="black" outline to="/addTask">Добавить задачу</q-btn>
+    <q-btn color="black" outline to="/addTask" class="q-mb-sm">Добавить задачу</q-btn>
   </div>
 
   <q-dialog v-model="alert">
     <q-card>
       <q-form class="row justify-center" @submit.prevent="updateTasks">
         <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
-        <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
+        <div class="q-gutter-y-lg">
           <q-input label="Название" v-model="title" />
 
           <q-input label="Описание" v-model="description" />
@@ -88,11 +87,8 @@
                   >
                     <q-item-section>
                       <q-item-label>{{
-                        user.fullname.first_name
+                        user.fullname.first_name + " " + user.fullname.last_name
                       }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ user.fullname.last_name }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -167,9 +163,11 @@ import { defineComponent, ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   setup() {
+    const $q = useQuasar();
     const tasksList = ref([]);
     const modulesList = ref([]);
     const performerUsers = ref([]);
@@ -248,7 +246,7 @@ export default defineComponent({
       tasksList.value = result.value.paginate_type2.data;
     });
 
-    const getResponsible = () => {
+    const getPerformer = () => {
       const { result, onResult, refetch } = useQuery(
         gql`
           query {
@@ -396,6 +394,12 @@ export default defineComponent({
           },
         },
       });
+       $q.notify({
+        message: "Задача изменена",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
+      });
       reset();
     };
 
@@ -408,7 +412,7 @@ export default defineComponent({
         (moduleId.value = "");
     };
 
-    getResponsible();
+    getPerformer();
     getModules();
     refetch();
 
@@ -420,7 +424,7 @@ export default defineComponent({
       getModules,
       modulesList,
       performerUsers,
-      getResponsible,
+      getPerformer,
       title,
       description,
       getUserId,
