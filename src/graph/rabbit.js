@@ -1,9 +1,7 @@
-
-import { useMutation } from "@vue/apollo-composable";
-import { useQuery } from "@vue/apollo-composable";
+import { useQuery, useMutation} from "@vue/apollo-composable";
 import { getModulesTasks, getModules} from "src/graphql/query";
 import { getQueue} from "src/graphql/mutation";
-import {Stomp} from "@stomp/stompjs"
+import { Stomp } from "@stomp/stompjs"
 
 
 const { mutate: createQueue } = useMutation(getQueue);
@@ -12,10 +10,10 @@ const { refetch: refetchModules} = useQuery(getModules);
 
 
     const queueCreate = async () => {
-        const { data: queueData } = await createQueue();
-        localStorage.setItem("queue", queueData.notificationSubscribe.hash);
+        const { data} = await createQueue();
+        localStorage.setItem("queue", data.notificationSubscribe.hash);
 
-        return queueData;
+        return data;
     }
 
     const rabbitConnect = () => {
