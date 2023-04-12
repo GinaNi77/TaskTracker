@@ -125,6 +125,7 @@ export default defineComponent({
       };
 
       parentPages.value = result.value.rootPages.data;
+      console.log(parentPages.value)
       parentPages.value.forEach((page) => {
         let treeElem = {
           label: page.title,
