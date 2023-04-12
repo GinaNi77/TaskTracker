@@ -1,5 +1,4 @@
 <template>
-
   <q-page padding>
     <q-list class="q-mb-xl">
       <table style="width: 100%; border-collapse: collapse">
@@ -21,12 +20,21 @@
     </q-list>
 
     <div class="flex justify-center q-mb-lg">
-       <q-btn outline size="md" color="black" label="Добавить ответственного"  @click="alert = true"/>     
+      <q-btn
+        outline
+        size="md"
+        color="black"
+        label="Добавить ответственного"
+        @click="alert = true"
+      />
     </div>
 
     <q-dialog v-model="alert">
       <q-card>
-        <q-form class="row justify-center q-my-md" @submit.prevent="addResponsible">
+        <q-form
+          class="row justify-center q-my-md"
+          @submit.prevent="addResponsible"
+        >
           <p class="col-12 text-h5 text-center">Добавить ответственного</p>
           <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
             <q-input label="Имя" v-model="form.name" />
@@ -49,8 +57,6 @@
         </q-form>
       </q-card>
     </q-dialog>
-
-    
   </q-page>
 </template>
 
@@ -59,19 +65,21 @@ import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   setup() {
-    const alert = ref(false)
+    const alert = ref(false);
     const form = ref({
       name: "",
       email: "",
       surname: "",
     });
 
+    const $q = useQuasar();
     const responsibleUsers = ref([]);
 
-    const { result, onResult } = useQuery(
+    const { result, onResult, refetch } = useQuery(
       gql`
         query {
           get_group(id: "4833572297286333641") {
@@ -94,6 +102,7 @@ export default defineComponent({
 
     onResult(() => {
       responsibleUsers.value = result.value.get_group.subject;
+      localStorage.setItem("responsibleArray", JSON.stringify(responsibleUsers.value))
     });
 
     const { mutate: userGroupInviteUser } = useMutation(gql`
@@ -113,6 +122,12 @@ export default defineComponent({
           page_group_id: "9163702586231323932",
         },
       });
+      $q.notify({
+        message: "Ответственный добавлен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
+      });
       resetForm();
     };
 
@@ -122,13 +137,17 @@ export default defineComponent({
         (form.value.name = "");
     };
 
+    refetch();
 
-    return{
-        form, addResponsible, onResult, responsibleUsers, alert
-    }
-  }
-})
-
+    return {
+      form,
+      addResponsible,
+      onResult,
+      responsibleUsers,
+      alert,
+    };
+  },
+});
 </script>
 
 <style scoped>

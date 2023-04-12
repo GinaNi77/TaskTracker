@@ -13,8 +13,7 @@
         <th>Назначено</th>
         <th>Выполнено</th>
         <th>Завершено</th>
-        <th>Редактировать</th>
-        <th>Удалить</th>
+        <th></th>
       </tr>
 
       <tr v-for="item in modulesList" :key="item.index">
@@ -51,18 +50,18 @@
           }}
         </td>
         <td>
-          <q-btn
-            class="bg-teal-10 text-white"
-            icon="edit"
-            @click="getModuleId(item.id)"
-          />
-        </td>
-        <td>
-          <q-btn
+          <div class="flex justify-center">
+            <q-btn
+              class="bg-teal-10 text-white q-mr-sm"
+              icon="edit"
+              @click="getModuleId(item.id)"
+            />
+            <q-btn :disabled="item.property9.length ? '' : disabled"
             class="bg-red-10 text-white"
             icon="delete"
             @click="deleteModules(item.id)"
           />
+          </div>
         </td>
       </tr>
     </table>
@@ -75,7 +74,7 @@
     <q-card>
       <q-form class="row justify-center" @submit.prevent="updateModules">
         <p class="col-12 text-h5 text-center q-mt-md">Изменить Модуль</p>
-        <div class="col-md-4 col-sm-6 col-xs-10 q-gutter-y-lg">
+        <div class="q-gutter-y-lg">
           <q-input label="Название" v-model="title" />
 
           <q-input label="Ответственный" v-model="responsibleUser">
@@ -92,11 +91,8 @@
                   >
                     <q-item-section>
                       <q-item-label>{{
-                        user.fullname.first_name
+                        user.fullname.first_name + "  " + user.fullname.last_name
                       }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ user.fullname.last_name }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -139,12 +135,14 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   setup() {
+    const $q = useQuasar();
     const moduleId = ref();
     const modulesList = ref([]);
     const responsibleUsers = ref([]);
@@ -154,57 +152,67 @@ export default defineComponent({
     const end_date = ref();
     const alert = ref(false);
 
-    const { result, onResult } = useQuery(
-      gql`
-        query getModules {
-          paginate_type1(page: 1, perPage: 100) {
-            data {
-              id
-              type_id
-              author_id
-              level
-              position
-              created_at
-              updated_at
-              name
-              property4 {
+    const getModules = () => {
+      const { result, onResult, refetch } = useQuery(
+        gql`
+          query getModules {
+            paginate_type1(page: 1, perPage: 100) {
+              data {
                 id
-                user_id
-                fullname {
-                  first_name
-                  last_name
+                type_id
+                author_id
+                level
+                position
+                created_at
+                updated_at
+                name
+                property4 {
+                  id
+                  user_id
+                  fullname {
+                    first_name
+                    last_name
+                  }
+                }
+                property6 {
+                  date
+                }
+                property7 {
+                  date
+                }
+                property9 {
+                  name
+                  property8
                 }
               }
-              property6 {
-                date
-              }
-              property7 {
-                date
-              }
-              property9 {
-                name
-                property8
-              }
-            }
 
-            paginatorInfo {
-              perPage
-              currentPage
-              lastPage
-              total
-              count
-              from
-              to
-              hasMorePages
+              paginatorInfo {
+                perPage
+                currentPage
+                lastPage
+                total
+                count
+                from
+                to
+                hasMorePages
+              }
             }
           }
+        `,
+        null,
+        {
+          pollInterval: 1,
         }
-      `,
-      null,
-      {
-        pollInterval: 1,
-      }
-    );
+      );
+
+      onResult(() => {
+        modulesList.value = result.value.paginate_type1.data;
+        localStorage.setItem("modulesArray", JSON.stringify(modulesList.value))
+      });
+      refetch();
+    };
+
+    // getModules();
 
     const onItemClick = (id) => {
       responsibleUser.value = id;
@@ -216,7 +224,7 @@ export default defineComponent({
     };
 
     const getResponsibleUsers = () => {
-      const { result, onResult } = useQuery(
+      const { result, onResult, refetch } = useQuery(
         gql`
           query {
             get_group(id: "4833572297286333641") {
@@ -240,15 +248,11 @@ export default defineComponent({
       onResult(() => {
         responsibleUsers.value = result.value.get_group.subject;
       });
-
+      refetch();
       return { onResult };
     };
 
-    getResponsibleUsers();
-
-    onResult(() => {
-      modulesList.value = result.value.paginate_type1.data;
-    });
+    // getResponsibleUsers();
 
     const { mutate: deleteModule } = useMutation(gql`
       mutation ($id: String!) {
@@ -314,8 +318,15 @@ export default defineComponent({
           },
         },
       });
+       $q.notify({
+        message: "Модуль изменен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
+      });
       resetForm();
     };
+
     const resetForm = () => {
       (moduleId.value = ""),
         (title.value = ""),
@@ -324,8 +335,13 @@ export default defineComponent({
         (responsibleUser.value = "");
     };
 
+    onMounted(() => {
+      getModules();
+      getResponsibleUsers();
+    });
+
     return {
-      onResult,
+      // onResult,
       modulesList,
       deleteModules,
       title,

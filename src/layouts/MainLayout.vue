@@ -16,8 +16,8 @@
     </q-header>
 
     <q-drawer
-      :width="400"
-      :breakpoint="300"
+      :width="300"
+      :breakpoint="200"
       class="bg-grey-1"
       bordered
       :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
@@ -204,6 +204,7 @@ export default defineComponent({
           treePages.value[1].children.push({
             label: page.name,
             id: page.id,
+            url: `${treePages.value[1].url}/${page.id}`,
           });
         });
       });

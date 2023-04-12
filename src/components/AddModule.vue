@@ -13,16 +13,16 @@
                 <q-item
                   clickable
                   v-close-popup
-                  v-for="user in responsibleUsers"
+                  v-for="user in responsibleList"
                   :key="user.index"
                   @click="onItemClick(user.id)"
                 >
                   <q-item-section>
-                    <q-item-label>{{ user.fullname.first_name }}</q-item-label>
+                    <q-item-label>{{ user.fullname.first_name +" "+user.fullname.last_name}}</q-item-label>
                   </q-item-section>
-                  <q-item-section>
+                  <!-- <q-item-section>
                     <q-item-label>{{ user.fullname.last_name }}</q-item-label>
-                  </q-item-section>
+                  </q-item-section> -->
                 </q-item>
               </q-list>
             </q-popup-proxy>
@@ -67,9 +67,9 @@
             flat
             size="md"
             color="black"
-            label="Главная страница"
+            label="Модули"
             class="full-width"
-            to="/main"
+            to="/modules"
           />
         </div>
       </div>
@@ -80,44 +80,21 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
-import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   props: ["modules"],
   setup() {
-    const responsibleUsers = ref([]);
+  
+    const responsibleList = ref(JSON.parse(localStorage.getItem("responsibleArray")))
     const title = ref("");
     const responsibleUser = ref();
     const start_date = ref();
     const end_date = ref();
+    const $q = useQuasar();
+  
     const newModule = ref();
-
-    const { result, onResult } = useQuery(
-      gql`
-        query {
-          get_group(id: "4833572297286333641") {
-            name
-            subject {
-              id
-              type_id
-              email {
-                email
-              }
-              fullname {
-                first_name
-                last_name
-              }
-            }
-          }
-        }
-      `
-    );
-
-    onResult(() => {
-      responsibleUsers.value = result.value.get_group.subject;
-      console.log(responsibleUsers.value);
-    });
 
     const onItemClick = (id) => {
       responsibleUser.value = id;
@@ -172,7 +149,17 @@ export default defineComponent({
           },
         },
       });
+       $q.notify({
+        message: "Модуль добавлен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
+      });
       resetForm();
+      // $q.notify({
+      //     message: 'Добавлен новый модуль',
+      //     color: 'black'
+      //   })
       console.log(data.create_type1.recordId);
     };
 
@@ -191,13 +178,14 @@ export default defineComponent({
 
     return {
       title,
-      responsibleUsers,
-      onResult,
+     
+   
       onItemClick,
       responsibleUser,
       start_date,
       end_date,
       addModules,
+      responsibleList 
       // createNewPage,
     };
   },
