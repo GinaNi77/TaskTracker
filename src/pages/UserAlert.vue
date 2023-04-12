@@ -33,8 +33,8 @@ export default defineComponent({
         let client = Stomp.client(url);
 
         let headers = {
-        login: 'nigina.gafurova.2001@mail.ru',
-        passcode: '89181024524Ni',
+        login: 'readonly',
+        passcode: '@3P^Lgdab)sv',
                         };
 
        
