@@ -20,9 +20,6 @@
                   <q-item-section>
                     <q-item-label>{{ user.fullname.first_name +" "+user.fullname.last_name}}</q-item-label>
                   </q-item-section>
-                  <!-- <q-item-section>
-                    <q-item-label>{{ user.fullname.last_name }}</q-item-label>
-                  </q-item-section> -->
                 </q-item>
               </q-list>
             </q-popup-proxy>
@@ -156,11 +153,6 @@ export default defineComponent({
         color:"black"
       });
       resetForm();
-      // $q.notify({
-      //     message: 'Добавлен новый модуль',
-      //     color: 'black'
-      //   })
-      console.log(data.create_type1.recordId);
     };
 
     const resetForm = () => {

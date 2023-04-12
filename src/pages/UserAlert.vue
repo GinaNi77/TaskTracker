@@ -5,6 +5,8 @@
 import { defineComponent } from 'vue'
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { useQuery } from "@vue/apollo-composable";
+import { getModulesTasks, getModules} from "src/graphql/query";
 import {Stomp} from "@stomp/stompjs"
 
 export default defineComponent({
@@ -24,7 +26,7 @@ export default defineComponent({
         const { data } = await getHash({
         })
         queue = data.notificationSubscribe.hash
-         console.log(queue)
+        console.log(queue)
         };
 
         getUserHash()
@@ -35,15 +37,21 @@ export default defineComponent({
         let headers = {
         login: 'readonly',
         passcode: '@3P^Lgdab)sv',
-                        };
+        };
 
-       
+        const { refetch: refetchTasks} = useQuery(getModulesTasks);
+        const { refetch: refetchModules} = useQuery(getModules);
 
         let onConnect = async () => {
             console.log('connected');
 
             let onMessage = (message) => {
-                console.log('Receive message:', JSON.parse(message.body));
+
+                const msgObj = JSON.parse(message.body);
+                console.log("Receive message:", msgObj);
+
+                refetchTasks()
+                refetchModules()
 
                 message.ack();
             };
