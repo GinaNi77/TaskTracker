@@ -46,14 +46,16 @@
         <td>
           <div class="flex justify-center">
             <q-btn
-            class="bg-teal-10 text-white q-mr-sm"
-            icon="edit"
-            @click="getTaskId(task.id)">
+              class="bg-teal-10 text-white q-mr-sm"
+              icon="edit"
+              @click="getTaskId(task.id)"
+            >
             </q-btn>
             <q-btn
-            class="bg-red-10 text-white"
-            @click="deleteTasks(task.id)"
-            icon="delete">
+              class="bg-red-10 text-white"
+              @click="deleteTasks(task.id)"
+              icon="delete"
+            >
             </q-btn>
           </div>
         </td>
@@ -61,7 +63,9 @@
     </table>
   </q-list>
   <div class="flex justify-center q-mb-lg">
-    <q-btn color="black" outline to="/addTask" class="q-mb-sm">Добавить задачу</q-btn>
+    <q-btn color="black" outline to="/addTask" class="q-mb-sm"
+      >Добавить задачу</q-btn
+    >
   </div>
 
   <q-dialog v-model="alert">
@@ -163,7 +167,7 @@ import { defineComponent, ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { useQuasar } from 'quasar'
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   setup() {
@@ -184,8 +188,12 @@ export default defineComponent({
 
     const getUserTask = () => {
       for (let i = 0; i < tasksList.value.length; i++) {
-        if (tasksList.value[i].property5.user_id == userID.value) {
-          userTasksList.value.push(tasksList.value[i]);
+        for (let j = 0; j < tasksList.value[i].property5.length; j++) {
+          if (
+            tasksList.value[i].property5[j].property5.user_id == userID.value
+          ) {
+            userTasksList.value.push(tasksList.value[i].property5[j]);
+          }
         }
       }
     };
@@ -197,8 +205,8 @@ export default defineComponent({
 
     const { result, onResult, refetch } = useQuery(
       gql`
-        query getModules {
-          paginate_type2(page: 1, perPage: 100) {
+        query {
+          paginate_subject(page: 1, perPage: 100) {
             data {
               id
               type_id
@@ -207,36 +215,26 @@ export default defineComponent({
               position
               created_at
               updated_at
-              name
-              property3
-              property8
-              property5 {
-                id
-                user_id
-                fullname {
-                  first_name
-                  last_name
-                }
+              user_id
+              fullname {
+                first_name
+                last_name
               }
-              property9 {
+              property5 {
                 name
-                property4 {
+                property3
+                property8
+                property9 {
+                  name
+                }
+                property5 {
+                  user_id
                   fullname {
                     first_name
                     last_name
                   }
                 }
               }
-            }
-            paginatorInfo {
-              perPage
-              currentPage
-              lastPage
-              total
-              count
-              from
-              to
-              hasMorePages
             }
           }
         }
@@ -254,7 +252,7 @@ export default defineComponent({
     // property 9 - привязанный модуль (property4 - данные об ответсвенном за модуль)
 
     onResult(() => {
-      tasksList.value = result.value.paginate_type2.data;
+      tasksList.value = result.value.paginate_subject.data;
       getUserTask();
     });
 
@@ -406,11 +404,11 @@ export default defineComponent({
           },
         },
       });
-       $q.notify({
+      $q.notify({
         message: "Задача изменена",
         icon: "check",
         timeout: 1000,
-        color:"black"
+        color: "black",
       });
       reset();
     };
