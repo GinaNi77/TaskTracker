@@ -7,6 +7,7 @@ const routes = [
       { path: '', name: 'loginDefault', component: () => import('pages/Login.vue') },
       { path: 'login', name: 'login', component: () => import('pages/Login.vue') },
       { path: 'register', name: 'register', component: () => import('pages/Register.vue') },
+      { path: 'userAlert', name: 'userAlert', component: () => import('pages/UserAlert.vue') },
 
       { path: 'addModule', name: 'addModule', component: () => import('components/AddModule.vue') }, //!
       { path: 'addTask', name: 'addTask', component: () => import('components/AddTask.vue') },//!
