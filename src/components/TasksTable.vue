@@ -163,11 +163,12 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import { useQuasar } from "quasar";
+import { getPerformerUser, getModules, getTasks } from "src/graphql/query"
+import { taskDelete, taskUpdate } from "src/graphql/mutation";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   setup() {
@@ -183,100 +184,22 @@ export default defineComponent({
     const taskId = ref();
     const taskStatus = ref();
 
-    const userID = ref(localStorage.getItem("userSignInId"));
-    const userTasksList = ref([]);
+    const tasksGet = () => {
+      const { result, onResult, refetch } = useQuery(getTasks)
 
-    const getUserTask = () => {
-      for (let i = 0; i < tasksList.value.length; i++) {
-        for (let j = 0; j < tasksList.value[i].property5.length; j++) {
-          if (
-            tasksList.value[i].property5[j].property5.user_id == userID.value
-          ) {
-            userTasksList.value.push(tasksList.value[i].property5[j]);
-          }
-        }
-      }
+      onResult(() => {
+        tasksList.value = result.value.paginate_type2.data;
+      });
+
+      refetch();
+
+      return {
+        onResult,
+      };
     };
-
-    const getTaskId = (id) => {
-      alert.value = true;
-      taskId.value = id;
-    };
-
-    const { result, onResult, refetch } = useQuery(
-      gql`
-        query {
-          paginate_subject(page: 1, perPage: 100) {
-            data {
-              id
-              type_id
-              author_id
-              level
-              position
-              created_at
-              updated_at
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-              property5 {
-                name
-                property3
-                property8
-                property9 {
-                  name
-                }
-                property5 {
-                  user_id
-                  fullname {
-                    first_name
-                    last_name
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-      null,
-      {
-        pollInterval: 1,
-      }
-    );
-
-    // name - названия задания
-    // property 3 - описание задания
-    // property 8 - айдишник статуса задачи
-    // property 5 - данные об исполнителе задачи
-    // property 9 - привязанный модуль (property4 - данные об ответсвенном за модуль)
-
-    onResult(() => {
-      tasksList.value = result.value.paginate_subject.data;
-      getUserTask();
-    });
 
     const getPerformer = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query {
-            get_group(id: "4753316581813399177") {
-              name
-              subject {
-                id
-                type_id
-                email {
-                  email
-                }
-                fullname {
-                  first_name
-                  last_name
-                }
-              }
-            }
-          }
-        `
-      );
+      const { result, onResult, refetch } = useQuery(getPerformerUser)
 
       onResult(() => {
         performerUsers.value = result.value.get_group.subject;
@@ -288,25 +211,8 @@ export default defineComponent({
       };
     };
 
-    const getModules = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query getModules {
-            paginate_type1(page: 1, perPage: 100) {
-              data {
-                id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
-              }
-            }
-          }
-        `
-      );
+     const getModule = () => {
+      const { result, onResult, refetch } = useQuery(getModules)
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
@@ -319,18 +225,20 @@ export default defineComponent({
       };
     };
 
-    const { mutate: deleteTask } = useMutation(gql`
-      mutation ($id: String!) {
-        delete_type2(id: $id) {
-          status
-        }
-      }
-    `);
+    const getTaskId = (id) => {
+      alert.value = true;
+      taskId.value = id;
+      getPerformer()
+      getModule()
+    };
+
+    const { mutate: deleteTask } = useMutation(taskDelete)
 
     const deleteTasks = async (id) => {
       const { data } = await deleteTask({
         id: id,
       });
+      tasksGet()
     };
 
     const getUserId = (id) => {
@@ -351,43 +259,7 @@ export default defineComponent({
       }
     };
 
-    const { mutate: updateTask } = useMutation(gql`
-      mutation ($id: String!, $input: update_type2_input!) {
-        update_type2(id: $id, input: $input) {
-          status
-          recordId
-          record {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-            property5 {
-              id
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-            }
-            property3
-            property8
-            property9 {
-              name
-              property4 {
-                fullname {
-                  first_name
-                  last_name
-                }
-              }
-            }
-          }
-        }
-      }
-    `);
+    const { mutate: updateTask } = useMutation(taskUpdate)
 
     const updateTasks = async () => {
       const { data } = await updateTask({
@@ -422,19 +294,16 @@ export default defineComponent({
         (moduleId.value = "");
     };
 
-    getPerformer();
-    getModules();
-    refetch();
+    onMounted(() => {
+      tasksGet();
+    });
 
     return {
-      onResult,
       tasksList,
       deleteTasks,
       alert,
-      getModules,
       modulesList,
       performerUsers,
-      getPerformer,
       title,
       description,
       getUserId,
@@ -447,9 +316,7 @@ export default defineComponent({
       taskStatus,
       getTaskStatus,
       reset,
-      userID,
-      getUserTask,
-      userTasksList,
+      tasksGet
     };
   },
 });

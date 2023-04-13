@@ -56,16 +56,18 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
 import { getClientOptions } from "src/apollo/index.js";
-import { provideApolloClient } from "@vue/apollo-composable";
-import { ApolloClient } from "@apollo/client/core";
 import router from "../router";
-
+import rabbit from "/src/graph/rabbit"
 import MainPageVue from "../pages/MainPage.vue";
+import { provideApolloClient } from "@vue/apollo-composable";
+import apolloClient from "src/apollo/client";
+
+provideApolloClient(apolloClient);
 
 export default defineComponent({
   name: "MainLayout",
@@ -73,7 +75,15 @@ export default defineComponent({
     MainPageVue,
   },
 
+  
+
   setup() {
+
+    onMounted(() => {
+  rabbit.queueCreate();
+  rabbit.rabbitConnect();
+});
+
     const leftDrawerOpen = ref(false);
     const treePages = ref([]);
     const parentPages = ref([]);
@@ -84,9 +94,6 @@ export default defineComponent({
 
     const teams = ref([]); //! Связка с TeamPage?
     const newModule = ref(); // Вывод модулей --
-
-    const apolloClient = new ApolloClient(getClientOptions());
-    provideApolloClient(apolloClient);
 
     const { result, loading, error, onResult, refetch } = useQuery(
       gql`
@@ -125,6 +132,7 @@ export default defineComponent({
       };
 
       parentPages.value = result.value.rootPages.data;
+      console.log(parentPages.value)
       parentPages.value.forEach((page) => {
         let treeElem = {
           label: page.title,

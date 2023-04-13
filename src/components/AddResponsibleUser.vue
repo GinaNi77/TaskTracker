@@ -64,7 +64,8 @@
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
+import { addUserToGroup } from "src/graphql/mutation"
+import { getResponsibleUser } from "src/graphql/query"
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
@@ -79,42 +80,17 @@ export default defineComponent({
     const $q = useQuasar();
     const responsibleUsers = ref([]);
 
-    const { result, onResult, refetch } = useQuery(
-      gql`
-        query {
-          get_group(id: "4833572297286333641") {
-            name
-            subject {
-              id
-              type_id
-              email {
-                email
-              }
-              fullname {
-                first_name
-                last_name
-              }
-            }
-          }
-        }
-      `
-    );
-
+    const { result, onResult, refetch } = useQuery(getResponsibleUser)
+     
     onResult(() => {
       responsibleUsers.value = result.value.get_group.subject;
       localStorage.setItem("responsibleArray", JSON.stringify(responsibleUsers.value))
     });
 
-    const { mutate: userGroupInviteUser } = useMutation(gql`
-      mutation UserGroupInviteUser($input: UserGroupInviteUserInput!) {
-        userGroupInviteUser(input: $input) {
-          status
-        }
-      }
-    `);
+    const { mutate: addResponsibleUser } = useMutation(addUserToGroup)
 
     const addResponsible = async () => {
-      const { data } = await userGroupInviteUser({
+      const { data } = await addResponsibleUser({
         input: {
           name: form.value.name,
           surname: form.value.surname,
