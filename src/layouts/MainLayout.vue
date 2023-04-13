@@ -50,6 +50,7 @@
         :selectedPage="selected"
         @update:selectedPage="selected = $event"
         @openPage="onTreeItemSelected(selected)"
+        @authorized="onUserAuthorized($event)"
       />
     </q-page-container>
   </q-layout>
@@ -80,85 +81,133 @@ export default defineComponent({
     const modulesList = ref([]);
     const selected = ref("");
 
-    const hey = "Hey";
-
-    const teams = ref([]); //! Связка с TeamPage?
-    const newModule = ref(); // Вывод модулей --
+    const teams = ref([]);
+    const userGroups = ref([]);
+    const userID = localStorage.getItem("userSignInId");
 
     const apolloClient = new ApolloClient(getClientOptions());
     provideApolloClient(apolloClient);
 
-    const { result, loading, error, onResult, refetch } = useQuery(
-      gql`
-        query parentPages {
-          rootPages {
-            data {
-              id
-              parent_id
-              page_type
-              title
-              content
-              icon
-              level
-              is_public
-              position
-              config
-              children {
-                data {
+    const getUserGroups = () => {
+      const { result, onResult, refetch } = useQuery(
+        gql`
+          {
+            paginate_group(page: 1, perPage: 100) {
+              data {
+                id
+                name
+                subject {
+                  user_id
                   id
-                  object {
-                    id
+                  fullname {
+                    first_name
                   }
-                  title
                 }
               }
-              created_at
-              updated_at
             }
           }
-        }
-      `
-    );
+        `
+      );
 
-    onResult(() => {
-      const urlMap = {
-        Команда: "/teams",
-        Модули: "/modules",
-        "Мои задачи": "/tasks",
-      };
+      onResult(() => {
+        const groups = ref([]);
+        groups.value = result.value.paginate_group.data;
 
-      parentPages.value = result.value.rootPages.data;
-      parentPages.value.forEach((page) => {
-        let treeElem = {
-          label: page.title,
-          id: page.id,
-          url: urlMap[page.title],
-          children: page.children.data.map((elem) => {
-            elem = {
-              label: elem.title,
-              id: elem.id,
-              url: `${urlMap[page.title]}/${elem.id}`,
-              canView: canViewTreeItem(elem),
-            };
-            return elem;
-          }),
-        };
-        if (
-          canViewTreeItem(page) ||
-          treeElem.children.some((item) => item.canView)
-        ) {
-          treeElem.children = treeElem.children.filter((item) => item.canView);
-          treePages.value.push(treeElem);
-        }
+        userGroups.value = [];
+        groups.value.forEach((item) => {
+          item.subject.forEach((subject) => {
+            if (subject.user_id == userID) {
+              console.log(subject.user_id, userID);
+              userGroups.value.push(item.id);
+            }
+          });
+        });
+
+        console.log(userGroups.value);
+        getTree();
       });
+    };
 
-      teams.value = treePages.value[0].children;
-      console.log(treePages.value);
-      getModules();
-    });
+    const getTree = () => {
+      const { result, loading, error, onResult, refetch } = useQuery(
+        gql`
+          query parentPages {
+            rootPages {
+              data {
+                id
+                parent_id
+                page_type
+                title
+                content
+                icon
+                level
+                is_public
+                position
+                config
+                children {
+                  data {
+                    id
+                    object {
+                      id
+                    }
+                    title
+                  }
+                }
+                created_at
+                updated_at
+              }
+            }
+          }
+        `
+      );
+
+      onResult(() => {
+        const urlMap = {
+          Команда: "/teams",
+          Модули: "/modules",
+          "Мои задачи": "/tasks",
+        };
+
+        treePages.value = [];
+        parentPages.value = result.value.rootPages.data;
+
+        parentPages.value.forEach((page) => {
+          let treeElem = {
+            label: page.title,
+            id: page.id,
+            url: urlMap[page.title],
+            children: page.children.data.map((elem) => {
+              elem = {
+                label: elem.title,
+                id: elem.id,
+                url: `${urlMap[page.title]}/${elem.id}`,
+                canView: canViewTreeItem(elem),
+              };
+              return elem;
+            }),
+          };
+
+          if (
+            canViewTreeItem(page) ||
+            treeElem.children.some((item) => item.canView)
+          ) {
+            treeElem.children = treeElem.children.filter(
+              (item) => item.canView
+            );
+            treePages.value.push(treeElem);
+          }
+        });
+
+        if (treePages.value[findIndexByUrl("/teams")]) {
+          teams.value = treePages.value[findIndexByUrl("/teams")].children;
+        }
+
+        getModules();
+      });
+    };
 
     const getModules = () => {
-      const { result, onResult } = useQuery(
+      const { result, onResult, refetch } = useQuery(
         gql`
           query getModules {
             paginate_type1(page: 1, perPage: 100) {
@@ -207,39 +256,47 @@ export default defineComponent({
       );
 
       onResult(() => {
-        modulesList.value = [];
         modulesList.value = result.value.paginate_type1.data;
         console.log(modulesList.value);
 
         modulesList.value.forEach((page) => {
           if (canViewTreeItem(page)) {
-            treePages.value[1].children.push({
+            treePages.value[findIndexByUrl("/modules")].children.push({
               label: page.name,
               id: page.id,
-              url: `${treePages.value[1].url}/${page.id}`,
+              url: `${treePages.value[findIndexByUrl("/modules")].url}/${
+                page.id
+              }`,
             });
-            console.log(322);
+          } else {
+            const user = JSON.parse(localStorage.getItem("userData"));
           }
         });
+
+        console.log(treePages.value);
       });
     };
 
     const canViewTreeItem = (item) => {
       const user = JSON.parse(localStorage.getItem("userData"));
       //  check module
-      if (item.property4?.id && item.property4.id === user.id) {
+      if (item.property4?.user_id && item.property4.user_id == userID) {
         return true;
       }
       // check teams
-      else if (user.groups.some((group) => group.id === item.id)) {
+      else if (userGroups.value.some((group) => group === item.id)) {
         return true;
-      } else if (user.groups.some((group) => group.id === item.object?.id)) {
+      } else if (userGroups.value.some((group) => group === item.object?.id)) {
         return true;
       } else if (item.title === "Модули" || item.title === "Мои задачи") {
         return true;
       }
       return false;
-      console.log(item.property4.id);
+    };
+
+    const findIndexByUrl = (url) => {
+      let index = treePages.value.findIndex((elem) => elem.url == url);
+      return index;
     };
 
     const onTreeItemSelected = (selected) => {
@@ -261,21 +318,23 @@ export default defineComponent({
       router.push({ path: item.url });
     };
 
-    const on = (selected) => {
-      console.log(selected);
+    if (!!localStorage.getItem("token")) {
+      getUserGroups();
+    }
+
+    const onUserAuthorized = (userModel) => {
+      getUserGroups();
     };
 
     return {
-      result,
       parentPages,
       treePages,
       selected,
       teams,
-      hey,
       leftDrawerOpen,
-      on,
       getModules,
       onTreeItemSelected,
+      onUserAuthorized,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },

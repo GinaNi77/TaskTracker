@@ -202,10 +202,7 @@ export default defineComponent({
             }
           }
         `,
-        null,
-        {
-          pollInterval: 1,
-        }
+        null
       );
 
       onResult(() => {
