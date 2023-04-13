@@ -1,6 +1,70 @@
 <template>
   <q-list>
     <table
+      v-if="userID == 5120362227219750820"
+      style="
+        width: 80%;
+        border-collapse: collapse;
+        text-align: left;
+        margin: 30px auto;
+        border: 1px solid #400303;
+      "
+    >
+      <caption class="q-mb-lg text-h5">
+        Список задач
+      </caption>
+      <tr style="font-size: 16px">
+        <th>Название</th>
+        <th>Описание</th>
+        <th>Статус</th>
+        <th>Исполнители</th>
+        <th>Модуль</th>
+        <th></th>
+      </tr>
+
+      <tr
+        style="border: solid 1px #400303"
+        v-for="task in tasksList"
+        :key="task.index"
+        :class="
+          task.property8 == 8536411824694842134
+            ? 'bg-pink-4'
+            : task.property8 == 3812168432889805433
+            ? 'bg-yellow-4'
+            : 'bg-light-green-4'
+        "
+      >
+        <td>{{ task.name }}</td>
+        <td>{{ task.property3 }}</td>
+        <td v-if="task.property8 == 8536411824694842134">Назначена</td>
+        <td v-else-if="task.property8 == 3812168432889805433">Выполнена</td>
+        <td v-else>Завершена</td>
+        <td>
+          {{ task.property5.fullname.first_name }}
+          {{ task.property5.fullname.last_name }}
+        </td>
+        <td>{{ task.property9.name }}</td>
+        <td>
+          <div class="flex justify-center">
+            <q-btn
+              class="bg-teal-10 text-white q-mr-sm"
+              icon="edit"
+              @click="getTaskId(task.id)"
+            >
+            </q-btn>
+            <q-btn
+              class="bg-red-10 text-white"
+              @click="deleteTasks(task.id)"
+              icon="delete"
+            >
+            </q-btn>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <table
+      v-else-if="performerUserToggler == true"
       style="
         width: 80%;
         border-collapse: collapse;
@@ -73,12 +137,24 @@
       <q-form class="row justify-center" @submit.prevent="updateTasks">
         <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
         <div class="q-gutter-y-lg">
-          <q-input label="Название" v-model="title" />
+          <q-input
+            v-if="performerUserToggler != true"
+            label="Название"
+            v-model="title"
+          />
 
-          <q-input label="Описание" v-model="description" />
+          <q-input
+            v-if="performerUserToggler != true"
+            label="Описание"
+            v-model="description"
+          />
 
-          <q-input label="Исполнитель" v-model="performerUser">
-            <template #append>
+          <q-input
+            v-if="performerUserToggler != true"
+            label="Исполнитель"
+            v-model="performerUser"
+          >
+            <template v-if="performerUserToggler != true" #append>
               <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
               <q-popup-proxy>
                 <q-list>
@@ -115,7 +191,11 @@
                       <q-item-label>Выполнена</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable @click="getTaskStatus('Завершена')">
+                  <q-item
+                    v-if="performerUserToggler != true"
+                    clickable
+                    @click="getTaskStatus('Завершена')"
+                  >
                     <q-item-section>
                       <q-item-label>Завершена</q-item-label>
                     </q-item-section>
@@ -125,7 +205,11 @@
             </template>
           </q-input>
 
-          <q-input label="Модуль" v-model="moduleId">
+          <q-input
+            v-if="performerUserToggler != true"
+            label="Модуль"
+            v-model="moduleId"
+          >
             <template #append>
               <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
               <q-popup-proxy>
@@ -185,6 +269,8 @@ export default defineComponent({
 
     const userID = ref(localStorage.getItem("userSignInId"));
     const userTasksList = ref([]);
+    const allTasksList = ref([]);
+    const performerUserToggler = ref(false);
 
     const getUserTask = () => {
       for (let i = 0; i < tasksList.value.length; i++) {
@@ -265,6 +351,7 @@ export default defineComponent({
               subject {
                 id
                 type_id
+                user_id
                 email {
                   email
                 }
@@ -280,12 +367,21 @@ export default defineComponent({
 
       onResult(() => {
         performerUsers.value = result.value.get_group.subject;
+        checkPerformerUser();
       });
 
       refetch();
       return {
         onResult,
       };
+    };
+
+    const checkPerformerUser = () => {
+      for (let i = 0; i < performerUsers.value.length; i++) {
+        if (performerUsers.value[i].user_id == userID.value) {
+          performerUserToggler.value = true;
+        }
+      }
     };
 
     const getModules = () => {
@@ -349,6 +445,64 @@ export default defineComponent({
       } else {
         taskStatus.value = "6403872496291980172";
       }
+    };
+
+    const getAllTasks = () => {
+      const { result, onResult, refetch } = useQuery(gql`
+        query getModules {
+          paginate_type2(page: 1, perPage: 100) {
+            data {
+              id
+              type_id
+              author_id
+              level
+              position
+              created_at
+              updated_at
+              name
+              property3
+              property8
+              property5 {
+                id
+                user_id
+                fullname {
+                  first_name
+                  last_name
+                }
+              }
+              property9 {
+                name
+                property4 {
+                  fullname {
+                    first_name
+                    last_name
+                  }
+                }
+              }
+            }
+            paginatorInfo {
+              perPage
+              currentPage
+              lastPage
+              total
+              count
+              from
+              to
+              hasMorePages
+            }
+          }
+        }
+      `);
+
+      onResult(() => {
+        modulesList.value = result.value.paginate_type1.data;
+      });
+
+      refetch();
+
+      return {
+        onResult,
+      };
     };
 
     const { mutate: updateTask } = useMutation(gql`
@@ -450,6 +604,10 @@ export default defineComponent({
       userID,
       getUserTask,
       userTasksList,
+      performerUserToggler,
+      checkPerformerUser,
+      allTasksList,
+      getAllTasks,
     };
   },
 });
