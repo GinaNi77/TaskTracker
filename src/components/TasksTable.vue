@@ -23,7 +23,7 @@
 
       <tr
         style="border: solid 1px #400303"
-        v-for="task in userTasksList"
+        v-for="task in tasksList"
         :key="task.index"
         :class="
           task.property8 == 8536411824694842134
