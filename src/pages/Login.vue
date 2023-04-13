@@ -15,7 +15,6 @@
             label="Войти"
             class="full-width"
             type="submit"
-            @click="signIn"
           />
         </div>
 
@@ -37,7 +36,6 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
-import router from "src/router";
 import {userSignIn} from "src/graphql/mutation" 
 
 import { provideApolloClient } from "@vue/apollo-composable";
@@ -47,10 +45,11 @@ provideApolloClient(apolloClient);
 
 export default defineComponent({
   name: "PageLogin",
-  setup() {
+  emits: ["authorized"],
+  setup(props, { emit }) {
     const form = ref({
-      email: "",
-      password: "",
+      email: "sofiya.khodyreva@bk.ru",
+      password: "SofiyaKH",
     });
 
     const { mutate: signInUser } = useMutation(userSignIn)
@@ -62,11 +61,12 @@ export default defineComponent({
           password: form.value.password,
         },
       });
-      localStorage.setItem("token", data.userSignIn.record.access_token);
-      localStorage.setItem("userSignInId", data.userSignIn.recordId);
 
       resetForm();
       if (data.userSignIn.status === 200) {
+        localStorage.setItem("token", data.userSignIn.record.access_token);
+        localStorage.setItem("userSignInId", data.userSignIn.recordId);
+        emit("authorized");
         window.location.href = "#/main";
       }
     };
@@ -74,6 +74,8 @@ export default defineComponent({
     const resetForm = () => {
       (form.value.email = ""), (form.value.password = "");
     };
+
+    localStorage.clear();
 
     return {
       form,

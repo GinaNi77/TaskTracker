@@ -52,15 +52,16 @@
         <td>
           <div class="flex justify-center">
             <q-btn
-              class="bg-teal-10 text-white q-mr-sm"
+              class="bg-teal-10 text-white q-ma-xs"
               icon="edit"
               @click="getModuleId(item.id)"
             />
-            <q-btn :disabled="item.property9.length ? '' : disabled"
-            class="bg-red-10 text-white"
-            icon="delete"
-            @click="deleteModules(item.id)"
-          />
+            <q-btn
+              :disabled="item.property9.length ? '' : disabled"
+              class="bg-red-10 q-ma-xs text-white"
+              icon="delete"
+              @click="deleteModules(item.id)"
+            />
           </div>
         </td>
       </tr>
@@ -91,7 +92,9 @@
                   >
                     <q-item-section>
                       <q-item-label>{{
-                        user.fullname.first_name + "  " + user.fullname.last_name
+                        user.fullname.first_name +
+                        "  " +
+                        user.fullname.last_name
                       }}</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -158,7 +161,7 @@ export default defineComponent({
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
-        localStorage.setItem("modulesArray", JSON.stringify(modulesList.value))
+        localStorage.setItem("modulesArray", JSON.stringify(modulesList.value));
       });
       refetch();
     };
@@ -211,11 +214,11 @@ export default defineComponent({
           },
         },
       });
-       $q.notify({
+      $q.notify({
         message: "Модуль изменен",
         icon: "check",
         timeout: 1000,
-        color:"black"
+        color: "black",
       });
       resetForm();
     };
