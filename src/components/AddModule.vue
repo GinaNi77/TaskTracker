@@ -77,8 +77,8 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import { useQuasar } from 'quasar'
+import { addModule } from "src/graphql/mutation";
+import { useQuasar } from 'quasar';
 
 export default defineComponent({
   props: ["modules"],
@@ -97,41 +97,10 @@ export default defineComponent({
       responsibleUser.value = id;
     };
 
-    const { mutate: addModule } = useMutation(gql`
-      mutation ($input: create_type1_input!) {
-        create_type1(input: $input) {
-          status
-          recordId
-          record {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-            property4 {
-              id
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-            }
-            property6 {
-              date
-            }
-            property7 {
-              date
-            }
-          }
-        }
-      }
-    `);
+    const { mutate: moduleAdd } = useMutation(addModule);
 
     const addModules = async () => {
-      const { data } = await addModule({
+      const { data } = await  moduleAdd({
         input: {
           name: title.value,
           property6: {

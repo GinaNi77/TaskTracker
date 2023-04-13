@@ -47,7 +47,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { useMutation } from '@vue/apollo-composable'
-import gql from "graphql-tag";
+import { SignUpSetPassword, SignUp} from "src/graphql/mutation" 
 
 export default defineComponent({
   name: 'PageRegister',
@@ -63,21 +63,7 @@ export default defineComponent({
         password: "",
     })
 
-     const { mutate: userSignUp } = useMutation(gql`
-        mutation UserSignUp($input: UserSignUpInput!) {
-        userSignUp(input: $input) {
-            recordId
-            record {
-                id
-                email
-                registration_passed
-                name
-                surname
-            }
-            status
-        }
-        }`
-    )
+     const { mutate: userSignUp } = useMutation(SignUp)
 
     const signUp = async () => {
        const {data} = await userSignUp(
@@ -89,21 +75,16 @@ export default defineComponent({
             }
         })
       
-        localStorage.setItem("userSignUpId", data.userSignUp.recordId)   
+        sessionStorage.setItem("userSignUpId", data.userSignUp.recordId)   
     };
 
-    const { mutate: userSignUpSetPassword } = useMutation(gql`
-    mutation UserSignUpSetPassword($input: UserSignUpSetPasswordInput!) {
-    userSignUpSetPassword(input: $input) {
-            status
-    }
-    }`)
+    const { mutate: userSignUpSetPassword } = useMutation(SignUpSetPassword)
 
       const setPassword = async () => {
        const {data} = await userSignUpSetPassword(
         {
         "input": {
-        "user_id": localStorage.getItem('userSignUpId'),
+        "user_id": sessionStorage.getItem('userSignUpId'),
             "code": formPas.value.code,
             "password": formPas.value.password
         }

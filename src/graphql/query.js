@@ -91,4 +91,88 @@ export const getModulesTasks = gql`
               }
             }
           `;
+          
+export const getResponsibleUser = gql`
+              query {
+                get_group(id: "4833572297286333641") {
+                  name
+                  subject {
+                    id
+                    type_id
+                    email {
+                      email
+                    }
+                    fullname {
+                      first_name
+                      last_name
+                    }
+                  }
+                }
+              }
+            `;
+
+export const getPerformerUser = gql`
+            query {
+              get_group(id: "4753316581813399177") {
+                name
+                subject {
+                  id
+                  type_id
+                  email {
+                    email
+                  }
+                  fullname {
+                    first_name
+                    last_name
+                  }
+                }
+              }
+            }
+          `;
+
+export const getTasks = gql`
+              query getModules {
+                paginate_type2(page: 1, perPage: 100) {
+                  data {
+                    id
+                    type_id
+                    author_id
+                    level
+                    position
+                    created_at
+                    updated_at
+                    name
+                    property3
+                    property8
+                    property5 {
+                      id
+                      user_id
+                      fullname {
+                        first_name
+                        last_name
+                      }
+                    }
+                    property9 {
+                      name
+                      property4 {
+                        fullname {
+                          first_name
+                          last_name
+                        }
+                      }
+                    }
+                  }
+                  paginatorInfo {
+                    perPage
+                    currentPage
+                    lastPage
+                    total
+                    count
+                    from
+                    to
+                    hasMorePages
+                  }
+                }
+              }
+            `;
 
