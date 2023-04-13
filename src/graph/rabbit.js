@@ -1,8 +1,10 @@
-import { useQuery, useMutation} from "@vue/apollo-composable";
+import { useQuery, useMutation, provideApolloClient} from "@vue/apollo-composable";
+import apolloClient from "src/apollo/client";
 import { getModulesTasks, getModules} from "src/graphql/query";
 import { getQueue} from "src/graphql/mutation";
 import { Stomp } from "@stomp/stompjs"
 
+provideApolloClient(apolloClient);
 
 const { mutate: createQueue } = useMutation(getQueue);
 const { refetch: refetchTasks} = useQuery(getModulesTasks);

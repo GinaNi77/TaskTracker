@@ -40,6 +40,11 @@ import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "src/router";
 
+import { provideApolloClient } from "@vue/apollo-composable";
+import apolloClient from "src/apollo/client";
+
+provideApolloClient(apolloClient);
+
 export default defineComponent({
   name: "PageLogin",
   setup() {
