@@ -170,13 +170,6 @@ export default defineComponent({
             paginate_type2(page: 1, perPage: 100) {
               data {
                 id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
                 property3
                 property8
                 property5 {
@@ -197,16 +190,6 @@ export default defineComponent({
                     }
                   }
                 }
-              }
-              paginatorInfo {
-                perPage
-                currentPage
-                lastPage
-                total
-                count
-                from
-                to
-                hasMorePages
               }
             }
           }
