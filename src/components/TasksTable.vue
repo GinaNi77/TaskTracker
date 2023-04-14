@@ -1,165 +1,280 @@
 <template>
-  <q-list>
-    <table
-      style="
-        width: 80%;
-        border-collapse: collapse;
-        text-align: left;
-        margin: 30px auto;
-        border: 1px solid #400303;
-      "
-    >
-      <caption class="q-mb-lg text-h5">
-        Список задач
-      </caption>
-      <tr style="font-size: 16px">
-        <th>Название</th>
-        <th>Описание</th>
-        <th>Статус</th>
-        <th>Исполнители</th>
-        <th>Модуль</th>
-        <th></th>
-      </tr>
-
-      <tr
-        style="border: solid 1px #400303"
-        v-for="task in tasksListById"
-        :key="task.index"
-        :class="
-          task.property8 == 8536411824694842134
-            ? 'bg-pink-4'
-            : task.property8 == 3812168432889805433
-            ? 'bg-yellow-4'
-            : 'bg-light-green-4'
+  <div v-if="(userID = 5120362227219750820)">
+    <q-list>
+      <table
+        style="
+          width: 80%;
+          border-collapse: collapse;
+          text-align: left;
+          margin: 30px auto;
+          border: 1px solid #400303;
         "
       >
-        <td>{{ task.name }}</td>
-        <td>{{ task.property3 }}</td>
-        <td v-if="task.property8 == 8536411824694842134">Назначена</td>
-        <td v-else-if="task.property8 == 3812168432889805433">Выполнена</td>
-        <td v-else>Завершена</td>
-        <td>
-          {{ task.property5.fullname.first_name }}
-          {{ task.property5.fullname.last_name }}
-        </td>
-        <td>{{ task.property9.name }}</td>
-        <td>
-          <div class="flex justify-center">
-            <q-btn
-              class="bg-teal-10 text-white q-ma-xs"
-              icon="edit"
-              @click="getTaskId(task.id)"
-            >
-            </q-btn>
-            <q-btn
-              class="bg-red-10 text-white q-ma-xs"
-              @click="deleteTasks(task.id)"
-              icon="delete"
-            >
-            </q-btn>
+        <caption class="q-mb-lg text-h5">
+          Список задач
+        </caption>
+        <tr style="font-size: 16px">
+          <th>Название</th>
+          <th>Описание</th>
+          <th>Статус</th>
+          <th>Исполнители</th>
+          <th>Модуль</th>
+          <th></th>
+        </tr>
+
+        <tr
+          style="border: solid 1px #400303"
+          v-for="task in ownerTasksList"
+          :key="task.index"
+          :class="
+            task.property8 == 8536411824694842134
+              ? 'bg-pink-4'
+              : task.property8 == 3812168432889805433
+              ? 'bg-yellow-4'
+              : 'bg-light-green-4'
+          "
+        >
+          <td>{{ task.name }}</td>
+          <td>{{ task.property3 }}</td>
+          <td v-if="task.property8 == 8536411824694842134">Назначена</td>
+          <td v-else-if="task.property8 == 3812168432889805433">Выполнена</td>
+          <td v-else>Завершена</td>
+          <td>
+            {{ task.property5.fullname.first_name }}
+            {{ task.property5.fullname.last_name }}
+          </td>
+          <td>{{ task.property9.name }}</td>
+          <td>
+            <div class="flex justify-center">
+              <q-btn
+                class="bg-teal-10 text-white q-ma-xs"
+                icon="edit"
+                @click="getTaskId(task.id)"
+              >
+              </q-btn>
+              <q-btn
+                class="bg-red-10 text-white q-ma-xs"
+                @click="deleteTasks(task.id)"
+                icon="delete"
+              >
+              </q-btn>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </q-list>
+    <div class="flex justify-center q-mb-lg">
+      <q-btn color="black" outline to="/addTask" class="q-mb-sm"
+        >Добавить задачу</q-btn
+      >
+    </div>
+
+    <q-dialog v-model="alert">
+      <q-card>
+        <q-form class="row justify-center" @submit.prevent="updateTasks">
+          <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
+          <div class="q-gutter-y-lg">
+            <q-input label="Название" v-model="title" />
+
+            <q-input label="Описание" v-model="description" />
+
+            <q-input label="Исполнитель" v-model="performerUser">
+              <template #append>
+                <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                <q-popup-proxy>
+                  <q-list>
+                    <q-item
+                      clickable
+                      v-close-popup
+                      v-for="user in performerUsers"
+                      :key="user.index"
+                      @click="getUserId(user.id)"
+                    >
+                      <q-item-section>
+                        <q-item-label>{{
+                          user.fullname.first_name +
+                          " " +
+                          user.fullname.last_name
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-popup-proxy>
+              </template>
+            </q-input>
+
+            <q-input label="Cтатус" v-model="taskStatus">
+              <template #append>
+                <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                <q-popup-proxy>
+                  <q-list v-close-popup>
+                    <q-item clickable @click="getTaskStatus('Назначена')">
+                      <q-item-section>
+                        <q-item-label>Назначена</q-item-label>
+                      </q-item-section></q-item
+                    >
+                    <q-item clickable @click="getTaskStatus('Выполнена')">
+                      <q-item-section>
+                        <q-item-label>Выполнена</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable @click="getTaskStatus('Завершена')">
+                      <q-item-section>
+                        <q-item-label>Завершена</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-popup-proxy>
+              </template>
+            </q-input>
+
+            <q-input label="Модуль" v-model="moduleId">
+              <template #append>
+                <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                <q-popup-proxy>
+                  <q-list>
+                    <q-item
+                      clickable
+                      v-close-popup
+                      v-for="item in modulesList"
+                      :key="item.index"
+                      @click="getModuleId(item.id)"
+                    >
+                      <q-item-section>
+                        <q-item-label>{{ item.name }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-popup-proxy>
+              </template>
+            </q-input>
+
+            <div class="q-mt-lg">
+              <q-btn
+                outline
+                size="md"
+                color="black"
+                label="Изменить"
+                class="full-width q-mb-md"
+                type="submit"
+              />
+            </div>
           </div>
-        </td>
-      </tr>
-    </table>
-  </q-list>
-  <div class="flex justify-center q-mb-lg">
-    <q-btn color="black" outline to="/addTask" class="q-mb-sm"
-      >Добавить задачу</q-btn
-    >
+        </q-form>
+      </q-card>
+    </q-dialog>
   </div>
 
-  <q-dialog v-model="alert">
-    <q-card>
-      <q-form class="row justify-center" @submit.prevent="updateTasks">
-        <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
-        <div class="q-gutter-y-lg">
-          <q-input label="Название" v-model="title" />
+  <div v-else>
+    <q-list>
+      <table
+        style="
+          width: 80%;
+          border-collapse: collapse;
+          text-align: left;
+          margin: 30px auto;
+          border: 1px solid #400303;
+        "
+      >
+        <caption class="q-mb-lg text-h5">
+          Список задач
+        </caption>
+        <tr style="font-size: 16px">
+          <th>Название</th>
+          <th>Описание</th>
+          <th>Статус</th>
+          <th>Исполнители</th>
+          <th>Модуль</th>
+          <th></th>
+        </tr>
 
-          <q-input label="Описание" v-model="description" />
+        <tr
+          style="border: solid 1px #400303"
+          v-for="task in tasksListById"
+          :key="task.index"
+          :class="
+            task.property8 == 8536411824694842134
+              ? 'bg-pink-4'
+              : task.property8 == 3812168432889805433
+              ? 'bg-yellow-4'
+              : 'bg-light-green-4'
+          "
+        >
+          <td>{{ task.name }}</td>
+          <td>{{ task.property3 }}</td>
+          <td v-if="task.property8 == 8536411824694842134">Назначена</td>
+          <td v-else-if="task.property8 == 3812168432889805433">Выполнена</td>
+          <td v-else>Завершена</td>
+          <td>
+            {{ task.property5.fullname.first_name }}
+            {{ task.property5.fullname.last_name }}
+          </td>
+          <td>{{ task.property9.name }}</td>
+          <td>
+            <div class="flex justify-center">
+              <q-btn
+                class="bg-teal-10 text-white q-ma-xs"
+                icon="edit"
+                @click="getTaskId(task.id)"
+              >
+              </q-btn>
+              <q-btn
+                class="bg-red-10 text-white q-ma-xs"
+                @click="deleteTasks(task.id)"
+                icon="delete"
+              >
+              </q-btn>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </q-list>
+    <div class="flex justify-center q-mb-lg">
+      <q-btn color="black" outline to="/addTask" class="q-mb-sm"
+        >Добавить задачу</q-btn
+      >
+    </div>
 
-          <q-input label="Исполнитель" v-model="performerUser">
-            <template #append>
-              <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
-              <q-popup-proxy>
-                <q-list>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    v-for="user in performerUsers"
-                    :key="user.index"
-                    @click="getUserId(user.id)"
-                  >
-                    <q-item-section>
-                      <q-item-label>{{
-                        user.fullname.first_name + " " + user.fullname.last_name
-                      }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-popup-proxy>
-            </template>
-          </q-input>
+    <q-dialog v-model="alert">
+      <q-card>
+        <q-form class="row justify-center" @submit.prevent="updateTasks">
+          <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
+          <div class="q-gutter-y-lg">
+            <q-input label="Cтатус" v-model="taskStatus">
+              <template #append>
+                <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                <q-popup-proxy>
+                  <q-list v-close-popup>
+                    <q-item clickable @click="getTaskStatus('Назначена')">
+                      <q-item-section>
+                        <q-item-label>Назначена</q-item-label>
+                      </q-item-section></q-item
+                    >
+                    <q-item clickable @click="getTaskStatus('Выполнена')">
+                      <q-item-section>
+                        <q-item-label>Выполнена</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-popup-proxy>
+              </template>
+            </q-input>
 
-          <q-input label="Cтатус" v-model="taskStatus">
-            <template #append>
-              <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
-              <q-popup-proxy>
-                <q-list v-close-popup>
-                  <q-item clickable @click="getTaskStatus('Назначена')">
-                    <q-item-section>
-                      <q-item-label>Назначена</q-item-label>
-                    </q-item-section></q-item
-                  >
-                  <q-item clickable @click="getTaskStatus('Выполнена')">
-                    <q-item-section>
-                      <q-item-label>Выполнена</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item clickable @click="getTaskStatus('Завершена')">
-                    <q-item-section>
-                      <q-item-label>Завершена</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-popup-proxy>
-            </template>
-          </q-input>
-
-          <q-input label="Модуль" v-model="moduleId">
-            <template #append>
-              <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
-              <q-popup-proxy>
-                <q-list>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    v-for="item in modulesList"
-                    :key="item.index"
-                    @click="getModuleId(item.id)"
-                  >
-                    <q-item-section>
-                      <q-item-label>{{ item.name }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-popup-proxy>
-            </template>
-          </q-input>
-
-          <div class="q-mt-lg">
-            <q-btn
-              outline
-              size="md"
-              color="black"
-              label="Изменить"
-              class="full-width q-mb-md"
-              type="submit"
-            />
+            <div class="q-mt-lg">
+              <q-btn
+                outline
+                size="md"
+                color="black"
+                label="Изменить"
+                class="full-width q-mb-md"
+                type="submit"
+              />
+            </div>
           </div>
-        </div>
-      </q-form>
-    </q-card>
-  </q-dialog>
+        </q-form>
+      </q-card>
+    </q-dialog>
+  </div>
 </template>
 
 <script>
@@ -174,6 +289,7 @@ export default defineComponent({
     const $q = useQuasar();
     const tasksList = ref([]);
     const tasksListById = ref([]);
+    const ownerTasksList = ref([]);
     const modulesList = ref([]);
     const performerUsers = ref([]);
     const alert = ref(false);
@@ -184,6 +300,9 @@ export default defineComponent({
     const taskId = ref();
     const taskStatus = ref();
 
+    const performerUserToggler = ref(false);
+    const userID = localStorage.getItem("userSignInId");
+
     const getTaskId = (id) => {
       alert.value = true;
       taskId.value = id;
@@ -191,8 +310,8 @@ export default defineComponent({
 
     const { result, onResult, refetch } = useQuery(
       gql`
-        query getModules {
-          paginate_type2(page: 1, perPage: 100) {
+        query {
+          paginate_subject(page: 1, perPage: 100) {
             data {
               id
               type_id
@@ -201,36 +320,26 @@ export default defineComponent({
               position
               created_at
               updated_at
-              name
-              property3
-              property8
-              property5 {
-                id
-                user_id
-                fullname {
-                  first_name
-                  last_name
-                }
+              user_id
+              fullname {
+                first_name
+                last_name
               }
-              property9 {
+              property5 {
                 name
-                property4 {
+                property3
+                property8
+                property9 {
+                  name
+                }
+                property5 {
+                  user_id
                   fullname {
                     first_name
                     last_name
                   }
                 }
               }
-            }
-            paginatorInfo {
-              perPage
-              currentPage
-              lastPage
-              total
-              count
-              from
-              to
-              hasMorePages
             }
           }
         }
@@ -248,16 +357,18 @@ export default defineComponent({
     // property 9 - привязанный модуль (property4 - данные об ответсвенном за модуль)
 
     onResult(() => {
-      tasksList.value = result.value.paginate_type2.data;
+      tasksList.value = result.value.paginate_subject.data;
 
-      let userID = localStorage.getItem("userSignInId");
-      if (userID != "5120362227219750820") {
-        tasksListById.value = tasksList.value.filter(
-          (item) => item.property5.user_id == userID
-        );
-      } else {
-        tasksListById.value = tasksList.value;
+      tasksListById.value = [];
+      for (let i = 0; i < tasksList.value.length; i++) {
+        for (let j = 0; j < tasksList.value[i].property5.length; j++) {
+          if (tasksList.value[i].property5[j].property5.user_id == userID) {
+            tasksListById.value.push(tasksList.value[i].property5[j]);
+          }
+        }
       }
+      console.log(tasksListById.value);
+      getOwnerTasksList();
     });
 
     const getPerformer = () => {
@@ -284,12 +395,21 @@ export default defineComponent({
 
       onResult(() => {
         performerUsers.value = result.value.get_group.subject;
+        checkPerformerUser();
       });
 
       refetch();
       return {
         onResult,
       };
+    };
+
+    const checkPerformerUser = () => {
+      for (let i = 0; i < performerUsers.value.length; i++) {
+        if (performerUsers.value[i].user_id == userID.value) {
+          performerUserToggler.value = true;
+        }
+      }
     };
 
     const getModules = () => {
@@ -314,6 +434,66 @@ export default defineComponent({
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
+      });
+
+      refetch();
+
+      return {
+        onResult,
+      };
+    };
+
+    const getOwnerTasksList = () => {
+      const { result, onResult, refetch } = useQuery(
+        gql`
+          query getModules {
+            paginate_type2(page: 1, perPage: 100) {
+              data {
+                id
+                type_id
+                author_id
+                level
+                position
+                created_at
+                updated_at
+                name
+                property3
+                property8
+                property5 {
+                  id
+                  user_id
+                  fullname {
+                    first_name
+                    last_name
+                  }
+                }
+                property9 {
+                  name
+                  property4 {
+                    fullname {
+                      first_name
+                      last_name
+                    }
+                  }
+                }
+              }
+              paginatorInfo {
+                perPage
+                currentPage
+                lastPage
+                total
+                count
+                from
+                to
+                hasMorePages
+              }
+            }
+          }
+        `
+      );
+
+      onResult(() => {
+        ownerTasksList.value = result.value.paginate_type2.data;
       });
 
       refetch();
@@ -451,6 +631,11 @@ export default defineComponent({
       taskStatus,
       getTaskStatus,
       reset,
+      getOwnerTasksList,
+      ownerTasksList,
+      performerUserToggler,
+      checkPerformerUser,
+      userID,
     };
   },
 });
