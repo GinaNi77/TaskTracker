@@ -15,7 +15,6 @@
             label="Войти"
             class="full-width"
             type="submit"
-            @click="signIn"
           />
         </div>
 
@@ -36,17 +35,21 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
+import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "src/router";
 
 export default defineComponent({
   name: "PageLogin",
-  setup() {
+  emits: ["authorized"],
+  setup(props, { emit }) {
     const form = ref({
-      email: "",
-      password: "",
+      email: "sofiya.khodyreva@bk.ru",
+      password: "SofiyaKH",
     });
+    localStorage.clear();
+    emit("clear");
+    console.log(localStorage.getItem("userSignInId"));
 
     const { mutate: signInUser } = useMutation(gql`
       mutation UserSignIn($input: UserSignInInput!) {
@@ -70,10 +73,12 @@ export default defineComponent({
           password: form.value.password,
         },
       });
-      localStorage.setItem("token", data.userSignIn.record.access_token);
 
       resetForm();
       if (data.userSignIn.status === 200) {
+        localStorage.setItem("token", data.userSignIn.record.access_token);
+        localStorage.setItem("userSignInId", data.userSignIn.recordId);
+        emit("authorized");
         window.location.href = "#/main";
       }
     };

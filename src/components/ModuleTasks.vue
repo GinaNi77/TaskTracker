@@ -4,54 +4,67 @@
   </div>
 
   <q-list class="q-mb-xl flex justify-center">
-    <table style="width: 90%; border-collapse: collapse">
-      <caption class="q-my-lg text-h5">
-        Список задач модуля
-      </caption>
-      <tr>
-        <th>Название</th>
-        <th>Задача</th>
-        <th>Описание</th>
-        <th>Имя исполнителя</th>
-        <th>Фамилия исполнителя</th>
-        <th>Статус</th>
-        <th></th>
-   
-      </tr>
+    <div
+      style="width: 100%"
+      class="flex justify-center"
+      v-if="tasksListById.length"
+    >
+      <table style="width: 90%; border-collapse: collapse">
+        <tr>
+          <th>Название</th>
+          <th>Задача</th>
+          <th>Описание</th>
+          <th>Имя исполнителя</th>
+          <th>Фамилия исполнителя</th>
+          <th>Статус</th>
+          <th>Действия</th>
+        </tr>
 
-      <tr v-for="item in tasksListById" :key="item.index"
-      :class="
-          item.property8 == 8536411824694842134
-            ? 'bg-pink-4'
-            : item.property8 == 3812168432889805433
-            ? 'bg-yellow-4'
-            : 'bg-light-green-4'
-        ">
-        <td>{{ item.property9.name }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.property3 }}</td>
-        <td>{{ item.property5.fullname.first_name }}</td>
-        <td>{{ item.property5.fullname.last_name }}</td>
+        <tr
+          v-for="item in tasksListById"
+          :key="item.index"
+          :class="
+            item.property8 == 8536411824694842134
+              ? 'bg-pink-4'
+              : item.property8 == 3812168432889805433
+              ? 'bg-yellow-4'
+              : 'bg-light-green-4'
+          "
+        >
+          <td>{{ item.property9.name }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.property3 }}</td>
+          <td>{{ item.property5.fullname.first_name }}</td>
+          <td>{{ item.property5.fullname.last_name }}</td>
 
-        <td v-if="item.property8 == 8536411824694842134">Назначена</td>
-        <td v-else-if="item.property8 == 3812168432889805433">Выполнена</td>
-        <td v-else>Завершена</td>
+          <td v-if="item.property8 == 8536411824694842134">Назначена</td>
+          <td v-else-if="item.property8 == 3812168432889805433">Выполнена</td>
+          <td v-else>Завершена</td>
 
-        <td>
-          <div class="flex justify-center">
-            <q-btn class="bg-teal-10 text-white q-mr-sm" icon="edit" @click="getTaskId(item.id)"/>
-            <q-btn
-            class="bg-red-10 text-white"
-            icon="delete"
-            @click="deleteModules(item.id)"
-          />
-          </div>
+          <td>
+            <div class="flex justify-center">
+              <q-btn
+                class="bg-teal-10 q-ma-xs text-white"
+                icon="edit"
+                @click="getTaskId(item.id)"
+              />
+
+              <q-btn
+                class="bg-red-10 q-ma-xs text-white"
+                icon="delete"
+                @click="deleteModules(item.id)"
+              />
+            </div>
           </td>
-        
-      </tr>
-    </table>
-  </q-list>
+        </tr>
+      </table>
+    </div>
 
+    <div class="flex column justify-center items-center" v-else>
+      <q-icon name="sentiment_very_satisfied" color="grey" size="10em" />
+      <div style="color: #a0a0a0" class="text-h5">Все задачи решены!</div>
+    </div>
+  </q-list>
   <q-dialog v-model="alert">
     <q-card>
       <q-form class="row justify-center" @submit.prevent="updateTasks">
@@ -73,10 +86,13 @@
                     :key="user.index"
                     @click="getUserId(user.id)"
                   >
-                    <q-item-section >
-                      <q-item-label>{{
-                        user.fullname.first_name + " " + user.fullname.last_name
-                      }}
+                    <q-item-section>
+                      <q-item-label
+                        >{{
+                          user.fullname.first_name +
+                          " " +
+                          user.fullname.last_name
+                        }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -126,7 +142,7 @@ import { defineComponent, ref, onUpdated, onBeforeUpdate } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "../router";
-import { useQuasar } from 'quasar'
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   setup() {
@@ -134,15 +150,18 @@ export default defineComponent({
     const tasksList = ref([]);
     const tasksListById = ref([]);
     const moduleID = ref();
-    const taskId = ref()
-    const alert = ref(false)
-    const taskStatus = ref()
-    const title = ref("")
-    const description =ref("")
-    const performerUser = ref('')
-    const performerList = ref(JSON.parse(localStorage.getItem("performerArray")));
+    const taskId = ref();
+    const alert = ref(false);
+    const taskStatus = ref();
+    const title = ref("");
+    const description = ref("");
+    const performerUser = ref("");
+    const performerList = ref(
+      JSON.parse(localStorage.getItem("performerArray"))
+    );
 
     moduleID.value = router.currentRoute.value.params.id;
+    console.log(moduleID.value);
 
     const getTasks = () => {
       const { result, onResult, refetch } = useQuery(
@@ -151,13 +170,6 @@ export default defineComponent({
             paginate_type2(page: 1, perPage: 100) {
               data {
                 id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
                 property3
                 property8
                 property5 {
@@ -178,16 +190,6 @@ export default defineComponent({
                     }
                   }
                 }
-              }
-              paginatorInfo {
-                perPage
-                currentPage
-                lastPage
-                total
-                count
-                from
-                to
-                hasMorePages
               }
             }
           }
@@ -241,15 +243,14 @@ export default defineComponent({
     const getTaskStatus = (status) => {
       if (status == "Выполнена") {
         taskStatus.value = "3812168432889805433";
-      }
-      else {
+      } else {
         taskStatus.value = "6403872496291980172";
       }
     };
 
     const getUserId = (id) => {
-            performerUser.value = id
-    }
+      performerUser.value = id;
+    };
 
     const { mutate: updateTask } = useMutation(gql`
       mutation ($id: String!, $input: update_type2_input!) {
@@ -304,11 +305,11 @@ export default defineComponent({
           },
         },
       });
-       $q.notify({
+      $q.notify({
         message: "Задача изменена",
         icon: "check",
         timeout: 1000,
-        color:"black"
+        color: "black",
       });
       reset();
     };
@@ -322,7 +323,6 @@ export default defineComponent({
         (moduleId.value = "");
     };
 
-
     return {
       tasksList,
       tasksListById,
@@ -330,9 +330,13 @@ export default defineComponent({
       alert,
       getTaskId,
       getTaskStatus,
-      taskStatus, title, description,
+      taskStatus,
+      title,
+      description,
       updateTasks,
-      getUserId, performerList, performerUser
+      getUserId,
+      performerList,
+      performerUser,
     };
   },
 });
