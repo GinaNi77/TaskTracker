@@ -23,7 +23,7 @@
 
       <tr
         style="border: solid 1px #400303"
-        v-for="task in tasksList"
+        v-for="task in tasksListById"
         :key="task.index"
         :class="
           task.property8 == 8536411824694842134
@@ -173,6 +173,7 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const tasksList = ref([]);
+    const tasksListById = ref([]);
     const modulesList = ref([]);
     const performerUsers = ref([]);
     const alert = ref(false);
@@ -248,6 +249,15 @@ export default defineComponent({
 
     onResult(() => {
       tasksList.value = result.value.paginate_type2.data;
+
+      let userID = localStorage.getItem("userSignInId");
+      if (userID != "5120362227219750820") {
+        tasksListById.value = tasksList.value.filter(
+          (item) => item.property5.user_id == userID
+        );
+      } else {
+        tasksListById.value = tasksList.value;
+      }
     });
 
     const getPerformer = () => {
@@ -422,7 +432,7 @@ export default defineComponent({
 
     return {
       onResult,
-      tasksList,
+      tasksListById,
       deleteTasks,
       alert,
       getModules,
