@@ -16,7 +16,7 @@
         <th></th>
       </tr>
 
-      <tr v-for="item in modulesList" :key="item.index">
+      <tr v-for="item in modulesListById" :key="item.index">
         <td>{{ item.name }}</td>
         <td>{{ item.property6.date }}</td>
         <td>{{ item.property7.date }}</td>
@@ -148,6 +148,7 @@ export default defineComponent({
     const $q = useQuasar();
     const moduleId = ref();
     const modulesList = ref([]);
+    const modulesListById = ref([]);
     const responsibleUsers = ref([]);
     const title = ref("");
     const responsibleUser = ref();
@@ -207,6 +208,20 @@ export default defineComponent({
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
+
+        console.log(modulesList.value);
+
+        let userID = localStorage.getItem("userSignInId");
+        if (userID != "5120362227219750820") {
+          modulesListById.value = modulesList.value.filter(
+            (item) => item.property4.user_id == userID
+          );
+        } else {
+          modulesListById.value = modulesList.value;
+        }
+
+        console.log(modulesListById.value);
+
         localStorage.setItem("modulesArray", JSON.stringify(modulesList.value));
       });
       refetch();
@@ -342,7 +357,7 @@ export default defineComponent({
 
     return {
       // onResult,
-      modulesList,
+      modulesListById,
       deleteModules,
       title,
       responsibleUsers,

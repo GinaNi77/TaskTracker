@@ -43,8 +43,12 @@
 
           <td>
             <div class="flex justify-center">
-              <q-btn class="bg-teal-10 q-ma-xs text-white" icon="edit" @click="getTaskId(item.id)"/>
-              
+              <q-btn
+                class="bg-teal-10 q-ma-xs text-white"
+                icon="edit"
+                @click="getTaskId(item.id)"
+              />
+
               <q-btn
                 class="bg-red-10 q-ma-xs text-white"
                 icon="delete"
@@ -157,6 +161,7 @@ export default defineComponent({
     );
 
     moduleID.value = router.currentRoute.value.params.id;
+    console.log(moduleID.value);
 
     const getTasks = () => {
       const { result, onResult, refetch } = useQuery(

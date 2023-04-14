@@ -284,30 +284,31 @@ export default defineComponent({
     };
 
     const canViewTreeItem = (item) => {
-      const user = JSON.parse(localStorage.getItem("userData"));
-      if (userID == "5120362227219751000") {
+      if (userID.value == "5120362227219750820") {
         return true;
+      } else {
+        //  check module
+        if (
+          (item.property4?.user_id && item.property4.user_id == userID.value) ||
+          userID == "5120362227219751000"
+        ) {
+          return true;
+        }
+        // check teams
+        else if (
+          userID == "5120362227219751000" ||
+          userGroups.value.some((group) => group === item.id)
+        ) {
+          return true;
+        } else if (
+          userGroups.value.some((group) => group === item.object?.id)
+        ) {
+          return true;
+        } else if (item.title === "Модули" || item.title === "Мои задачи") {
+          return true;
+        }
+        return false;
       }
-
-      //  check module
-      if (
-        (item.property4?.user_id && item.property4.user_id == userID.value) ||
-        userID == "5120362227219751000"
-      ) {
-        return true;
-      }
-      // check teams
-      else if (
-        userID == "5120362227219751000" ||
-        userGroups.value.some((group) => group === item.id)
-      ) {
-        return true;
-      } else if (userGroups.value.some((group) => group === item.object?.id)) {
-        return true;
-      } else if (item.title === "Модули" || item.title === "Мои задачи") {
-        return true;
-      }
-      return false;
     };
 
     const findIndexByUrl = (url) => {
