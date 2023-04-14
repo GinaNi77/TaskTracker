@@ -47,6 +47,9 @@ export default defineComponent({
       email: "sofiya.khodyreva@bk.ru",
       password: "SofiyaKH",
     });
+    localStorage.clear();
+    emit("clear");
+    console.log(localStorage.getItem("userSignInId"));
 
     const { mutate: signInUser } = useMutation(gql`
       mutation UserSignIn($input: UserSignInInput!) {
@@ -83,8 +86,6 @@ export default defineComponent({
     const resetForm = () => {
       (form.value.email = ""), (form.value.password = "");
     };
-
-    localStorage.clear();
 
     return {
       form,

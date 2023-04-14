@@ -46,14 +46,16 @@
         <td>
           <div class="flex justify-center">
             <q-btn
-            class="bg-teal-10 text-white q-mr-sm"
-            icon="edit"
-            @click="getTaskId(task.id)">
+              class="bg-teal-10 text-white q-ma-xs"
+              icon="edit"
+              @click="getTaskId(task.id)"
+            >
             </q-btn>
             <q-btn
-            class="bg-red-10 text-white"
-            @click="deleteTasks(task.id)"
-            icon="delete">
+              class="bg-red-10 text-white q-ma-xs"
+              @click="deleteTasks(task.id)"
+              icon="delete"
+            >
             </q-btn>
           </div>
         </td>
@@ -61,7 +63,9 @@
     </table>
   </q-list>
   <div class="flex justify-center q-mb-lg">
-    <q-btn color="black" outline to="/addTask" class="q-mb-sm">Добавить задачу</q-btn>
+    <q-btn color="black" outline to="/addTask" class="q-mb-sm"
+      >Добавить задачу</q-btn
+    >
   </div>
 
   <q-dialog v-model="alert">
@@ -163,7 +167,7 @@ import { defineComponent, ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { useQuasar } from 'quasar'
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   setup() {
@@ -394,11 +398,11 @@ export default defineComponent({
           },
         },
       });
-       $q.notify({
+      $q.notify({
         message: "Задача изменена",
         icon: "check",
         timeout: 1000,
-        color:"black"
+        color: "black",
       });
       reset();
     };
