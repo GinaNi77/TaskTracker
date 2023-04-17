@@ -66,7 +66,7 @@ export default defineComponent({
           password: form.value.password,
         },
       });
-      userIdGet(data.userSignIn.recordId)
+      // userIdGet(data.userSignIn.recordId)
 
       resetForm();
       if (data.userSignIn.status === 200) {
