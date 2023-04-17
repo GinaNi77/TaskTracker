@@ -61,13 +61,13 @@
 import { defineComponent, ref, onBeforeMount } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-
-import { getClientOptions } from "src/apollo/index.js";
-import { provideApolloClient } from "@vue/apollo-composable";
-import { ApolloClient } from "@apollo/client/core";
 import router from "../router";
-
 import MainPageVue from "../pages/MainPage.vue";
+import rabbit from "/src/rabbit/rabbit"
+import { provideApolloClient } from "@vue/apollo-composable";
+import apolloClient from "src/apollo/client";
+
+provideApolloClient(apolloClient);
 
 export default defineComponent({
   name: "MainLayout",
@@ -85,9 +85,6 @@ export default defineComponent({
     const teams = ref([]);
     const userGroups = ref([]);
     const userID = ref();
-
-    const apolloClient = new ApolloClient(getClientOptions());
-    provideApolloClient(apolloClient);
 
     const clear = () => {
       userID.value = "";
