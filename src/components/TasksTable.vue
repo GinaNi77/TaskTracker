@@ -282,6 +282,8 @@ import { defineComponent, ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import { getPerformerUser, getModules, getTasks } from "src/graphql/query"
+import { taskUpdate, taskDelete } from "src/graphql/mutation"
 import { useQuasar } from "quasar";
 
 export default defineComponent({
@@ -306,6 +308,8 @@ export default defineComponent({
     const getTaskId = (id) => {
       alert.value = true;
       taskId.value = id;
+      modulesGet();
+      getPerformer();
     };
 
     const { result, onResult, refetch } = useQuery(
@@ -372,26 +376,7 @@ export default defineComponent({
     });
 
     const getPerformer = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query {
-            get_group(id: "4753316581813399177") {
-              name
-              subject {
-                id
-                type_id
-                email {
-                  email
-                }
-                fullname {
-                  first_name
-                  last_name
-                }
-              }
-            }
-          }
-        `
-      );
+      const { result, onResult, refetch } = useQuery(getPerformerUser)
 
       onResult(() => {
         performerUsers.value = result.value.get_group.subject;
@@ -412,25 +397,8 @@ export default defineComponent({
       }
     };
 
-    const getModules = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query getModules {
-            paginate_type1(page: 1, perPage: 100) {
-              data {
-                id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
-              }
-            }
-          }
-        `
-      );
+    const modulesGet = () => {
+      const { result, onResult, refetch } = useQuery(getModules)
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
@@ -444,53 +412,7 @@ export default defineComponent({
     };
 
     const getOwnerTasksList = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query getModules {
-            paginate_type2(page: 1, perPage: 100) {
-              data {
-                id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
-                property3
-                property8
-                property5 {
-                  id
-                  user_id
-                  fullname {
-                    first_name
-                    last_name
-                  }
-                }
-                property9 {
-                  name
-                  property4 {
-                    fullname {
-                      first_name
-                      last_name
-                    }
-                  }
-                }
-              }
-              paginatorInfo {
-                perPage
-                currentPage
-                lastPage
-                total
-                count
-                from
-                to
-                hasMorePages
-              }
-            }
-          }
-        `
-      );
+      const { result, onResult, refetch } = useQuery(getTasks)
 
       onResult(() => {
         ownerTasksList.value = result.value.paginate_type2.data;
@@ -503,13 +425,7 @@ export default defineComponent({
       };
     };
 
-    const { mutate: deleteTask } = useMutation(gql`
-      mutation ($id: String!) {
-        delete_type2(id: $id) {
-          status
-        }
-      }
-    `);
+    const { mutate: deleteTask } = useMutation(taskDelete)
 
     const deleteTasks = async (id) => {
       const { data } = await deleteTask({
@@ -535,43 +451,7 @@ export default defineComponent({
       }
     };
 
-    const { mutate: updateTask } = useMutation(gql`
-      mutation ($id: String!, $input: update_type2_input!) {
-        update_type2(id: $id, input: $input) {
-          status
-          recordId
-          record {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-            property5 {
-              id
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-            }
-            property3
-            property8
-            property9 {
-              name
-              property4 {
-                fullname {
-                  first_name
-                  last_name
-                }
-              }
-            }
-          }
-        }
-      }
-    `);
+    const { mutate: updateTask } = useMutation(taskUpdate)
 
     const updateTasks = async () => {
       const { data } = await updateTask({
@@ -606,8 +486,7 @@ export default defineComponent({
         (moduleId.value = "");
     };
 
-    getPerformer();
-    getModules();
+    
     refetch();
 
     return {
@@ -615,7 +494,7 @@ export default defineComponent({
       tasksListById,
       deleteTasks,
       alert,
-      getModules,
+      modulesGet,
       modulesList,
       performerUsers,
       getPerformer,
