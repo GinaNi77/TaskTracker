@@ -1,5 +1,5 @@
 <template>
-  <div v-if="(userID = 5120362227219750820)">
+  <div v-if="(userID == 5120362227219750820)">
     <q-list>
       <table
         style="
@@ -229,11 +229,6 @@
         </tr>
       </table>
     </q-list>
-    <div class="flex justify-center q-mb-lg">
-      <q-btn color="black" outline to="/addTask" class="q-mb-sm"
-        >Добавить задачу</q-btn
-      >
-    </div>
 
     <q-dialog v-model="alert">
       <q-card>
@@ -371,6 +366,7 @@ export default defineComponent({
           }
         }
       }
+      console.log(tasksListById.value.length)
       console.log(tasksListById.value);
       getOwnerTasksList();
     });

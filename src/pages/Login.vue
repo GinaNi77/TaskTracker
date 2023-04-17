@@ -35,8 +35,9 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
+import { useMutation, useQuery } from "@vue/apollo-composable";
 import { userSignIn } from "src/graphql/mutation";
+import gql from "graphql-tag";
 import { provideApolloClient } from "@vue/apollo-composable";
 import apolloClient from "src/apollo/client";
 
@@ -54,6 +55,8 @@ export default defineComponent({
     emit("clear");
     console.log(localStorage.getItem("userSignInId"));
 
+    // const subjectId = ref([])
+
     const { mutate: signInUser } = useMutation(userSignIn)
 
     const signIn = async () => {
@@ -63,6 +66,7 @@ export default defineComponent({
           password: form.value.password,
         },
       });
+      userIdGet(data.userSignIn.recordId)
 
       resetForm();
       if (data.userSignIn.status === 200) {
@@ -72,6 +76,48 @@ export default defineComponent({
         window.location.href = "#/main";
       }
     };
+
+//     const userIdGet=(subjectData)=>{
+
+//       console.log(subjectData)
+//       const { result, onResult } = useQuery(gql`
+//         query {
+//             paginate_subject(
+//               page: 1
+//               perPage: 100
+//               where: {column: "user_id", operator: EQ, value: "${subjectData}"}
+//             )
+//             {
+//               data {
+//                 id
+//                 type_id
+//                 author_id
+//                 level
+//                 position
+//                 created_at
+//                 updated_at
+//                 user_id
+//                 fullname {
+//                   first_name
+//                   last_name
+//                 }
+//                 email{
+//                   email
+//                 }
+              
+//               } 
+//           }
+//         }`
+// )
+//       onResult(() => {
+//         subjectId.value = result.value.paginate_subject.data
+//         console.log(subjectId.value)
+//       });
+
+//       return{
+//         onResult, subjectId
+//       }
+//     }
 
     const resetForm = () => {
       (form.value.email = ""), (form.value.password = "");
