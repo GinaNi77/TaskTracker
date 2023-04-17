@@ -143,6 +143,8 @@ import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "../router";
 import { useQuasar } from "quasar";
+import { taskUpdate, taskDelete } from "src/graphql/mutation"
+import { getTasks } from "src/graphql/query"
 
 export default defineComponent({
   setup() {
@@ -163,43 +165,8 @@ export default defineComponent({
     moduleID.value = router.currentRoute.value.params.id;
     console.log(moduleID.value);
 
-    const getTasks = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query getModules {
-            paginate_type2(page: 1, perPage: 100) {
-              data {
-                id
-                property3
-                property8
-                property5 {
-                  id
-                  user_id
-                  fullname {
-                    first_name
-                    last_name
-                  }
-                }
-                property9 {
-                  id
-                  name
-                  property4 {
-                    fullname {
-                      first_name
-                      last_name
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `,
-        null,
-        {
-          pollInterval: 1,
-        }
-      );
-
+    const tasksGet = () => {
+      const { result, onResult, refetch } = useQuery(getTasks)
       refetch();
       onResult(() => {
         tasksList.value = result.value.paginate_type2.data;
@@ -213,13 +180,7 @@ export default defineComponent({
       });
     };
 
-    const { mutate: deleteModuleTask } = useMutation(gql`
-      mutation ($id: String!) {
-        delete_type2(id: $id) {
-          status
-        }
-      }
-    `);
+    const { mutate: deleteModuleTask } = useMutation(taskDelete)
 
     const deleteModules = async (id) => {
       const { data } = await deleteModuleTask({
@@ -228,11 +189,11 @@ export default defineComponent({
       console.log("deleted");
     };
 
-    getTasks();
+    tasksGet();
 
     onUpdated(() => {
       moduleID.value = router.currentRoute.value.params.id;
-      getTasks();
+      tasksGet();
     });
 
     const getTaskId = (id) => {
@@ -252,43 +213,7 @@ export default defineComponent({
       performerUser.value = id;
     };
 
-    const { mutate: updateTask } = useMutation(gql`
-      mutation ($id: String!, $input: update_type2_input!) {
-        update_type2(id: $id, input: $input) {
-          status
-          recordId
-          record {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-            property5 {
-              id
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-            }
-            property3
-            property8
-            property9 {
-              name
-              property4 {
-                fullname {
-                  first_name
-                  last_name
-                }
-              }
-            }
-          }
-        }
-      }
-    `);
+    const { mutate: updateTask } = useMutation(taskUpdate)
 
     const updateTasks = async () => {
       const { data } = await updateTask({
