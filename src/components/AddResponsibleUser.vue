@@ -80,12 +80,19 @@ export default defineComponent({
     const $q = useQuasar();
     const responsibleUsers = ref([]);
 
-    const { result, onResult, refetch } = useQuery(getResponsibleUser)
+    const newResponsible = () =>{
+      const { result, onResult, refetch } = useQuery(getResponsibleUser)
+      refetch()
+      onResult(() => {
+        responsibleUsers.value = result.value.get_group.subject;
+        localStorage.setItem("responsibleArray", JSON.stringify(responsibleUsers.value))
+      });
+      return{
+        onResult
+      }
+    }
 
-    onResult(() => {
-      responsibleUsers.value = result.value.get_group.subject;
-      localStorage.setItem("responsibleArray", JSON.stringify(responsibleUsers.value))
-    });
+    newResponsible()
 
     const { mutate: userGroupInviteUser } = useMutation(addUserToGroup)
 
@@ -105,6 +112,7 @@ export default defineComponent({
         color:"black"
       });
       resetForm();
+      newResponsible()
     };
 
     const resetForm = () => {
@@ -113,12 +121,9 @@ export default defineComponent({
         (form.value.name = "");
     };
 
-    refetch();
-
     return {
       form,
       addResponsible,
-      onResult,
       responsibleUsers,
       alert,
     };

@@ -82,12 +82,22 @@ export default defineComponent({
     const $q = useQuasar();
     const performerUsers = ref([]);
 
+    const newPerformer = () =>{
+
     const { result, onResult, refetch } = useQuery(getPerformerUser)
 
     onResult(() => {
       performerUsers.value = result.value.get_group.subject;
       localStorage.setItem("performerArray", JSON.stringify(performerUsers.value))
     });
+    refetch()
+    
+    return{
+      onResult
+    }
+  }
+
+  newPerformer()
 
     const { mutate: userGroupInviteUser } = useMutation(addUserToGroup)
 
@@ -108,6 +118,7 @@ export default defineComponent({
       });
 
       resetForm();
+      newPerformer()
     };
 
     const resetForm = () => {
@@ -116,11 +127,9 @@ export default defineComponent({
         (form.value.name = "");
     };
 
-    refetch();
     return {
       form,
       addPerformer,
-      onResult,
       performerUsers,
       alert,
     };
