@@ -7,7 +7,7 @@
 
         <q-input label="Ответственный" v-model="responsibleUser">
           <template #append>
-            <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+            <q-icon name="arrow_drop_down" class="cursor-pointer" @click=" getResponsibleUsers"></q-icon>
             <q-popup-proxy>
               <q-list>
                 <q-item
@@ -76,15 +76,16 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
+import { useMutation, useQuery } from "@vue/apollo-composable";
 import {addModule} from "src/graphql/mutation"
 import { useQuasar } from 'quasar'
+import { getResponsibleUser } from "src/graphql/query"
 
 export default defineComponent({
   props: ["modules"],
   setup() {
   
-    const responsibleList = ref(JSON.parse(localStorage.getItem("responsibleArray")))
+    const responsibleList = ref([])
     const title = ref("");
     const responsibleUser = ref();
     const start_date = ref();
@@ -95,6 +96,16 @@ export default defineComponent({
 
     const onItemClick = (id) => {
       responsibleUser.value = id;
+    };
+
+     const getResponsibleUsers = () => {
+      const { result, onResult, refetch } = useQuery(getResponsibleUser)
+
+      onResult(() => {
+        responsibleList.value = result.value.get_group.subject;
+      });
+      refetch();
+      return { onResult, responsibleList };
     };
 
     const { mutate: moduleAdd } = useMutation(addModule)
@@ -122,7 +133,6 @@ export default defineComponent({
         color:"black"
       });
       resetForm();
-      console.log(data.create_type1.recordId);
     };
 
     const resetForm = () => {
@@ -139,7 +149,7 @@ export default defineComponent({
       start_date,
       end_date,
       addModules,
-      responsibleList 
+      responsibleList,  getResponsibleUsers
     };
   },
 });

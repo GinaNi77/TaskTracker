@@ -85,7 +85,6 @@ export default defineComponent({
       refetch()
       onResult(() => {
         responsibleUsers.value = result.value.get_group.subject;
-        localStorage.setItem("responsibleArray", JSON.stringify(responsibleUsers.value))
       });
       return{
         onResult

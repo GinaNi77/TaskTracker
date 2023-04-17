@@ -84,17 +84,17 @@ export default defineComponent({
 
     const newPerformer = () =>{
 
-    const { result, onResult, refetch } = useQuery(getPerformerUser)
+      const { result, onResult, refetch } = useQuery(getPerformerUser)
 
-    onResult(() => {
-      performerUsers.value = result.value.get_group.subject;
-      localStorage.setItem("performerArray", JSON.stringify(performerUsers.value))
-    });
-    refetch()
-    
-    return{
-      onResult
-    }
+      onResult(() => {
+        performerUsers.value = result.value.get_group.subject;
+      });
+      
+      refetch()
+      
+      return{
+        onResult
+      }
   }
 
   newPerformer()

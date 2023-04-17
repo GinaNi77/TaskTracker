@@ -15,7 +15,7 @@
 
                 <q-input label="Исполнитель" v-model="performerUser">
                     <template #append>
-                        <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                        <q-icon name="arrow_drop_down" class="cursor-pointer" @click="getPerformerUsers"></q-icon>
                         <q-popup-proxy>
                                 <q-list>
                                     <q-item clickable v-close-popup  v-for="user in performerList" :key="user.index" @click="getUserId(user.id)">
@@ -31,7 +31,7 @@
 
                 <q-input label="Модуль" v-model=" moduleId">
                     <template #append>
-                        <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                        <q-icon name="arrow_drop_down" class="cursor-pointer" @click="modulesGet"></q-icon>
                         <q-popup-proxy>
                                 <q-list>
                                     <q-item clickable v-close-popup  v-for="item in modulesList" :key="item.index" @click="getModuleId(item.id)">
@@ -59,8 +59,9 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
-import {addTask} from "src/graphql/mutation"
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { addTask } from "src/graphql/mutation"
+import { getPerformerUser, getModules } from "src/graphql/query"
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
@@ -68,7 +69,7 @@ export default defineComponent({
   
   setup() {
 
-    const performerList = ref(JSON.parse(localStorage.getItem("performerArray")));
+    const performerList = ref([]);
     const performerUser = ref('')
     const modulesList= ref(JSON.parse(localStorage.getItem("modulesArray")))
     const moduleId = ref()
@@ -76,6 +77,28 @@ export default defineComponent({
     const description = ref('')
     const $q = useQuasar();
 
+    
+    const getPerformerUsers = () =>{
+
+      const { result, onResult, refetch } = useQuery(getPerformerUser)
+      onResult(() => {
+        performerList.value = result.value.get_group.subject;
+      });
+      refetch()
+      return{
+        onResult
+      }
+  }
+
+  const modulesGet = () => {
+      const { result, onResult, refetch } = useQuery(getModules)
+       
+      onResult(() => {
+        modulesList.value = result.value.paginate_type1.data;})
+
+      refetch();
+      return{onResult}
+    };
 
     const getUserId = (id) => {
             performerUser.value = id
@@ -128,7 +151,10 @@ export default defineComponent({
     };
 
     return {
-      performerList, modulesList, performerUser, getUserId, getModuleId, moduleId, addTasks, title, description
+        performerList, modulesList,
+        performerUser, getUserId, getModuleId,
+        moduleId, addTasks, title,
+        description, getPerformerUsers, modulesGet
     };
 
 

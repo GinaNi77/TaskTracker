@@ -140,7 +140,6 @@
 <script>
 import { defineComponent, ref, onMounted } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
 import { moduleUpdate, moduleDelete} from "src/graphql/mutation"
 import { getResponsibleUser, getModules } from "src/graphql/query";
 import { useQuasar } from "quasar";
@@ -164,8 +163,6 @@ export default defineComponent({
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
 
-        console.log(modulesList.value);
-
         let userID = localStorage.getItem("userSignInId");
         if (userID != "5120362227219750820") {
           modulesListById.value = modulesList.value.filter(
@@ -174,10 +171,6 @@ export default defineComponent({
         } else {
           modulesListById.value = modulesList.value;
         }
-
-        console.log(modulesListById.value);
-
-        localStorage.setItem("modulesArray", JSON.stringify(modulesList.value));
       });
       refetch();
     };
