@@ -176,3 +176,38 @@ export const getTasks = gql`
               }
             `;
 
+export const getSubjectTasks = gql`
+query {
+  paginate_subject(page: 1, perPage: 100) {
+    data {
+      id
+      type_id
+      author_id
+      level
+      position
+      created_at
+      updated_at
+      user_id
+      fullname {
+        first_name
+        last_name
+      }
+      property5 {
+        name
+        property3
+        property8
+        property9 {
+          name
+        }
+        property5 {
+          user_id
+          fullname {
+            first_name
+            last_name
+          }
+        }
+      }
+    }
+  }
+}
+`

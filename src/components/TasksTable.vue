@@ -277,7 +277,7 @@ import { defineComponent, ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { getPerformerUser, getModules, getTasks } from "src/graphql/query"
+import { getPerformerUser, getModules, getTasks, getSubjectTasks } from "src/graphql/query"
 import { taskUpdate, taskDelete } from "src/graphql/mutation"
 import { useQuasar } from "quasar";
 
@@ -307,55 +307,10 @@ export default defineComponent({
       getPerformer();
     };
 
-    const { result, onResult, refetch } = useQuery(
-      gql`
-        query {
-          paginate_subject(page: 1, perPage: 100) {
-            data {
-              id
-              type_id
-              author_id
-              level
-              position
-              created_at
-              updated_at
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-              property5 {
-                name
-                property3
-                property8
-                property9 {
-                  name
-                }
-                property5 {
-                  user_id
-                  fullname {
-                    first_name
-                    last_name
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-      null,
-      {
-        pollInterval: 1,
-      }
-    );
+    const subjectTasksGet = () => {
+     const { result, onResult, refetch } = useQuery(getSubjectTasks) 
 
-    // name - названия задания
-    // property 3 - описание задания
-    // property 8 - айдишник статуса задачи
-    // property 5 - данные об исполнителе задачи
-    // property 9 - привязанный модуль (property4 - данные об ответсвенном за модуль)
-
-    onResult(() => {
+      onResult(() => {
       tasksList.value = result.value.paginate_subject.data;
 
       tasksListById.value = [];
@@ -366,11 +321,19 @@ export default defineComponent({
           }
         }
       }
-      console.log(tasksListById.value.length)
-      console.log(tasksListById.value);
       getOwnerTasksList();
     });
 
+    refetch()
+
+    return{
+      onResult
+    }
+
+    }
+
+    subjectTasksGet()
+   
     const getPerformer = () => {
       const { result, onResult, refetch } = useQuery(getPerformerUser)
 
@@ -427,6 +390,7 @@ export default defineComponent({
       const { data } = await deleteTask({
         id: id,
       });
+      subjectTasksGet()
     };
 
     const getUserId = (id) => {
@@ -471,6 +435,7 @@ export default defineComponent({
         color: "black",
       });
       reset();
+      subjectTasksGet()
     };
 
     const reset = () => {
@@ -482,11 +447,7 @@ export default defineComponent({
         (moduleId.value = "");
     };
 
-    
-    refetch();
-
     return {
-      onResult,
       tasksListById,
       deleteTasks,
       alert,
