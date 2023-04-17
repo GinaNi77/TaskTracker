@@ -218,12 +218,6 @@
                 @click="getTaskId(task.id)"
               >
               </q-btn>
-              <q-btn
-                class="bg-red-10 text-white q-ma-xs"
-                @click="deleteTasks(task.id)"
-                icon="delete"
-              >
-              </q-btn>
             </div>
           </td>
         </tr>
