@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onBeforeMount } from "vue";
+import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "../router";
@@ -76,6 +76,12 @@ export default defineComponent({
   },
 
   setup() {
+
+    onMounted(() => {
+  rabbit.queueCreate();
+  rabbit.rabbitConnect();
+});
+
     const leftDrawerOpen = ref(false);
     const treePages = ref([]);
     const parentPages = ref([]);
