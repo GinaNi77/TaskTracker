@@ -60,6 +60,7 @@
 <script>
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useQuery } from "@vue/apollo-composable";
+import { getRootPages, getAllGroup, getModules } from "src/graphql/query"
 import gql from "graphql-tag";
 import router from "../router";
 import MainPageVue from "../pages/MainPage.vue";
@@ -101,25 +102,7 @@ export default defineComponent({
     const getUserGroups = () => {
       userID.value = localStorage.getItem("userSignInId");
 
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          {
-            paginate_group(page: 1, perPage: 100) {
-              data {
-                id
-                name
-                subject {
-                  user_id
-                  id
-                  fullname {
-                    first_name
-                  }
-                }
-              }
-            }
-          }
-        `
-      );
+      const { result, onResult } = useQuery(getAllGroup);
 
       onResult(() => {
         const groups = ref([]);
@@ -140,38 +123,8 @@ export default defineComponent({
     };
 
     const getTree = () => {
-      const { result, loading, error, onResult, refetch } = useQuery(
-        gql`
-          query parentPages {
-            rootPages {
-              data {
-                id
-                parent_id
-                page_type
-                title
-                content
-                icon
-                level
-                is_public
-                position
-                config
-                children {
-                  data {
-                    id
-                    object {
-                      id
-                    }
-                    title
-                  }
-                }
-                created_at
-                updated_at
-              }
-            }
-          }
-        `
-      );
-
+      const { result, loading, error, onResult } = useQuery(getRootPages)
+       
       onResult(() => {
         const urlMap = {
           Команда: "/teams",
@@ -213,58 +166,12 @@ export default defineComponent({
           teams.value = treePages.value[findIndexByUrl("/teams")].children;
         }
 
-        getModules();
+        modulesGet();
       });
     };
 
-    const getModules = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query getModules {
-            paginate_type1(page: 1, perPage: 100) {
-              data {
-                id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
-                property4 {
-                  id
-                  user_id
-                  fullname {
-                    first_name
-                    last_name
-                  }
-                }
-                property6 {
-                  date
-                }
-                property7 {
-                  date
-                }
-                property9 {
-                  name
-                  property8
-                }
-              }
-
-              paginatorInfo {
-                perPage
-                currentPage
-                lastPage
-                total
-                count
-                from
-                to
-                hasMorePages
-              }
-            }
-          }
-        `
-      );
+    const modulesGet = () => {
+      const { result, onResult } = useQuery(getModules)
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
@@ -353,7 +260,7 @@ export default defineComponent({
       teams,
       leftDrawerOpen,
       clear,
-      getModules,
+      modulesGet,
       onTreeItemSelected,
       onUserAuthorized,
       toggleLeftDrawer() {
