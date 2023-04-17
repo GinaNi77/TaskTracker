@@ -65,6 +65,7 @@ import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import {addUserToGroup} from "src/graphql/mutation"
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
@@ -107,13 +108,7 @@ export default defineComponent({
       localStorage.setItem("performerArray", JSON.stringify(performerUsers.value))
     });
 
-    const { mutate: userGroupInviteUser } = useMutation(gql`
-      mutation UserGroupInviteUser($input: UserGroupInviteUserInput!) {
-        userGroupInviteUser(input: $input) {
-          status
-        }
-      }
-    `);
+    const { mutate: userGroupInviteUser } = useMutation(addUserToGroup)
 
     const addPerformer = async () => {
       const { data } = await userGroupInviteUser({

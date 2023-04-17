@@ -35,9 +35,8 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useQuery, useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import router from "src/router";
+import { useMutation } from "@vue/apollo-composable";
+import { userSignIn } from "src/graphql/mutation";
 import { provideApolloClient } from "@vue/apollo-composable";
 import apolloClient from "src/apollo/client";
 
@@ -55,20 +54,7 @@ export default defineComponent({
     emit("clear");
     console.log(localStorage.getItem("userSignInId"));
 
-    const { mutate: signInUser } = useMutation(gql`
-      mutation UserSignIn($input: UserSignInInput!) {
-        userSignIn(input: $input) {
-          recordId
-          record {
-            token_type
-            expires_in
-            access_token
-            refresh_token
-          }
-          status
-        }
-      }
-    `);
+    const { mutate: signInUser } = useMutation(userSignIn)
 
     const signIn = async () => {
       const { data } = await signInUser({
