@@ -64,7 +64,8 @@
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
+import { getResponsibleUser } from "src/graphql/query";
+import {addUserToGroup} from "src/graphql/mutation"
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
@@ -79,39 +80,20 @@ export default defineComponent({
     const $q = useQuasar();
     const responsibleUsers = ref([]);
 
-    const { result, onResult, refetch } = useQuery(
-      gql`
-        query {
-          get_group(id: "4833572297286333641") {
-            name
-            subject {
-              id
-              type_id
-              email {
-                email
-              }
-              fullname {
-                first_name
-                last_name
-              }
-            }
-          }
-        }
-      `
-    );
-
-    onResult(() => {
-      responsibleUsers.value = result.value.get_group.subject;
-      localStorage.setItem("responsibleArray", JSON.stringify(responsibleUsers.value))
-    });
-
-    const { mutate: userGroupInviteUser } = useMutation(gql`
-      mutation UserGroupInviteUser($input: UserGroupInviteUserInput!) {
-        userGroupInviteUser(input: $input) {
-          status
-        }
+    const newResponsible = () =>{
+      const { result, onResult, refetch } = useQuery(getResponsibleUser)
+      refetch()
+      onResult(() => {
+        responsibleUsers.value = result.value.get_group.subject;
+      });
+      return{
+        onResult
       }
-    `);
+    }
+
+    newResponsible()
+
+    const { mutate: userGroupInviteUser } = useMutation(addUserToGroup)
 
     const addResponsible = async () => {
       const { data } = await userGroupInviteUser({
@@ -129,6 +111,7 @@ export default defineComponent({
         color:"black"
       });
       resetForm();
+      newResponsible()
     };
 
     const resetForm = () => {
@@ -137,12 +120,9 @@ export default defineComponent({
         (form.value.name = "");
     };
 
-    refetch();
-
     return {
       form,
       addResponsible,
-      onResult,
       responsibleUsers,
       alert,
     };

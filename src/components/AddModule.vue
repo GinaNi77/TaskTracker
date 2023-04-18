@@ -7,7 +7,7 @@
 
         <q-input label="Ответственный" v-model="responsibleUser">
           <template #append>
-            <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+            <q-icon name="arrow_drop_down" class="cursor-pointer" @click=" getResponsibleUsers"></q-icon>
             <q-popup-proxy>
               <q-list>
                 <q-item
@@ -20,9 +20,6 @@
                   <q-item-section>
                     <q-item-label>{{ user.fullname.first_name +" "+user.fullname.last_name}}</q-item-label>
                   </q-item-section>
-                  <!-- <q-item-section>
-                    <q-item-label>{{ user.fullname.last_name }}</q-item-label>
-                  </q-item-section> -->
                 </q-item>
               </q-list>
             </q-popup-proxy>
@@ -79,15 +76,16 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import {addModule} from "src/graphql/mutation"
 import { useQuasar } from 'quasar'
+import { getResponsibleUser } from "src/graphql/query"
 
 export default defineComponent({
   props: ["modules"],
   setup() {
   
-    const responsibleList = ref(JSON.parse(localStorage.getItem("responsibleArray")))
+    const responsibleList = ref([])
     const title = ref("");
     const responsibleUser = ref();
     const start_date = ref();
@@ -100,41 +98,20 @@ export default defineComponent({
       responsibleUser.value = id;
     };
 
-    const { mutate: addModule } = useMutation(gql`
-      mutation ($input: create_type1_input!) {
-        create_type1(input: $input) {
-          status
-          recordId
-          record {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-            property4 {
-              id
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-            }
-            property6 {
-              date
-            }
-            property7 {
-              date
-            }
-          }
-        }
-      }
-    `);
+     const getResponsibleUsers = () => {
+      const { result, onResult, refetch } = useQuery(getResponsibleUser)
+
+      onResult(() => {
+        responsibleList.value = result.value.get_group.subject;
+      });
+      refetch();
+      return { onResult, responsibleList };
+    };
+
+    const { mutate: moduleAdd } = useMutation(addModule)
 
     const addModules = async () => {
-      const { data } = await addModule({
+      const { data } = await moduleAdd({
         input: {
           name: title.value,
           property6: {
@@ -156,11 +133,6 @@ export default defineComponent({
         color:"black"
       });
       resetForm();
-      // $q.notify({
-      //     message: 'Добавлен новый модуль',
-      //     color: 'black'
-      //   })
-      console.log(data.create_type1.recordId);
     };
 
     const resetForm = () => {
@@ -170,23 +142,14 @@ export default defineComponent({
         (responsibleUser.value = "");
     };
 
-    // const createNewPage = () => {
-    //   newModule.value = {
-    //     label: title.value,
-    //   };
-    // };
-
     return {
       title,
-     
-   
       onItemClick,
       responsibleUser,
       start_date,
       end_date,
       addModules,
-      responsibleList 
-      // createNewPage,
+      responsibleList,  getResponsibleUsers
     };
   },
 });

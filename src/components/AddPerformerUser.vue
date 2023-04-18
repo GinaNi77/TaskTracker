@@ -64,7 +64,8 @@
 import { defineComponent, ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
+import { getPerformerUser } from "src/graphql/query"
+import {addUserToGroup} from "src/graphql/mutation"
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
@@ -81,39 +82,24 @@ export default defineComponent({
     const $q = useQuasar();
     const performerUsers = ref([]);
 
-    const { result, onResult, refetch } = useQuery(
-      gql`
-        query {
-          get_group(id: "4753316581813399177") {
-            name
-            subject {
-              id
-              type_id
-              email {
-                email
-              }
-              fullname {
-                first_name
-                last_name
-              }
-            }
-          }
-        }
-      `
-    );
+    const newPerformer = () =>{
 
-    onResult(() => {
-      performerUsers.value = result.value.get_group.subject;
-      localStorage.setItem("performerArray", JSON.stringify(performerUsers.value))
-    });
+      const { result, onResult, refetch } = useQuery(getPerformerUser)
 
-    const { mutate: userGroupInviteUser } = useMutation(gql`
-      mutation UserGroupInviteUser($input: UserGroupInviteUserInput!) {
-        userGroupInviteUser(input: $input) {
-          status
-        }
+      onResult(() => {
+        performerUsers.value = result.value.get_group.subject;
+      });
+      
+      refetch()
+      
+      return{
+        onResult
       }
-    `);
+  }
+
+  newPerformer()
+
+    const { mutate: userGroupInviteUser } = useMutation(addUserToGroup)
 
     const addPerformer = async () => {
       const { data } = await userGroupInviteUser({
@@ -132,6 +118,7 @@ export default defineComponent({
       });
 
       resetForm();
+      newPerformer()
     };
 
     const resetForm = () => {
@@ -140,11 +127,9 @@ export default defineComponent({
         (form.value.name = "");
     };
 
-    refetch();
     return {
       form,
       addPerformer,
-      onResult,
       performerUsers,
       alert,
     };

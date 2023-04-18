@@ -50,22 +50,25 @@
         :selectedPage="selected"
         @update:selectedPage="selected = $event"
         @openPage="onTreeItemSelected(selected)"
+        @authorized="onUserAuthorized($event)"
+        @clear="clear()"
       />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useQuery } from "@vue/apollo-composable";
+import { getRootPages, getAllGroup, getModules } from "src/graphql/query";
 import gql from "graphql-tag";
-
-import { getClientOptions } from "src/apollo/index.js";
-import { provideApolloClient } from "@vue/apollo-composable";
-import { ApolloClient } from "@apollo/client/core";
 import router from "../router";
-
 import MainPageVue from "../pages/MainPage.vue";
+import rabbit from "/src/rabbit/rabbit";
+import { provideApolloClient } from "@vue/apollo-composable";
+import apolloClient from "src/apollo/client";
+
+provideApolloClient(apolloClient);
 
 export default defineComponent({
   name: "MainLayout",
@@ -74,140 +77,154 @@ export default defineComponent({
   },
 
   setup() {
+    onMounted(() => {
+      rabbit.queueCreate();
+      rabbit.rabbitConnect();
+    });
+
     const leftDrawerOpen = ref(false);
     const treePages = ref([]);
     const parentPages = ref([]);
     const modulesList = ref([]);
     const selected = ref("");
 
-    const hey = "Hey";
+    const teams = ref([]);
+    const userGroups = ref([]);
+    const userID = ref();
 
-    const teams = ref([]); //! Связка с TeamPage?
-    const newModule = ref(); // Вывод модулей --
+    const clear = () => {
+      userID.value = "";
+      userGroups.values = [];
+      treePages.value = [];
+    };
 
-    const apolloClient = new ApolloClient(getClientOptions());
-    provideApolloClient(apolloClient);
+    const getUserGroups = () => {
+      userID.value = localStorage.getItem("userSignInId");
 
-    const { result, loading, error, onResult, refetch } = useQuery(
-      gql`
-        query parentPages {
-          rootPages {
-            data {
-              id
-              parent_id
-              page_type
-              title
-              content
-              icon
-              level
-              is_public
-              position
-              config
-              children {
-                data {
-                  id
-                  title
-                }
-              }
-              created_at
-              updated_at
-            }
-          }
-        }
-      `
-    );
-
-    onResult(() => {
-      const urlMap = {
-        Команда: "/teams",
-        Модули: "/modules",
-        "Мои задачи": "/tasks",
-      };
-
-      parentPages.value = result.value.rootPages.data;
-      parentPages.value.forEach((page) => {
-        let treeElem = {
-          label: page.title,
-          id: page.id,
-          url: urlMap[page.title],
-          children: page.children.data.map((elem) => {
-            elem = {
-              label: elem.title,
-              id: elem.id,
-              url: `${urlMap[page.title]}/${elem.id}`,
-            };
-            return elem;
-          }),
-        };
-        treePages.value.push(treeElem);
-      });
-
-      teams.value = treePages.value[0].children;
-      getModules();
-    });
-
-    const getModules = () => {
-      const { result, onResult } = useQuery(
-        gql`
-          query getModules {
-            paginate_type1(page: 1, perPage: 100) {
-              data {
-                id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
-                property4 {
-                  id
-                  user_id
-                  fullname {
-                    first_name
-                    last_name
-                  }
-                }
-                property6 {
-                  date
-                }
-                property7 {
-                  date
-                }
-                property9 {
-                  name
-                  property8
-                }
-              }
-
-              paginatorInfo {
-                perPage
-                currentPage
-                lastPage
-                total
-                count
-                from
-                to
-                hasMorePages
-              }
-            }
-          }
-        `
-      );
+      const { result, onResult } = useQuery(getAllGroup);
 
       onResult(() => {
-        modulesList.value = [];
-        modulesList.value = result.value.paginate_type1.data;
-        console.log(modulesList.value);
+        const groups = ref([]);
+        groups.value = result.value.paginate_group.data;
 
-        modulesList.value.forEach((page) => {
-          treePages.value[1].children.push({
-            label: page.name,
-            id: page.id,
-            url: `${treePages.value[1].url}/${page.id}`,
+        userGroups.value = [];
+        groups.value.forEach((item) => {
+          item.subject.forEach((subject) => {
+            if (subject.user_id == userID.value) {
+              userGroups.value.push(item.id);
+            }
           });
         });
+
+        getTree();
       });
+    };
+
+    const getTree = () => {
+      const { result, loading, error, onResult } = useQuery(getRootPages);
+
+      onResult(() => {
+        const urlMap = {
+          Команда: "/teams",
+          Модули: "/modules",
+          "Мои задачи": "/tasks",
+        };
+
+        treePages.value = [];
+        parentPages.value = result.value.rootPages.data;
+
+        parentPages.value.forEach((page) => {
+          let treeElem = {
+            label: page.title,
+            id: page.id,
+            url: urlMap[page.title],
+            children: page.children.data.map((elem) => {
+              elem = {
+                label: elem.title,
+                id: elem.id,
+                url: `${urlMap[page.title]}/${elem.id}`,
+                canView: canViewTreeItem(elem),
+              };
+              return elem;
+            }),
+          };
+
+          if (
+            canViewTreeItem(page) ||
+            treeElem.children.some((item) => item.canView)
+          ) {
+            treeElem.children = treeElem.children.filter(
+              (item) => item.canView
+            );
+            treePages.value.push(treeElem);
+          }
+        });
+
+        if (treePages.value[findIndexByUrl("/teams")]) {
+          teams.value = treePages.value[findIndexByUrl("/teams")].children;
+        }
+
+         modulesGet();
+      });
+    };
+
+    const modulesGet = () => {
+      const { result, onResult, refetch } = useQuery(getModules);
+      refetch();
+
+      onResult(() => {
+        modulesList.value = result.value.paginate_type1.data;
+    
+        treePages.value[findIndexByUrl("/modules")].children = [];
+
+        modulesList.value.forEach((page) => {
+          if (canViewTreeItem(page)) {
+            treePages.value[findIndexByUrl("/modules")].children.push({
+              label: page.name,
+              id: page.id,
+              url: `${treePages.value[findIndexByUrl("/modules")].url}/${
+                page.id
+              }`,
+            });
+          } else {
+            const user = JSON.parse(localStorage.getItem("userData"));
+          }
+        });
+
+      });
+    };
+
+    const canViewTreeItem = (item) => {
+        if (userID.value == "5120362227219750820") {
+        return true;
+      } else {
+        //  check module
+        if (
+          (item.property4?.user_id && item.property4.user_id == userID.value) ||
+          userID == "5120362227219751000"
+        ) {
+          return true;
+        }
+        // check teams
+        else if (
+          userID == "5120362227219751000" ||
+          userGroups.value.some((group) => group === item.id)
+        ) {
+          return true;
+        } else if (
+          userGroups.value.some((group) => group === item.object?.id)
+        ) {
+          return true;
+        } else if (item.title === "Модули" || item.title === "Мои задачи") {
+          return true;
+        }
+        return false;
+      }
+    };
+
+    const findIndexByUrl = (url) => {
+      let index = treePages.value.findIndex((elem) => elem.url == url);
+      return index;
     };
 
     const onTreeItemSelected = (selected) => {
@@ -229,21 +246,24 @@ export default defineComponent({
       router.push({ path: item.url });
     };
 
-    const on = (selected) => {
-      console.log(selected);
+    if (!!localStorage.getItem("token")) {
+      getUserGroups();
+    }
+
+    const onUserAuthorized = () => {
+      getUserGroups();
     };
 
     return {
-      result,
       parentPages,
       treePages,
       selected,
       teams,
-      hey,
       leftDrawerOpen,
-      on,
-      getModules,
+      clear,
+      modulesGet,
       onTreeItemSelected,
+      onUserAuthorized,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },

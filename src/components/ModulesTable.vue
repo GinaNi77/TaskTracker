@@ -16,7 +16,7 @@
         <th></th>
       </tr>
 
-      <tr v-for="item in modulesList" :key="item.index">
+      <tr v-for="item in modulesListById" :key="item.index">
         <td>{{ item.name }}</td>
         <td>{{ item.property6.date }}</td>
         <td>{{ item.property7.date }}</td>
@@ -52,15 +52,16 @@
         <td>
           <div class="flex justify-center">
             <q-btn
-              class="bg-teal-10 text-white q-mr-sm"
+              class="bg-teal-10 text-white q-ma-xs"
               icon="edit"
               @click="getModuleId(item.id)"
             />
-            <q-btn :disabled="item.property9.length ? '' : disabled"
-            class="bg-red-10 text-white"
-            icon="delete"
-            @click="deleteModules(item.id)"
-          />
+            <q-btn
+              :disabled="item.property9.length ? '' : disabled"
+              class="bg-red-10 q-ma-xs text-white"
+              icon="delete"
+              @click="deleteModules(item.id)"
+            />
           </div>
         </td>
       </tr>
@@ -91,7 +92,9 @@
                   >
                     <q-item-section>
                       <q-item-label>{{
-                        user.fullname.first_name + "  " + user.fullname.last_name
+                        user.fullname.first_name +
+                        "  " +
+                        user.fullname.last_name
                       }}</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -132,87 +135,47 @@
       </q-form>
     </q-card>
   </q-dialog>
+
+  <input type="text" v-model="title" />
 </template>
 
 <script>
 import { defineComponent, ref, onMounted } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import { useQuasar } from 'quasar'
+import { moduleUpdate, moduleDelete } from "src/graphql/mutation";
+import { getResponsibleUser, getModules } from "src/graphql/query";
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   setup() {
     const $q = useQuasar();
     const moduleId = ref();
     const modulesList = ref([]);
+    const modulesListById = ref([]);
     const responsibleUsers = ref([]);
     const title = ref("");
     const responsibleUser = ref();
-    const start_date = ref();
+    const start_date = ref("");
     const end_date = ref();
     const alert = ref(false);
 
-    const getModules = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query getModules {
-            paginate_type1(page: 1, perPage: 100) {
-              data {
-                id
-                type_id
-                author_id
-                level
-                position
-                created_at
-                updated_at
-                name
-                property4 {
-                  id
-                  user_id
-                  fullname {
-                    first_name
-                    last_name
-                  }
-                }
-                property6 {
-                  date
-                }
-                property7 {
-                  date
-                }
-                property9 {
-                  name
-                  property8
-                }
-              }
-
-              paginatorInfo {
-                perPage
-                currentPage
-                lastPage
-                total
-                count
-                from
-                to
-                hasMorePages
-              }
-            }
-          }
-        `,
-        null,
-        {
-          pollInterval: 1,
-        }
-      );
+    const modulesGet = () => {
+      const { result, onResult, refetch } = useQuery(getModules);
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
-        localStorage.setItem("modulesArray", JSON.stringify(modulesList.value))
+
+        let userID = localStorage.getItem("userSignInId");
+        if (userID != "5120362227219750820") {
+          modulesListById.value = modulesList.value.filter(
+            (item) => item.property4.user_id == userID
+          );
+        } else {
+          modulesListById.value = modulesList.value;
+        }
       });
       refetch();
     };
-
-    // getModules();
 
     const onItemClick = (id) => {
       responsibleUser.value = id;
@@ -221,29 +184,20 @@ export default defineComponent({
     const getModuleId = (id) => {
       alert.value = true;
       moduleId.value = id;
+
+      modulesList.value.forEach((item) => {
+        console.log(modulesList.value);
+        if (item.id === moduleId.value) {
+          title.value = item.name;
+          responsibleUser.value = item.property4.id;
+          start_date.value = item.property6.date;
+          end_date.value = item.property7.date;
+        }
+      });
     };
 
     const getResponsibleUsers = () => {
-      const { result, onResult, refetch } = useQuery(
-        gql`
-          query {
-            get_group(id: "4833572297286333641") {
-              name
-              subject {
-                id
-                type_id
-                email {
-                  email
-                }
-                fullname {
-                  first_name
-                  last_name
-                }
-              }
-            }
-          }
-        `
-      );
+      const { result, onResult, refetch } = useQuery(getResponsibleUser);
 
       onResult(() => {
         responsibleUsers.value = result.value.get_group.subject;
@@ -252,55 +206,16 @@ export default defineComponent({
       return { onResult };
     };
 
-    // getResponsibleUsers();
-
-    const { mutate: deleteModule } = useMutation(gql`
-      mutation ($id: String!) {
-        delete_type1(id: $id) {
-          status
-        }
-      }
-    `);
+    const { mutate: deleteModule } = useMutation(moduleDelete);
 
     const deleteModules = async (id) => {
       const { data } = await deleteModule({
         id: id,
       });
-      console.log("deleted");
+      modulesGet();
     };
 
-    const { mutate: updateModule } = useMutation(gql`
-      mutation ($id: String!, $input: update_type1_input!) {
-        update_type1(id: $id, input: $input) {
-          status
-          recordId
-          record {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-            property4 {
-              id
-              user_id
-              fullname {
-                first_name
-                last_name
-              }
-            }
-            property6 {
-              date
-            }
-            property7 {
-              date
-            }
-          }
-        }
-      }
-    `);
+    const { mutate: updateModule } = useMutation(moduleUpdate);
 
     const updateModules = async (id) => {
       const { data } = await updateModule({
@@ -318,13 +233,14 @@ export default defineComponent({
           },
         },
       });
-       $q.notify({
+      $q.notify({
         message: "Модуль изменен",
         icon: "check",
         timeout: 1000,
-        color:"black"
+        color: "black",
       });
       resetForm();
+      modulesGet();
     };
 
     const resetForm = () => {
@@ -336,13 +252,12 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      getModules();
+      modulesGet();
       getResponsibleUsers();
     });
 
     return {
-      // onResult,
-      modulesList,
+      modulesListById,
       deleteModules,
       title,
       responsibleUsers,
