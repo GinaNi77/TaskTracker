@@ -148,6 +148,7 @@ query {
         last_name
       }
       property5 {
+        id
         name
         property3
         property8

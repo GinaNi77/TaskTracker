@@ -438,6 +438,8 @@ export default defineComponent({
           },
         },
       });
+
+      
       $q.notify({
         message: "Задача изменена",
         icon: "check",
