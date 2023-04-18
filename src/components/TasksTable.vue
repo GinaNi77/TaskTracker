@@ -274,6 +274,7 @@ export default defineComponent({
             }
           }
         }
+      console.log(result.value.paginate_type2.data);
       });
 
       refetch();
@@ -338,6 +339,7 @@ export default defineComponent({
       });
       reset();
       getTasksList();
+      alert.value = false;
     };
 
     const reset = () => {
