@@ -1,5 +1,5 @@
 <template>
-  <div v-if="(userID == 5120362227219750820)">
+  <div v-if="userID == 5120362227219750820">
     <q-list>
       <table
         style="
@@ -271,8 +271,13 @@ import { defineComponent, ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { getPerformerUser, getModules, getTasks, getSubjectTasks } from "src/graphql/query"
-import { taskUpdate, taskDelete } from "src/graphql/mutation"
+import {
+  getPerformerUser,
+  getModules,
+  getTasks,
+  getSubjectTasks,
+} from "src/graphql/query";
+import { taskUpdate, taskDelete } from "src/graphql/mutation";
 import { useQuasar } from "quasar";
 
 export default defineComponent({
@@ -297,40 +302,50 @@ export default defineComponent({
     const getTaskId = (id) => {
       alert.value = true;
       taskId.value = id;
+
+      ownerTasksList.value.forEach((item) => {
+        // console.log(ownerTasksList.value);
+        if (item.id === taskId.value) {
+          title.value = item.name;
+          performerUser.value = item.property5.id;
+          description.value = item.property3;
+          taskStatus.value = item.property8;
+          moduleId.value = item.property9.id;
+        }
+        // console.log(moduleId);
+      });
       modulesGet();
       getPerformer();
-      
     };
 
     const subjectTasksGet = () => {
-     const { result, onResult, refetch } = useQuery(getSubjectTasks) 
+      const { result, onResult, refetch } = useQuery(getSubjectTasks);
 
       onResult(() => {
-      tasksList.value = result.value.paginate_subject.data;
+        tasksList.value = result.value.paginate_subject.data;
 
-      tasksListById.value = [];
-      for (let i = 0; i < tasksList.value.length; i++) {
-        for (let j = 0; j < tasksList.value[i].property5.length; j++) {
-          if (tasksList.value[i].property5[j].property5.user_id == userID) {
-            tasksListById.value.push(tasksList.value[i].property5[j]);
+        tasksListById.value = [];
+        for (let i = 0; i < tasksList.value.length; i++) {
+          for (let j = 0; j < tasksList.value[i].property5.length; j++) {
+            if (tasksList.value[i].property5[j].property5.user_id == userID) {
+              tasksListById.value.push(tasksList.value[i].property5[j]);
+            }
           }
         }
-      }
-      getOwnerTasksList();
-    });
+        getOwnerTasksList();
+      });
 
-    refetch()
+      refetch();
 
-    return{
-      onResult
-    }
+      return {
+        onResult,
+      };
+    };
 
-    }
+    subjectTasksGet();
 
-    subjectTasksGet()
-   
     const getPerformer = () => {
-      const { result, onResult, refetch } = useQuery(getPerformerUser)
+      const { result, onResult, refetch } = useQuery(getPerformerUser);
 
       onResult(() => {
         performerUsers.value = result.value.get_group.subject;
@@ -352,7 +367,7 @@ export default defineComponent({
     };
 
     const modulesGet = () => {
-      const { result, onResult, refetch } = useQuery(getModules)
+      const { result, onResult, refetch } = useQuery(getModules);
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
@@ -366,7 +381,7 @@ export default defineComponent({
     };
 
     const getOwnerTasksList = () => {
-      const { result, onResult, refetch } = useQuery(getTasks)
+      const { result, onResult, refetch } = useQuery(getTasks);
 
       onResult(() => {
         ownerTasksList.value = result.value.paginate_type2.data;
@@ -379,13 +394,13 @@ export default defineComponent({
       };
     };
 
-    const { mutate: deleteTask } = useMutation(taskDelete)
+    const { mutate: deleteTask } = useMutation(taskDelete);
 
     const deleteTasks = async (id) => {
       const { data } = await deleteTask({
         id: id,
       });
-      subjectTasksGet()
+      subjectTasksGet();
     };
 
     const getUserId = (id) => {
@@ -406,7 +421,7 @@ export default defineComponent({
       }
     };
 
-    const { mutate: updateTask } = useMutation(taskUpdate)
+    const { mutate: updateTask } = useMutation(taskUpdate);
 
     const updateTasks = async () => {
       const { data } = await updateTask({
@@ -430,7 +445,7 @@ export default defineComponent({
         color: "black",
       });
       reset();
-      subjectTasksGet()
+      subjectTasksGet();
     };
 
     const reset = () => {
