@@ -266,15 +266,11 @@ export default defineComponent({
         if (userID == 5120362227219750820) {
           tasksList.value = result.value.paginate_type2.data;
         } else {
-          for (let i = 0; i < result.value.paginate_type2.data.length; i++) {
-            if (
-              result.value.paginate_type2.data[i].property5.user_id == userID
-            ) {
-              tasksList.value.push(result.value.paginate_type2.data[i]);
-            }
-          }
+          tasksList.value = result.value.paginate_type2.data.filter(
+            (item) => item.property5.user_id == userID
+          );
         }
-      console.log(result.value.paginate_type2.data);
+        console.log(result.value.paginate_type2.data);
       });
 
       refetch();

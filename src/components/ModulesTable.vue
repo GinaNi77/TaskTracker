@@ -159,7 +159,7 @@ export default defineComponent({
     const end_date = ref();
     const alert = ref(false);
 
-    const modulesGet = () => {                          // НАДО НЕМНОГО ИЗМЕНИТЬ
+    const modulesGet = () => {
       const { result, onResult, refetch } = useQuery(getModules);
 
       onResult(() => {
