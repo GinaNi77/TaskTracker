@@ -57,7 +57,7 @@ export default defineComponent({
 
     // const subjectId = ref([])
 
-    const { mutate: signInUser } = useMutation(userSignIn)
+    const { mutate: signInUser } = useMutation(userSignIn);
 
     const signIn = async () => {
       const { data } = await signInUser({
@@ -77,47 +77,47 @@ export default defineComponent({
       }
     };
 
-//     const userIdGet=(subjectData)=>{
+    //     const userIdGet=(subjectData)=>{
 
-//       console.log(subjectData)
-//       const { result, onResult } = useQuery(gql`
-//         query {
-//             paginate_subject(
-//               page: 1
-//               perPage: 100
-//               where: {column: "user_id", operator: EQ, value: "${subjectData}"}
-//             )
-//             {
-//               data {
-//                 id
-//                 type_id
-//                 author_id
-//                 level
-//                 position
-//                 created_at
-//                 updated_at
-//                 user_id
-//                 fullname {
-//                   first_name
-//                   last_name
-//                 }
-//                 email{
-//                   email
-//                 }
-              
-//               } 
-//           }
-//         }`
-// )
-//       onResult(() => {
-//         subjectId.value = result.value.paginate_subject.data
-//         console.log(subjectId.value)
-//       });
+    //       console.log(subjectData)
+    //       const { result, onResult } = useQuery(gql`
+    //         query {
+    //             paginate_subject(
+    //               page: 1
+    //               perPage: 100
+    //               where: {column: "user_id", operator: EQ, value: "${subjectData}"}
+    //             )
+    //             {
+    //               data {
+    //                 id
+    //                 type_id
+    //                 author_id
+    //                 level
+    //                 position
+    //                 created_at
+    //                 updated_at
+    //                 user_id
+    //                 fullname {
+    //                   first_name
+    //                   last_name
+    //                 }
+    //                 email{
+    //                   email
+    //                 }
 
-//       return{
-//         onResult, subjectId
-//       }
-//     }
+    //               }
+    //           }
+    //         }`
+    // )
+    //       onResult(() => {
+    //         subjectId.value = result.value.paginate_subject.data
+    //         console.log(subjectId.value)
+    //       });
+
+    //       return{
+    //         onResult, subjectId
+    //       }
+    //     }
 
     const resetForm = () => {
       (form.value.email = ""), (form.value.password = "");

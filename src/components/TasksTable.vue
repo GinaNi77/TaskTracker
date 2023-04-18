@@ -299,6 +299,7 @@ export default defineComponent({
       taskId.value = id;
       modulesGet();
       getPerformer();
+      
     };
 
     const subjectTasksGet = () => {
