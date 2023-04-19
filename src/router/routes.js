@@ -34,7 +34,11 @@ const routes = [
       },
       {
         path: 'teams/3969277701932267641',
-        component: () => import('components/AddPerformerUser.vue')
+        component: () => import('src/components/PerformerUser.vue')
+      },
+      {
+        path: '/addPer',
+        component: () => import('src/components/AddPerformerUser.vue')
       },
       {
         path: 'teams/9163702586231323932',

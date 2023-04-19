@@ -23,15 +23,15 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import AddPerformerUser from "../components/AddPerformerUser.vue";
-import AddResponsibleUser from "./ResponsibleUser.vue";
+import PerformerUser from "src/components/PerformerUser.vue";
+import ResponsibleUser from "src/components/ResponsibleUser.vue";
 
 export default defineComponent({
   name: "team-page",
   props: ["team_pages", "selectedPage"],
   components: {
-    AddPerformerUser,
-    AddResponsibleUser,
+    PerformerUser,
+    ResponsibleUser,
   },
 
   setup() {
