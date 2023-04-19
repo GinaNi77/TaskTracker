@@ -7,7 +7,7 @@
     <div
       style="width: 100%"
       class="flex justify-center"
-      v-if="tasksListById.length"
+      v-if="tasksList.length"
     >
       <table style="width: 90%; border-collapse: collapse">
         <tr>
@@ -21,7 +21,7 @@
         </tr>
 
         <tr
-          v-for="item in tasksListById"
+          v-for="item in tasksList"
           :key="item.index"
           :class="
             item.property8 == 8536411824694842134
@@ -143,14 +143,13 @@ import { useQuery, useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import router from "../router";
 import { useQuasar } from "quasar";
-import { taskUpdate, taskDelete } from "src/graphql/mutation"
-import { getTasks } from "src/graphql/query"
+import { taskUpdate, taskDelete } from "src/graphql/mutation";
+import { getTasks } from "src/graphql/query";
 
 export default defineComponent({
   setup() {
     const $q = useQuasar();
     const tasksList = ref([]);
-    const tasksListById = ref([]);
     const moduleID = ref();
     const taskId = ref();
     const alert = ref(false);
@@ -166,21 +165,17 @@ export default defineComponent({
     console.log(moduleID.value);
 
     const tasksGet = () => {
-      const { result, onResult, refetch } = useQuery(getTasks)
+      const { result, onResult, refetch } = useQuery(getTasks);
       refetch();
       onResult(() => {
-        tasksList.value = result.value.paginate_type2.data;
-        console.log(tasksList.value);
-
-        tasksListById.value = tasksList.value.filter(
+        tasksList.value = result.value.paginate_type2.data.filter(
           (item) => item.property9.id === moduleID.value
         );
-
-        console.log(tasksListById.value);
+        console.log(tasksList.value);
       });
     };
 
-    const { mutate: deleteModuleTask } = useMutation(taskDelete)
+    const { mutate: deleteModuleTask } = useMutation(taskDelete);
 
     const deleteModules = async (id) => {
       const { data } = await deleteModuleTask({
@@ -199,6 +194,15 @@ export default defineComponent({
     const getTaskId = (id) => {
       alert.value = true;
       taskId.value = id;
+
+      tasksList.value.forEach((item) => {
+        if (item.id === taskId.value) {
+          title.value = item.name;
+          performerUser.value = item.property5.id;
+          description.value = item.property3;
+          taskStatus.value = item.property8;
+        }
+      });
     };
 
     const getTaskStatus = (status) => {
@@ -213,7 +217,7 @@ export default defineComponent({
       performerUser.value = id;
     };
 
-    const { mutate: updateTask } = useMutation(taskUpdate)
+    const { mutate: updateTask } = useMutation(taskUpdate);
 
     const updateTasks = async () => {
       const { data } = await updateTask({
@@ -250,7 +254,6 @@ export default defineComponent({
 
     return {
       tasksList,
-      tasksListById,
       deleteModules,
       alert,
       getTaskId,

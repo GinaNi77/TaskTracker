@@ -16,7 +16,7 @@
         <th></th>
       </tr>
 
-      <tr v-for="item in modulesListById" :key="item.index">
+      <tr v-for="item in modulesList" :key="item.index">
         <td>{{ item.name }}</td>
         <td>{{ item.property6.date }}</td>
         <td>{{ item.property7.date }}</td>
@@ -151,7 +151,6 @@ export default defineComponent({
     const $q = useQuasar();
     const moduleId = ref();
     const modulesList = ref([]);
-    const modulesListById = ref([]);
     const responsibleUsers = ref([]);
     const title = ref("");
     const responsibleUser = ref();
@@ -163,15 +162,13 @@ export default defineComponent({
       const { result, onResult, refetch } = useQuery(getModules);
 
       onResult(() => {
-        modulesList.value = result.value.paginate_type1.data;
-
         let userID = localStorage.getItem("userSignInId");
         if (userID != "5120362227219750820") {
-          modulesListById.value = modulesList.value.filter(
+          modulesList.value = result.value.paginate_type1.data.filter(
             (item) => item.property4.user_id == userID
           );
         } else {
-          modulesListById.value = modulesList.value;
+          modulesList.value = result.value.paginate_type1.data;
         }
       });
       refetch();
@@ -186,7 +183,6 @@ export default defineComponent({
       moduleId.value = id;
 
       modulesList.value.forEach((item) => {
-        console.log(modulesList.value);
         if (item.id === moduleId.value) {
           title.value = item.name;
           responsibleUser.value = item.property4.id;
@@ -257,7 +253,6 @@ export default defineComponent({
     });
 
     return {
-      modulesListById,
       deleteModules,
       title,
       responsibleUsers,
@@ -269,6 +264,7 @@ export default defineComponent({
       moduleId,
       onItemClick,
       updateModules,
+      modulesList,
     };
   },
 });
