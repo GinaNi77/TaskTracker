@@ -59,9 +59,8 @@
 
 <script>
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
-import { useQuery } from "@vue/apollo-composable";
+import { useQuery, useLazyQuery } from "@vue/apollo-composable";
 import { getRootPages, getAllGroup, getModules } from "src/graphql/query";
-import gql from "graphql-tag";
 import router from "../router";
 import MainPageVue from "../pages/MainPage.vue";
 import rabbit from "/src/rabbit/rabbit";
@@ -77,11 +76,6 @@ export default defineComponent({
   },
 
   setup() {
-    onMounted(() => {
-      rabbit.queueCreate();
-      rabbit.rabbitConnect();
-    });
-
     const leftDrawerOpen = ref(false);
     const treePages = ref([]);
     const parentPages = ref([]);
@@ -92,20 +86,25 @@ export default defineComponent({
     const userGroups = ref([]);
     const userID = ref();
 
+    onMounted(() => {
+      rabbit.queueCreate();
+      rabbit.rabbitConnect();
+    });
+
     const clear = () => {
       userID.value = "";
       userGroups.values = [];
       treePages.value = [];
     };
 
-    const getUserGroups = () => {
-      userID.value = localStorage.getItem("userSignInId");
+    const getData = () => {
+      let group = apolloClient.query({ query: getAllGroup });
+      let rootPages = apolloClient.query({ query: getRootPages });
 
-      const { result, onResult } = useQuery(getAllGroup);
-
-      onResult(() => {
+      Promise.all([group, rootPages]).then(([group, rootPages]) => {
+        userID.value = localStorage.getItem("userSignInId");
         const groups = ref([]);
-        groups.value = result.value.paginate_group.data;
+        groups.value = group.data.paginate_group.data;
 
         userGroups.value = [];
         groups.value.forEach((item) => {
@@ -116,65 +115,49 @@ export default defineComponent({
           });
         });
 
-        getTree();
+        parentPages.value = rootPages.data.rootPages.data;
+
+        getAllTree();
       });
     };
 
-    const getTree = () => {
-      const { result, loading, error, onResult } = useQuery(getRootPages);
+    const getAllTree = () => {
+      const urlMap = {
+        Команда: "/teams",
+        Модули: "/modules",
+        "Мои задачи": "/tasks",
+      };
 
-      onResult(() => {
-        const urlMap = {
-          Команда: "/teams",
-          Модули: "/modules",
-          "Мои задачи": "/tasks",
+      treePages.value = [];
+      parentPages.value.forEach((page) => {
+        let treeElem = {
+          label: page.title,
+          id: page.id,
+          url: urlMap[page.title],
+          children: page.children.data.map((elem) => {
+            elem = {
+              label: elem.title,
+              id: elem.id,
+              url: `${urlMap[page.title]}/${elem.id}`,
+              canView: canViewTreeItem(elem),
+            };
+            return elem;
+          }),
         };
-
-        treePages.value = [];
-        parentPages.value = result.value.rootPages.data;
-
-        parentPages.value.forEach((page) => {
-          let treeElem = {
-            label: page.title,
-            id: page.id,
-            url: urlMap[page.title],
-            children: page.children.data.map((elem) => {
-              elem = {
-                label: elem.title,
-                id: elem.id,
-                url: `${urlMap[page.title]}/${elem.id}`,
-                canView: canViewTreeItem(elem),
-              };
-              return elem;
-            }),
-          };
-
-          if (
-            canViewTreeItem(page) ||
-            treeElem.children.some((item) => item.canView)
-          ) {
-            treeElem.children = treeElem.children.filter(
-              (item) => item.canView
-            );
-            treePages.value.push(treeElem);
-          }
-        });
-
-        if (treePages.value[findIndexByUrl("/teams")]) {
-          teams.value = treePages.value[findIndexByUrl("/teams")].children;
+        if (
+          canViewTreeItem(page) ||
+          treeElem.children.some((item) => item.canView)
+        ) {
+          treeElem.children = treeElem.children.filter((item) => item.canView);
+          treePages.value.push(treeElem);
         }
-
-         modulesGet();
       });
-    };
 
-    const modulesGet = () => {
-      const { result, onResult, refetch } = useQuery(getModules);
+      const { result: modules, onResult, refetch } = useQuery(getModules);
       refetch();
 
       onResult(() => {
-        modulesList.value = result.value.paginate_type1.data;
-    
+        modulesList.value = modules.value.paginate_type1.data;
         treePages.value[findIndexByUrl("/modules")].children = [];
 
         modulesList.value.forEach((page) => {
@@ -186,16 +169,17 @@ export default defineComponent({
                 page.id
               }`,
             });
-          } else {
-            const user = JSON.parse(localStorage.getItem("userData"));
           }
         });
-
       });
+
+      if (treePages.value[findIndexByUrl("/teams")]) {
+        teams.value = treePages.value[findIndexByUrl("/teams")].children;
+      }
     };
 
     const canViewTreeItem = (item) => {
-        if (userID.value == "5120362227219750820") {
+      if (userID.value == "5120362227219750820") {
         return true;
       } else {
         //  check module
@@ -247,11 +231,11 @@ export default defineComponent({
     };
 
     if (!!localStorage.getItem("token")) {
-      getUserGroups();
+      getData();
     }
 
     const onUserAuthorized = () => {
-      getUserGroups();
+      getData();
     };
 
     return {
@@ -261,7 +245,6 @@ export default defineComponent({
       teams,
       leftDrawerOpen,
       clear,
-      modulesGet,
       onTreeItemSelected,
       onUserAuthorized,
       toggleLeftDrawer() {

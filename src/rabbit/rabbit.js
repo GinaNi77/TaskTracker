@@ -42,6 +42,8 @@ const rabbitConnect = () => {
 
             refetchTasks()
             refetchModules()
+            
+            
 
             message.ack();
         };

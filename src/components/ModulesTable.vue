@@ -135,8 +135,6 @@
       </q-form>
     </q-card>
   </q-dialog>
-
-  <input type="text" v-model="title" />
 </template>
 
 <script>
