@@ -38,7 +38,11 @@ const routes = [
       },
       {
         path: 'teams/9163702586231323932',
-        component: () => import('components/AddResponsibleUser.vue')
+        component: () => import('src/components/ResponsibleUser.vue')
+      },
+      {
+        path: '/addRes',
+        component: () => import('src/components/AddResponsibleUser.vue')
       },
 
 

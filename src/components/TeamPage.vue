@@ -24,7 +24,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 import AddPerformerUser from "../components/AddPerformerUser.vue";
-import AddResponsibleUser from "../components/AddResponsibleUser.vue";
+import AddResponsibleUser from "./ResponsibleUser.vue";
 
 export default defineComponent({
   name: "team-page",
