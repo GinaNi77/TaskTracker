@@ -139,7 +139,6 @@ const emit = defineEmits(['updateTask'])
       };
     };
 
-
  const getUserId = (id) => {
       performerUser.value = id;
     };
@@ -191,6 +190,4 @@ const getTaskStatus = (status) => {
 const emitFun = () => {
         emit("updateTask");
     }
-
-
 </script>

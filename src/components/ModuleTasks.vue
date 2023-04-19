@@ -29,8 +29,7 @@
               : item.property8 == 3812168432889805433
               ? 'bg-yellow-4'
               : 'bg-light-green-4'
-          "
-        >
+          ">
           <td>{{ item.property9.name }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.property3 }}</td>
@@ -48,7 +47,6 @@
                 icon="edit"
                 @click="getTaskId(item.id)"
               />
-
               <q-btn v-if="userID == 5120362227219750820"
                 class="bg-red-10 q-ma-xs text-white"
                 icon="delete"
@@ -154,7 +152,6 @@ export default defineComponent({
         color:"black"
       });
     }   
-
 
     return {
       tasksList,

@@ -228,6 +228,4 @@ const getTaskStatus = (status) => {
 const emitFun = () => {
         emit("updateTask");
     }
-
-
 </script>
