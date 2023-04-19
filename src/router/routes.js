@@ -56,6 +56,10 @@ const routes = [
         path: '/updateTask',
         component: () => import('components/UpdateTask.vue')
       },
+      {
+        path: '/updateTaskPerformer',
+        component: () => import('components/UpdateTaskPerformer.vue')
+      },
 
 
     ]
