@@ -52,6 +52,10 @@ const routes = [
         path: '/updateModule',
         component: () => import('components/UpdateModule.vue')
       },
+      {
+        path: '/updateTask',
+        component: () => import('components/UpdateTask.vue')
+      },
 
 
     ]

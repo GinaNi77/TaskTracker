@@ -86,9 +86,9 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref} from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
-import { moduleUpdate, moduleDelete } from "src/graphql/mutation";
+import { moduleDelete } from "src/graphql/mutation";
 import { getResponsibleUser, getModules } from "src/graphql/query";
 import { useQuasar } from "quasar";
 import UpdateModule from "src/components/UpdateModule.vue"
@@ -157,10 +157,8 @@ export default defineComponent({
       modulesGet();
     };
 
-    onMounted(() => {
       modulesGet();
       getResponsibleUsers();
-    });
 
     const closeWindow = ()=>{
       alert.value = false;
