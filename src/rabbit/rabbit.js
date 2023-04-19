@@ -11,9 +11,6 @@ const { refetch: refetchTasks } = useQuery(getTasks);
 const { refetch: refetchModules } = useQuery(getModules);
 const { refetch: refetchPerGroup } = useQuery(getPerformerUser);
 
-
-
-
 const queueCreate = async () => {
     const { data } = await createQueue();
     localStorage.setItem("queue", data.notificationSubscribe.hash);
@@ -59,10 +56,7 @@ const rabbitConnect = () => {
         console.log('Close', msg);
     }
 
-
     client.connect(headers, onConnect, onError, onClose, '/');
-
-
 }
 
 const rabbit = { queueCreate, rabbitConnect };

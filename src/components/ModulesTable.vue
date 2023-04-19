@@ -72,68 +72,16 @@
   </div>
 
   <q-dialog v-model="alert">
-    <q-card>
-      <q-form class="row justify-center" @submit.prevent="updateModules">
-        <p class="col-12 text-h5 text-center q-mt-md">Изменить Модуль</p>
-        <div class="q-gutter-y-lg">
-          <q-input label="Название" v-model="title" />
-
-          <q-input label="Ответственный" v-model="responsibleUser">
-            <template #append>
-              <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
-              <q-popup-proxy>
-                <q-list>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    v-for="user in responsibleUsers"
-                    :key="user.index"
-                    @click="onItemClick(user.id)"
-                  >
-                    <q-item-section>
-                      <q-item-label>{{
-                        user.fullname.first_name +
-                        "  " +
-                        user.fullname.last_name
-                      }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-popup-proxy>
-            </template>
-          </q-input>
-
-          <q-input label="Дата начала" v-model="start_date">
-            <template #append>
-              <q-icon name="event" class="cursor-pointer"></q-icon>
-              <q-popup-proxy>
-                <q-date v-model="start_date" minimal mask="DD.MM.YYYY" />
-              </q-popup-proxy>
-            </template>
-          </q-input>
-
-          <q-input label="Дата окончания" v-model="end_date">
-            <template #append>
-              <q-icon name="event" class="cursor-pointer"></q-icon>
-              <q-popup-proxy>
-                <q-date v-model="end_date" minimal mask="DD.MM.YYYY" />
-              </q-popup-proxy>
-            </template>
-          </q-input>
-
-          <div class="q-mt-lg">
-            <q-btn
-              outline
-              size="md"
-              color="black"
-              label="Изменить"
-              class="full-width q-mb-md"
-              type="submit"
-            />
-          </div>
-        </div>
-      </q-form>
-    </q-card>
+    <UpdateModule
+    :moduleId="moduleId"
+    :modulesList="modulesList"
+    :title="title"
+    :responsibleUser="responsibleUser"
+    :start_date="start_date"
+    :end_date="end_date"
+    :responsibleUsers="responsibleUsers"
+    @updateModule="closeWindow"
+    />
   </q-dialog>
 </template>
 
@@ -143,8 +91,12 @@ import { useQuery, useMutation } from "@vue/apollo-composable";
 import { moduleUpdate, moduleDelete } from "src/graphql/mutation";
 import { getResponsibleUser, getModules } from "src/graphql/query";
 import { useQuasar } from "quasar";
+import UpdateModule from "src/components/UpdateModule.vue"
 
 export default defineComponent({
+  components:{
+    UpdateModule
+  },
   setup() {
     const $q = useQuasar();
     const moduleId = ref();
@@ -170,10 +122,6 @@ export default defineComponent({
         }
       });
       refetch();
-    };
-
-    const onItemClick = (id) => {
-      responsibleUser.value = id;
     };
 
     const getModuleId = (id) => {
@@ -209,46 +157,21 @@ export default defineComponent({
       modulesGet();
     };
 
-    const { mutate: updateModule } = useMutation(moduleUpdate);
-
-    const updateModules = async (id) => {
-      const { data } = await updateModule({
-        id: moduleId.value,
-        input: {
-          name: title.value,
-          property6: {
-            date: start_date.value,
-          },
-          property7: {
-            date: end_date.value,
-          },
-          property4: {
-            "2730894142110796608": responsibleUser.value,
-          },
-        },
-      });
-      $q.notify({
-        message: "Модуль изменен",
-        icon: "check",
-        timeout: 1000,
-        color: "black",
-      });
-      resetForm();
-      modulesGet();
-    };
-
-    const resetForm = () => {
-      (moduleId.value = ""),
-        (title.value = ""),
-        (start_date.value = ""),
-        (end_date.value = ""),
-        (responsibleUser.value = "");
-    };
-
     onMounted(() => {
       modulesGet();
       getResponsibleUsers();
     });
+
+    const closeWindow = ()=>{
+      alert.value = false;
+  
+      $q.notify({
+        message: "Модуль изменен",
+        icon: "check",
+        timeout: 1000,
+        color:"black"
+      });
+    }
 
     return {
       deleteModules,
@@ -260,9 +183,8 @@ export default defineComponent({
       getModuleId,
       alert,
       moduleId,
-      onItemClick,
-      updateModules,
       modulesList,
+      closeWindow
     };
   },
 });

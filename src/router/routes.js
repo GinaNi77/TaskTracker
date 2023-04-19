@@ -48,6 +48,10 @@ const routes = [
         path: '/addRes',
         component: () => import('src/components/AddResponsibleUser.vue')
       },
+      {
+        path: '/updateModule',
+        component: () => import('components/UpdateModule.vue')
+      },
 
 
     ]
