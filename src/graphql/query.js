@@ -45,7 +45,7 @@ export const getModules = gql`
               }
             }
           `;
-          
+
 export const getResponsibleUser = gql`
               query {
                 get_group(id: "4833572297286333641") {
@@ -107,6 +107,7 @@ export const getTasks = gql`
                       }
                     }
                     property9 {
+                    id
                       name
                       property4 {
                         fullname {
@@ -147,6 +148,7 @@ query {
         last_name
       }
       property5 {
+        id
         name
         property3
         property8

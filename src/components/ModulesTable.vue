@@ -16,7 +16,7 @@
         <th></th>
       </tr>
 
-      <tr v-for="item in modulesListById" :key="item.index">
+      <tr v-for="item in modulesList" :key="item.index">
         <td>{{ item.name }}</td>
         <td>{{ item.property6.date }}</td>
         <td>{{ item.property7.date }}</td>
@@ -60,7 +60,7 @@
               :disabled="item.property9.length ? '' : disabled"
               class="bg-red-10 q-ma-xs text-white"
               icon="delete"
-              @click="deleteModules(item.id)"
+              @click="deleteModules(item.id)" 
             />
           </div>
         </td>
@@ -140,7 +140,7 @@
 <script>
 import { defineComponent, ref, onMounted } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
-import { moduleUpdate, moduleDelete} from "src/graphql/mutation"
+import { moduleUpdate, moduleDelete } from "src/graphql/mutation";
 import { getResponsibleUser, getModules } from "src/graphql/query";
 import { useQuasar } from "quasar";
 
@@ -149,27 +149,24 @@ export default defineComponent({
     const $q = useQuasar();
     const moduleId = ref();
     const modulesList = ref([]);
-    const modulesListById = ref([]);
     const responsibleUsers = ref([]);
     const title = ref("");
     const responsibleUser = ref();
-    const start_date = ref();
+    const start_date = ref("");
     const end_date = ref();
     const alert = ref(false);
 
     const modulesGet = () => {
-      const { result, onResult, refetch } = useQuery(getModules)
-       
-      onResult(() => {
-        modulesList.value = result.value.paginate_type1.data;
+      const { result, onResult, refetch } = useQuery(getModules);
 
+      onResult(() => {
         let userID = localStorage.getItem("userSignInId");
         if (userID != "5120362227219750820") {
-          modulesListById.value = modulesList.value.filter(
+          modulesList.value = result.value.paginate_type1.data.filter(
             (item) => item.property4.user_id == userID
           );
         } else {
-          modulesListById.value = modulesList.value;
+          modulesList.value = result.value.paginate_type1.data;
         }
       });
       refetch();
@@ -182,10 +179,19 @@ export default defineComponent({
     const getModuleId = (id) => {
       alert.value = true;
       moduleId.value = id;
+
+      modulesList.value.forEach((item) => {
+        if (item.id === moduleId.value) {
+          title.value = item.name;
+          responsibleUser.value = item.property4.id;
+          start_date.value = item.property6.date;
+          end_date.value = item.property7.date;
+        }
+      });
     };
 
     const getResponsibleUsers = () => {
-      const { result, onResult, refetch } = useQuery(getResponsibleUser)
+      const { result, onResult, refetch } = useQuery(getResponsibleUser);
 
       onResult(() => {
         responsibleUsers.value = result.value.get_group.subject;
@@ -194,7 +200,7 @@ export default defineComponent({
       return { onResult };
     };
 
-    const { mutate: deleteModule } = useMutation(moduleDelete)
+    const { mutate: deleteModule } = useMutation(moduleDelete);
 
     const deleteModules = async (id) => {
       const { data } = await deleteModule({
@@ -203,7 +209,7 @@ export default defineComponent({
       modulesGet();
     };
 
-    const { mutate: updateModule } = useMutation(moduleUpdate)
+    const { mutate: updateModule } = useMutation(moduleUpdate);
 
     const updateModules = async (id) => {
       const { data } = await updateModule({
@@ -245,7 +251,6 @@ export default defineComponent({
     });
 
     return {
-      modulesListById,
       deleteModules,
       title,
       responsibleUsers,
@@ -257,6 +262,7 @@ export default defineComponent({
       moduleId,
       onItemClick,
       updateModules,
+      modulesList,
     };
   },
 });

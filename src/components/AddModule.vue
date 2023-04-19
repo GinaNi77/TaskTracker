@@ -77,7 +77,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import {addModule} from "src/graphql/mutation"
+import {addModule, ruleCreate} from "src/graphql/mutation"
 import { useQuasar } from 'quasar'
 import { getResponsibleUser } from "src/graphql/query"
 
@@ -110,6 +110,27 @@ export default defineComponent({
 
     const { mutate: moduleAdd } = useMutation(addModule)
 
+const { mutate: createPermissionRule } = useMutation(ruleCreate)
+
+    const createRule = async (moduleData) => {
+
+      console.log(moduleData.create_type1.recordId)
+      console.log(moduleData.create_type1.record.property4.id)
+
+      const { data: ruleData } = await createPermissionRule({
+        input: {
+          model_type: "object",
+          model_id: moduleData.create_type1.recordId,
+          owner_type: "subject",
+          owner_id: moduleData.create_type1.record.property4.id,
+          level: 7,
+        },
+      });
+      console.log(ruleData.permissionRuleCreate.status)
+      console.log(ruleData.permissionRuleCreate.recordId)
+
+    }
+
     const addModules = async () => {
       const { data } = await moduleAdd({
         input: {
@@ -126,6 +147,12 @@ export default defineComponent({
           },
         },
       });
+
+      console.log(data.create_type1.recordId)
+      console.log(data.create_type1.record.property4.id)
+
+      createRule(data)
+
        $q.notify({
         message: "Модуль добавлен",
         icon: "check",

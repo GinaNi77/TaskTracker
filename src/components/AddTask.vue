@@ -60,7 +60,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { addTask } from "src/graphql/mutation"
+import { addTask, ruleCreate } from "src/graphql/mutation"
 import { getPerformerUser, getModules } from "src/graphql/query"
 import { useQuasar } from 'quasar'
 
@@ -110,6 +110,39 @@ export default defineComponent({
 
     const { mutate: taskAdd } = useMutation(addTask)
 
+    const { mutate: createPermissionRule } = useMutation(ruleCreate)
+
+    const createRule = async (moduleData) => {
+
+      console.log(moduleData.create_type2.recordId)
+      console.log(moduleData.create_type2.record.property5.id)
+
+      const { data: ruleData } = await createPermissionRule({
+        input: {
+          model_type: "object",
+          model_id: moduleData.create_type2.recordId,
+          owner_type: "subject",
+          owner_id: moduleData.create_type2.record.property5.id,
+          level: 5,
+        },
+      });
+
+      const { data: ruleData2 } = await createPermissionRule({
+        input: {
+          model_type: "object",
+          model_id: moduleData.create_type2.recordId,
+          owner_type: "subject",
+          owner_id: moduleData.create_type2.record.property9.property4.id,
+          level: 7,
+        },
+      });
+      console.log(ruleData.permissionRuleCreate.status)
+      console.log(ruleData.permissionRuleCreate.recordId)
+
+      console.log(ruleData2.permissionRuleCreate.status)
+
+    }
+
     const addTasks = async () => {
        const {data} = await taskAdd(
         {
@@ -132,6 +165,14 @@ export default defineComponent({
                                 }
             }
         })
+
+        createRule(data)
+
+        console.log(data.create_type2.recordId);
+        console.log(data.create_type2.record.property5.id);
+
+        console.log(data.create_type2.record.property9.property4.id);
+         
          $q.notify({
         message: "Задача добавлена",
         icon: "check",

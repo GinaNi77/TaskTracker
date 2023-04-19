@@ -60,11 +60,11 @@
 <script>
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useQuery } from "@vue/apollo-composable";
-import { getRootPages, getAllGroup, getModules } from "src/graphql/query"
+import { getRootPages, getAllGroup, getModules } from "src/graphql/query";
 import gql from "graphql-tag";
 import router from "../router";
 import MainPageVue from "../pages/MainPage.vue";
-import rabbit from "/src/rabbit/rabbit"
+import rabbit from "/src/rabbit/rabbit";
 import { provideApolloClient } from "@vue/apollo-composable";
 import apolloClient from "src/apollo/client";
 
@@ -77,11 +77,10 @@ export default defineComponent({
   },
 
   setup() {
-
     onMounted(() => {
-  rabbit.queueCreate();
-  rabbit.rabbitConnect();
-});
+      rabbit.queueCreate();
+      rabbit.rabbitConnect();
+    });
 
     const leftDrawerOpen = ref(false);
     const treePages = ref([]);
@@ -112,7 +111,6 @@ export default defineComponent({
         groups.value.forEach((item) => {
           item.subject.forEach((subject) => {
             if (subject.user_id == userID.value) {
-              console.log(subject.user_id, userID.value);
               userGroups.value.push(item.id);
             }
           });
@@ -123,8 +121,8 @@ export default defineComponent({
     };
 
     const getTree = () => {
-      const { result, loading, error, onResult } = useQuery(getRootPages)
-       
+      const { result, loading, error, onResult } = useQuery(getRootPages);
+
       onResult(() => {
         const urlMap = {
           Команда: "/teams",
@@ -166,16 +164,18 @@ export default defineComponent({
           teams.value = treePages.value[findIndexByUrl("/teams")].children;
         }
 
-        modulesGet();
+         modulesGet();
       });
     };
 
     const modulesGet = () => {
-      const { result, onResult } = useQuery(getModules)
+      const { result, onResult, refetch } = useQuery(getModules);
+      refetch();
 
       onResult(() => {
         modulesList.value = result.value.paginate_type1.data;
-        console.log(modulesList.value);
+    
+        treePages.value[findIndexByUrl("/modules")].children = [];
 
         modulesList.value.forEach((page) => {
           if (canViewTreeItem(page)) {
@@ -190,11 +190,12 @@ export default defineComponent({
             const user = JSON.parse(localStorage.getItem("userData"));
           }
         });
+
       });
     };
 
     const canViewTreeItem = (item) => {
-      if (userID.value == "5120362227219750820") {
+        if (userID.value == "5120362227219750820") {
         return true;
       } else {
         //  check module
