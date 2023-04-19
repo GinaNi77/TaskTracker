@@ -123,7 +123,7 @@ const { mutate: createPermissionRule } = useMutation(ruleCreate)
           model_id: moduleData.create_type1.recordId,
           owner_type: "subject",
           owner_id: moduleData.create_type1.record.property4.id,
-          level: 5,
+          level: 7,
         },
       });
       console.log(ruleData.permissionRuleCreate.status)

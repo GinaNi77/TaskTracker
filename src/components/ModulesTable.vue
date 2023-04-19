@@ -60,7 +60,7 @@
               :disabled="item.property9.length ? '' : disabled"
               class="bg-red-10 q-ma-xs text-white"
               icon="delete"
-              @click="deleteModules(item.id)"
+              @click="deleteModules(item.id)" 
             />
           </div>
         </td>
@@ -135,8 +135,6 @@
       </q-form>
     </q-card>
   </q-dialog>
-
-  <input type="text" v-model="title" />
 </template>
 
 <script>

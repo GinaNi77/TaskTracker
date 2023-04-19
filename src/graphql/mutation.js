@@ -16,7 +16,7 @@ export const userSignIn = gql`
   }
 `;
 
-export const getQueue = gql `
+export const getQueue = gql`
 mutation {
     notificationSubscribe {
         hash
@@ -84,6 +84,7 @@ export const addTask = gql`
         property9{
         name
         property4{
+            id
             fullname{
             first_name
             last_name
@@ -110,7 +111,7 @@ export const moduleDelete = gql`
       }
     `;
 
-export const moduleUpdate= gql`
+export const moduleUpdate = gql`
     mutation ($id: String!, $input: update_type1_input!) {
       update_type1(id: $id, input: $input) {
         status
@@ -179,7 +180,7 @@ export const taskUpdate = gql`
       }
     }
   }
-`;     
+`;
 
 export const taskDelete = gql`
 mutation ($id: String!) {

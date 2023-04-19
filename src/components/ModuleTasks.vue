@@ -49,7 +49,7 @@
                 @click="getTaskId(item.id)"
               />
 
-              <q-btn
+              <q-btn v-if="userID == 5120362227219750820"
                 class="bg-red-10 q-ma-xs text-white"
                 icon="delete"
                 @click="deleteModules(item.id)"
@@ -70,19 +70,19 @@
       <q-form class="row justify-center" @submit.prevent="updateTasks">
         <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
         <div class="q-gutter-y-lg">
-          <q-input label="Название" v-model="title" />
+          <q-input v-if="userID == 5120362227219750820" label="Название" v-model="title" />
 
-          <q-input label="Описание" v-model="description" />
+          <q-input v-if="userID == 5120362227219750820" label="Описание" v-model="description" />
 
           <q-input label="Исполнитель" v-model="performerUser">
             <template #append>
-              <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+              <q-icon name="arrow_drop_down" class="cursor-pointer" @click="getPerformer"></q-icon>
               <q-popup-proxy>
                 <q-list>
                   <q-item
                     clickable
                     v-close-popup
-                    v-for="user in performerList"
+                    v-for="user in performerUsers"
                     :key="user.index"
                     @click="getUserId(user.id)"
                   >
@@ -140,11 +140,10 @@
 <script>
 import { defineComponent, ref, onUpdated, onBeforeUpdate } from "vue";
 import { useQuery, useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
 import router from "../router";
 import { useQuasar } from "quasar";
 import { taskUpdate, taskDelete } from "src/graphql/mutation";
-import { getTasks } from "src/graphql/query";
+import { getTasks, getPerformerUser } from "src/graphql/query";
 
 export default defineComponent({
   setup() {
@@ -157,9 +156,9 @@ export default defineComponent({
     const title = ref("");
     const description = ref("");
     const performerUser = ref("");
-    const performerList = ref(
-      JSON.parse(localStorage.getItem("performerArray"))
-    );
+    const performerUsers = ref([]);
+
+    const userID = localStorage.getItem("userSignInId");
 
     moduleID.value = router.currentRoute.value.params.id;
     console.log(moduleID.value);
@@ -234,6 +233,7 @@ export default defineComponent({
           },
         },
       });
+      alert.value = false
       $q.notify({
         message: "Задача изменена",
         icon: "check",
@@ -241,6 +241,19 @@ export default defineComponent({
         color: "black",
       });
       reset();
+    };
+
+    const getPerformer = () => {
+      const { result, onResult, refetch } = useQuery(getPerformerUser);
+
+      onResult(() => {
+        performerUsers.value = result.value.get_group.subject;
+      });
+
+      refetch();
+      return {
+        onResult,
+      };
     };
 
     const reset = () => {
@@ -263,8 +276,10 @@ export default defineComponent({
       description,
       updateTasks,
       getUserId,
-      performerList,
       performerUser,
+      userID,
+      getPerformer,
+      performerUsers
     };
   },
 });

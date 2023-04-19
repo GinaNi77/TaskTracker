@@ -126,8 +126,20 @@ export default defineComponent({
           level: 5,
         },
       });
+
+      const { data: ruleData2 } = await createPermissionRule({
+        input: {
+          model_type: "object",
+          model_id: moduleData.create_type2.recordId,
+          owner_type: "subject",
+          owner_id: moduleData.create_type2.record.property9.property4.id,
+          level: 7,
+        },
+      });
       console.log(ruleData.permissionRuleCreate.status)
       console.log(ruleData.permissionRuleCreate.recordId)
+
+      console.log(ruleData2.permissionRuleCreate.status)
 
     }
 
@@ -158,6 +170,8 @@ export default defineComponent({
 
         console.log(data.create_type2.recordId);
         console.log(data.create_type2.record.property5.id);
+
+        console.log(data.create_type2.record.property9.property4.id);
          
          $q.notify({
         message: "Задача добавлена",
