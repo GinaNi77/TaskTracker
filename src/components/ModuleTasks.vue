@@ -121,7 +121,6 @@ export default defineComponent({
       const { data } = await deleteModuleTask({
         id: id,
       });
-      console.log("deleted");
     };
 
     tasksGet();
@@ -168,7 +167,8 @@ export default defineComponent({
       description,
       performerUser,
       userID,
-      moduleID
+      moduleID,
+      taskId
     };
   },
 });

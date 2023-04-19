@@ -1,25 +1,13 @@
 <template>
-    <q-card>
+     <q-card>
       <q-form class="row justify-center" @submit.prevent="updateTasks">
         <p class="col-12 text-h5 text-center q-mt-md">Изменить Задачу</p>
         <div class="q-gutter-y-lg">
-          <q-input
-            v-if="userID == 5120362227219750820"
-            label="Название"
-            v-model="title"
-          />
+          <q-input v-if="userID == 5120362227219750820" label="Название" v-model="title" />
 
-          <q-input
-            v-if="userID == 5120362227219750820"
-            label="Описание"
-            v-model="description"
-          />
+          <q-input v-if="userID == 5120362227219750820" label="Описание" v-model="description" />
 
-          <q-input
-            v-if="userID == 5120362227219750820"
-            label="Исполнитель"
-            v-model="performerUser"
-          >
+          <q-input label="Исполнитель" v-model="performerUser">
             <template #append>
               <q-icon name="arrow_drop_down" class="cursor-pointer" @click="getPerformer"></q-icon>
               <q-popup-proxy>
@@ -32,9 +20,13 @@
                     @click="getUserId(user.id)"
                   >
                     <q-item-section>
-                      <q-item-label>{{
-                        user.fullname.first_name + " " + user.fullname.last_name
-                      }}</q-item-label>
+                      <q-item-label
+                        >{{
+                          user.fullname.first_name +
+                          " " +
+                          user.fullname.last_name
+                        }}
+                      </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -47,48 +39,19 @@
               <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
               <q-popup-proxy>
                 <q-list v-close-popup>
-                  <q-item clickable @click="getTaskStatus('Назначена')">
+                  <q-item clickable v-if="userID == 5120362227219750820" @click="getTaskStatus('Назначена')">
                     <q-item-section>
                       <q-item-label>Назначена</q-item-label>
-                    </q-item-section></q-item
-                  >
+                    </q-item-section>
+                  </q-item>
                   <q-item clickable @click="getTaskStatus('Выполнена')">
                     <q-item-section>
                       <q-item-label>Выполнена</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item
-                    v-if="userID == 5120362227219750820"
-                    clickable
-                    @click="getTaskStatus('Завершена')"
-                  >
+                  <q-item clickable @click="getTaskStatus('Завершена')">
                     <q-item-section>
                       <q-item-label>Завершена</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-popup-proxy>
-            </template>
-          </q-input>
-
-          <q-input
-            v-if="userID == 5120362227219750820"
-            label="Модуль"
-            v-model="moduleId"
-          >
-            <template #append>
-              <q-icon name="arrow_drop_down" class="cursor-pointer" @click="modulesGet"></q-icon>
-              <q-popup-proxy>
-                <q-list>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    v-for="item in modulesList"
-                    :key="item.index"
-                    @click="getModuleId(item.id)"
-                  >
-                    <q-item-section>
-                      <q-item-label>{{ item.name }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -108,7 +71,7 @@
           </div>
         </div>
       </q-form>
-    </q-card>    
+    </q-card> 
 </template>
 
 <script>
