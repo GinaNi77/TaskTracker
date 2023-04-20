@@ -35,9 +35,12 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useQuery, useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import router from "src/router";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { userSignIn } from "src/graphql/mutation";
+import { provideApolloClient } from "@vue/apollo-composable";
+import apolloClient from "src/apollo/client";
+
+provideApolloClient(apolloClient);
 
 export default defineComponent({
   name: "PageLogin",
@@ -51,20 +54,9 @@ export default defineComponent({
     emit("clear");
     console.log(localStorage.getItem("userSignInId"));
 
-    const { mutate: signInUser } = useMutation(gql`
-      mutation UserSignIn($input: UserSignInInput!) {
-        userSignIn(input: $input) {
-          recordId
-          record {
-            token_type
-            expires_in
-            access_token
-            refresh_token
-          }
-          status
-        }
-      }
-    `);
+    // const subjectId = ref([])
+
+    const { mutate: signInUser } = useMutation(userSignIn);
 
     const signIn = async () => {
       const { data } = await signInUser({
@@ -73,6 +65,7 @@ export default defineComponent({
           password: form.value.password,
         },
       });
+      // userIdGet(data.userSignIn.recordId)
 
       resetForm();
       if (data.userSignIn.status === 200) {
@@ -82,6 +75,48 @@ export default defineComponent({
         window.location.href = "#/main";
       }
     };
+
+    //     const userIdGet=(subjectData)=>{
+
+    //       console.log(subjectData)
+    //       const { result, onResult } = useQuery(gql`
+    //         query {
+    //             paginate_subject(
+    //               page: 1
+    //               perPage: 100
+    //               where: {column: "user_id", operator: EQ, value: "${subjectData}"}
+    //             )
+    //             {
+    //               data {
+    //                 id
+    //                 type_id
+    //                 author_id
+    //                 level
+    //                 position
+    //                 created_at
+    //                 updated_at
+    //                 user_id
+    //                 fullname {
+    //                   first_name
+    //                   last_name
+    //                 }
+    //                 email{
+    //                   email
+    //                 }
+
+    //               }
+    //           }
+    //         }`
+    // )
+    //       onResult(() => {
+    //         subjectId.value = result.value.paginate_subject.data
+    //         console.log(subjectId.value)
+    //       });
+
+    //       return{
+    //         onResult, subjectId
+    //       }
+    //     }
 
     const resetForm = () => {
       (form.value.email = ""), (form.value.password = "");

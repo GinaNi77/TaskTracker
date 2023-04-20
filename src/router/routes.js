@@ -34,14 +34,32 @@ const routes = [
       },
       {
         path: 'teams/3969277701932267641',
-        component: () => import('components/AddPerformerUser.vue')
+        component: () => import('src/components/PerformerUser.vue')
+      },
+      {
+        path: '/addPer',
+        component: () => import('src/components/AddPerformerUser.vue')
       },
       {
         path: 'teams/9163702586231323932',
-        component: () => import('components/AddResponsibleUser.vue')
+        component: () => import('src/components/ResponsibleUser.vue')
       },
-
-
+      {
+        path: '/addRes',
+        component: () => import('src/components/AddResponsibleUser.vue')
+      },
+      {
+        path: '/updateModule',
+        component: () => import('components/UpdateModule.vue')
+      },
+      {
+        path: '/updateTask',
+        component: () => import('components/UpdateTask.vue')
+      },
+      {
+        path: '/updateTaskPerformer',
+        component: () => import('components/UpdateTaskPerformer.vue')
+      },
     ]
   },
 

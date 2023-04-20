@@ -15,7 +15,7 @@
 
                 <q-input label="Исполнитель" v-model="performerUser">
                     <template #append>
-                        <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                        <q-icon name="arrow_drop_down" class="cursor-pointer" @click="getPerformerUsers"></q-icon>
                         <q-popup-proxy>
                                 <q-list>
                                     <q-item clickable v-close-popup  v-for="user in performerList" :key="user.index" @click="getUserId(user.id)">
@@ -31,7 +31,7 @@
 
                 <q-input label="Модуль" v-model=" moduleId">
                     <template #append>
-                        <q-icon name="arrow_drop_down" class="cursor-pointer"></q-icon>
+                        <q-icon name="arrow_drop_down" class="cursor-pointer" @click="modulesGet"></q-icon>
                         <q-popup-proxy>
                                 <q-list>
                                     <q-item clickable v-close-popup  v-for="item in modulesList" :key="item.index" @click="getModuleId(item.id)">
@@ -59,8 +59,9 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useMutation } from "@vue/apollo-composable";
-import gql from "graphql-tag";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { addTask, ruleCreate } from "src/graphql/mutation"
+import { getPerformerUser, getModules } from "src/graphql/query"
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
@@ -68,7 +69,7 @@ export default defineComponent({
   
   setup() {
 
-    const performerList = ref(JSON.parse(localStorage.getItem("performerArray")));
+    const performerList = ref([]);
     const performerUser = ref('')
     const modulesList= ref(JSON.parse(localStorage.getItem("modulesArray")))
     const moduleId = ref()
@@ -76,6 +77,27 @@ export default defineComponent({
     const description = ref('')
     const $q = useQuasar();
 
+    const getPerformerUsers = () =>{
+
+      const { result, onResult, refetch } = useQuery(getPerformerUser)
+      onResult(() => {
+        performerList.value = result.value.get_group.subject;
+      });
+      refetch()
+      return{
+        onResult
+      }
+  }
+
+  const modulesGet = () => {
+      const { result, onResult, refetch } = useQuery(getModules)
+       
+      onResult(() => {
+        modulesList.value = result.value.paginate_type1.data;})
+
+      refetch();
+      return{onResult}
+    };
 
     const getUserId = (id) => {
             performerUser.value = id
@@ -85,66 +107,51 @@ export default defineComponent({
             moduleId.value = id
     }
 
-    const { mutate: addTask } = useMutation(gql`
-        mutation ($input: create_type2_input!) {
-        create_type2(input: $input) {
-        status
-        recordId
-        record {
-            id
-            type_id
-            author_id
-            level
-            position
-            created_at
-            updated_at
-            name
-            property5 {
-            id
-            user_id
-            fullname {
-                first_name
-                last_name
-                     }
-            }
-            property3
-            property8
-            property9{
-            name
-            property4{
-                fullname{
-                first_name
-                last_name
-                }
-          } 
-        }
+    const { mutate: taskAdd } = useMutation(addTask)
+
+    const { mutate: createPermissionRule } = useMutation(ruleCreate)
+
+    const createRule = async (moduleData) => {
+
+      const { data: ruleData } = await createPermissionRule({
+        input: {
+          model_type: "object",
+          model_id: moduleData.create_type2.recordId,
+          owner_type: "subject",
+          owner_id: moduleData.create_type2.record.property5.id,
+          level: 5,
+        },
+      });
+
+      const { data: ruleData2 } = await createPermissionRule({
+        input: {
+          model_type: "object",
+          model_id: moduleData.create_type2.recordId,
+          owner_type: "subject",
+          owner_id: moduleData.create_type2.record.property9.property4.id,
+          level: 7,
+        },
+      });
     }
-  }
-}`
-    )
 
     const addTasks = async () => {
-       const {data} = await addTask(
+       const {data} = await taskAdd(
         {
             "input":{
                 "name": title.value,
                     "property3": description.value,
                     "property8": "8536411824694842134",
-                    // айдишник статуса задачи 
-                    // 8536411824694842134 - Назначена
-                    // 3812168432889805433 - Выполнена
-                    // 6403872496291980172 - Завершена
-                    // При добавлении задачи ее статус всегда - Назначена
                     "property9": {
                         "6591698446779899108": moduleId.value
-                        // айдишник типа Модуль
                     },
                     "property5":{
                         "2730894142110796608": performerUser.value
-                        // айдишник типа Субъект
                                 }
             }
         })
+
+        createRule(data)
+         
          $q.notify({
         message: "Задача добавлена",
         icon: "check",
@@ -164,9 +171,11 @@ export default defineComponent({
     };
 
     return {
-      performerList, modulesList, performerUser, getUserId, getModuleId, moduleId, addTasks, title, description
+        performerList, modulesList,
+        performerUser, getUserId, getModuleId,
+        moduleId, addTasks, title,
+        description, getPerformerUsers, modulesGet
     };
-
 
   },
 });
