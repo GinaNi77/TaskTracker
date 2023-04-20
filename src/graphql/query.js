@@ -214,3 +214,35 @@ export const getAllGroup = gql`
           }
         }
       `;
+
+export const permissionTreeSubjects = gql`
+query permissionTreeSubjects(
+	$perPage: Int
+	$page: Int
+	$modelId: String!
+	$groupId: String!
+) {
+	permissionTreeSubjects(
+		perPage: $perPage
+		page: $page
+		modelId: $modelId
+		groupId: $groupId
+	) {
+		data {
+      subject_id
+			level
+			permission_rule_id
+		}
+		paginatorInfo {
+			perPage
+			total
+			count
+			currentPage
+			from
+			to
+			lastPage
+			hasMorePages
+		}
+	}
+}
+`

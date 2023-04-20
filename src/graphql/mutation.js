@@ -231,3 +231,11 @@ mutation permissionRuleCreate($input: PermissionRuleCreateInput!) {
     }
   }
 }`
+
+export const ruleDelete = gql`
+mutation permissionRuleDelete($id: String!) {
+  permissionRuleDelete(id: $id) {
+    recordId
+    status
+  }
+}`

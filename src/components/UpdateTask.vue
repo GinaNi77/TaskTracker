@@ -121,10 +121,10 @@ export default {
 
 import { ref } from "vue"
 import { useQuery, useMutation } from "@vue/apollo-composable";
-import { taskUpdate } from "src/graphql/mutation";
+import { taskUpdate, ruleDelete, ruleCreate} from "src/graphql/mutation";
 import { provideApolloClient } from "@vue/apollo-composable";
 import apolloClient from "src/apollo/client";
-import { getPerformerUser, getModules} from "src/graphql/query";
+import { getPerformerUser, getModules, permissionTreeSubjects} from "src/graphql/query";
 
 provideApolloClient(apolloClient);
 
@@ -146,6 +146,9 @@ const moduleId = ref(props.moduleId);
 const taskId = ref(props.taskId);
 const performerUsers = ref([])
 const modulesList = ref([])
+const permissionArray = ref([])
+const permission_id = ref([])
+const flag = ref(false)
 
 const emit = defineEmits(['updateTask'])
 
@@ -179,7 +182,40 @@ const emit = defineEmits(['updateTask'])
 
  const getUserId = (id) => {
       performerUser.value = id;
+      flag == true;
+      if(flag){
+        permissionArray.value.forEach((item) => {
+        if (item.subject_id === props.performerUser) {
+            permission_id.value = item.permission_rule_id;
+        }
+      });
+      }
+      console.log(typeof(permission_id.value))
     };
+
+    const { mutate: deleteRule } = useMutation(ruleDelete);
+
+    const deletePermission = async (id) => {
+      const { data } = await deleteRule({
+        id: permission_id.value,
+      });
+    };
+
+    const { mutate: createPermissionRule } = useMutation(ruleCreate)
+
+    const createRule = async (moduleData) => {
+
+      const { data: ruleData } = await createPermissionRule({
+        input: {
+          model_type: "object",
+          model_id: props.taskId,
+          owner_type: "subject",
+          owner_id: performerUser.value,
+          level: 5,
+        },
+      });
+      }
+
 
 const getModuleId = (id) => {
       moduleId.value = id;
@@ -212,6 +248,12 @@ const getTaskStatus = (status) => {
           },
         },
       });
+
+      if(flag){
+        deletePermission();
+        createRule();
+        flag == false;
+      }
       emitFun()
       reset();
     };
@@ -228,4 +270,23 @@ const getTaskStatus = (status) => {
 const emitFun = () => {
         emit("updateTask");
     }
+
+     const permissionTreeGet = () => {
+      const { result, onResult, refetch } = useQuery(permissionTreeSubjects,{     
+	      "modelId": props.taskId,
+	      "groupId": "3969277701932267641"
+      });
+
+      onResult(() => {
+        permissionArray.value = result.value.permissionTreeSubjects.data;
+      });
+
+      refetch();
+
+      return {
+        onResult,
+      };
+    };
+
+    permissionTreeGet();
 </script>
