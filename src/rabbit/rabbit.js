@@ -53,6 +53,7 @@ const rabbitConnect = () => {
 
     let onClose = (msg) => {
         console.log('Close', msg);
+        setTimeout(() => { window.location.reload() }, 1000)
     }
 
     client.connect(headers, onConnect, onError, onClose, '/');
