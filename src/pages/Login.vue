@@ -37,7 +37,6 @@
 import { defineComponent, ref } from "vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { userSignIn } from "src/graphql/mutation";
-import gql from "graphql-tag";
 import { provideApolloClient } from "@vue/apollo-composable";
 import apolloClient from "src/apollo/client";
 
