@@ -77,7 +77,6 @@ export default defineComponent({
     const description = ref('')
     const $q = useQuasar();
 
-    
     const getPerformerUsers = () =>{
 
       const { result, onResult, refetch } = useQuery(getPerformerUser)
@@ -114,9 +113,6 @@ export default defineComponent({
 
     const createRule = async (moduleData) => {
 
-      console.log(moduleData.create_type2.recordId)
-      console.log(moduleData.create_type2.record.property5.id)
-
       const { data: ruleData } = await createPermissionRule({
         input: {
           model_type: "object",
@@ -136,11 +132,6 @@ export default defineComponent({
           level: 7,
         },
       });
-      console.log(ruleData.permissionRuleCreate.status)
-      console.log(ruleData.permissionRuleCreate.recordId)
-
-      console.log(ruleData2.permissionRuleCreate.status)
-
     }
 
     const addTasks = async () => {
@@ -150,28 +141,16 @@ export default defineComponent({
                 "name": title.value,
                     "property3": description.value,
                     "property8": "8536411824694842134",
-                    // айдишник статуса задачи 
-                    // 8536411824694842134 - Назначена
-                    // 3812168432889805433 - Выполнена
-                    // 6403872496291980172 - Завершена
-                    // При добавлении задачи ее статус всегда - Назначена
                     "property9": {
                         "6591698446779899108": moduleId.value
-                        // айдишник типа Модуль
                     },
                     "property5":{
                         "2730894142110796608": performerUser.value
-                        // айдишник типа Субъект
                                 }
             }
         })
 
         createRule(data)
-
-        console.log(data.create_type2.recordId);
-        console.log(data.create_type2.record.property5.id);
-
-        console.log(data.create_type2.record.property9.property4.id);
          
          $q.notify({
         message: "Задача добавлена",
@@ -197,7 +176,6 @@ export default defineComponent({
         moduleId, addTasks, title,
         description, getPerformerUsers, modulesGet
     };
-
 
   },
 });

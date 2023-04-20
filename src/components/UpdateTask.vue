@@ -121,7 +121,7 @@ export default {
 
 import { ref } from "vue"
 import { useQuery, useMutation } from "@vue/apollo-composable";
-import { taskUpdate, ruleDelete, ruleCreate} from "src/graphql/mutation";
+import { taskUpdate, ruleDelete, ruleCreate } from "src/graphql/mutation";
 import { provideApolloClient } from "@vue/apollo-composable";
 import apolloClient from "src/apollo/client";
 import { getPerformerUser, getModules, permissionTreeSubjects} from "src/graphql/query";
@@ -190,7 +190,6 @@ const emit = defineEmits(['updateTask'])
         }
       });
       }
-      console.log(typeof(permission_id.value))
     };
 
     const { mutate: deleteRule } = useMutation(ruleDelete);

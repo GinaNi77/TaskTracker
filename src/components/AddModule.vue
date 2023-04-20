@@ -91,8 +91,6 @@ export default defineComponent({
     const start_date = ref();
     const end_date = ref();
     const $q = useQuasar();
-  
-    const newModule = ref();
 
     const onItemClick = (id) => {
       responsibleUser.value = id;
@@ -114,9 +112,6 @@ const { mutate: createPermissionRule } = useMutation(ruleCreate)
 
     const createRule = async (moduleData) => {
 
-      console.log(moduleData.create_type1.recordId)
-      console.log(moduleData.create_type1.record.property4.id)
-
       const { data: ruleData } = await createPermissionRule({
         input: {
           model_type: "object",
@@ -126,9 +121,6 @@ const { mutate: createPermissionRule } = useMutation(ruleCreate)
           level: 7,
         },
       });
-      console.log(ruleData.permissionRuleCreate.status)
-      console.log(ruleData.permissionRuleCreate.recordId)
-
     }
 
     const addModules = async () => {
@@ -143,13 +135,9 @@ const { mutate: createPermissionRule } = useMutation(ruleCreate)
           },
           property4: {
             "2730894142110796608": responsibleUser.value,
-            // айдишник типа Субъект
           },
         },
       });
-
-      console.log(data.create_type1.recordId)
-      console.log(data.create_type1.record.property4.id)
 
       createRule(data)
 
