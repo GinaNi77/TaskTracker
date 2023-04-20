@@ -47,14 +47,12 @@ export default defineComponent({
   emits: ["authorized"],
   setup(props, { emit }) {
     const form = ref({
-      email: "sofiya.khodyreva@bk.ru",
-      password: "SofiyaKH",
+      email: "nigina.gafurova.2001@mail.ru",
+      password: "89181024524Ni",
+
     });
     localStorage.clear();
     emit("clear");
-    console.log(localStorage.getItem("userSignInId"));
-
-    // const subjectId = ref([])
 
     const { mutate: signInUser } = useMutation(userSignIn);
 
@@ -65,7 +63,6 @@ export default defineComponent({
           password: form.value.password,
         },
       });
-      // userIdGet(data.userSignIn.recordId)
 
       resetForm();
       if (data.userSignIn.status === 200) {
@@ -75,48 +72,6 @@ export default defineComponent({
         window.location.href = "#/main";
       }
     };
-
-    //     const userIdGet=(subjectData)=>{
-
-    //       console.log(subjectData)
-    //       const { result, onResult } = useQuery(gql`
-    //         query {
-    //             paginate_subject(
-    //               page: 1
-    //               perPage: 100
-    //               where: {column: "user_id", operator: EQ, value: "${subjectData}"}
-    //             )
-    //             {
-    //               data {
-    //                 id
-    //                 type_id
-    //                 author_id
-    //                 level
-    //                 position
-    //                 created_at
-    //                 updated_at
-    //                 user_id
-    //                 fullname {
-    //                   first_name
-    //                   last_name
-    //                 }
-    //                 email{
-    //                   email
-    //                 }
-
-    //               }
-    //           }
-    //         }`
-    // )
-    //       onResult(() => {
-    //         subjectId.value = result.value.paginate_subject.data
-    //         console.log(subjectId.value)
-    //       });
-
-    //       return{
-    //         onResult, subjectId
-    //       }
-    //     }
 
     const resetForm = () => {
       (form.value.email = ""), (form.value.password = "");
