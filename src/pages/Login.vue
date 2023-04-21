@@ -47,9 +47,8 @@ export default defineComponent({
   emits: ["authorized"],
   setup(props, { emit }) {
     const form = ref({
-      email: "nigina.gafurova.2001@mail.ru",
-      password: "89181024524Ni",
-
+      email: "",
+      password: "",
     });
     localStorage.clear();
     emit("clear");

@@ -3,6 +3,7 @@ import apolloClient from "src/apollo/client";
 import { getTasks, getModules, getPerformerUser } from "src/graphql/query";
 import { getQueue } from "src/graphql/mutation";
 import { Stomp } from "@stomp/stompjs"
+import router from "src/router";
 
 provideApolloClient(apolloClient);
 
@@ -53,7 +54,7 @@ const rabbitConnect = () => {
 
     let onClose = (msg) => {
         console.log('Close', msg);
-        setTimeout(() => { window.location.reload() }, 3000)
+        setInterval(() => { if (router.currentRoute.value.path != '/login') window.location.reload() }, 2000)
     }
 
     client.connect(headers, onConnect, onError, onClose, '/');

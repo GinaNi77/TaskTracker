@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
-import { useQuery, useLazyQuery } from "@vue/apollo-composable";
+import { defineComponent, ref, onMounted } from "vue";
+import { useQuery } from "@vue/apollo-composable";
 import { getRootPages, getAllGroup, getModules } from "src/graphql/query";
 import router from "../router";
 import MainPageVue from "../pages/MainPage.vue";
